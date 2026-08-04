@@ -253,6 +253,49 @@ loudly.
 
 ---
 
+## D-015 · The North Star aims at AI filmmaking, not at a competitor
+**Date:** 2026-08-03 · **Source:** Vince rewrote `GOALS.md` · **Agent:** cowork (recording only)
+
+**Context:** The first `GOALS.md` was derived from `HANDOFF.md` §1, which framed the problem
+commercially: StoryWorth and Remento produce work their own customers call *"a list of answers, not a
+story."* Vince rewrote the core problems and the primary outcome.
+
+**Reason:** The competitor framing described a *market*, not the work. What actually blocks the film
+is AI filmmaking itself — generations that come out wrong, style that will not hold, prompt craft
+that differs per model, workflows that go obsolete, and the filmmaker drifting from his own story.
+Naming the real obstacles makes the document usable as a build filter; naming a competitor did not.
+
+**What changed, directionally:**
+
+1. **Hearthlight has a UI, and it is a product surface.** A visual overview of the film and the state
+   of production is now primary outcome 4, and iteration speed is core problem 1. This reclassified
+   `hearthlight-dashboard` from **UNCLEAR** to **CORE**.
+2. **Eliminating logistics became a goal.** *"No more hand-typing prompts into a web UI or wiring a
+   ComfyUI graph for every one-off."* The old non-goal *"not an app that spits out a video"* was
+   deleted, and these two now sit in tension — see the open question in `ROADMAP.md`.
+3. **Adaptation and retirement became goals.** Models obsolete workflows, so retiring skills that no
+   longer earn their place is expected behaviour. The `SKILL-INVENTORY.md` pruning list is an
+   adaptation backlog, not housekeeping.
+4. **Experimentation became a loop with an output.** Successful workflows get systematized into the
+   instruction layer; failed ones leave lessons. EXPERIMENTAL is a lifecycle stage, not a warning.
+5. **Documents became the substrate.** Hearthlight is administrator and secretary: material becomes
+   organized, **agent-fetchable** documents, which are then reformatted into what image, video, and
+   audio generation each need.
+6. **Drift now includes the filmmaker's own drift** from the story, not only the machine's aesthetic
+   drift.
+
+**Consequences:** Three stated outcomes have **no implementation** — the UI correction loop, audio
+generation, and continuous narrative-drift tracking. They are recorded as gaps in `PRODUCT_SPEC.md`
+§6 and `ROADMAP.md` rather than quietly treated as done.
+
+**Also deleted, and worth watching:** the non-goals section and the open North Star questions
+(film-vs-engine, Talefeather-as-only-client, commercial shape). The film-vs-engine question is
+effectively answered by the v1 definition — both halves are required. The others are simply gone.
+The engine/client abstraction's justification is **weaker** under the new framing, which is built
+around craft problems rather than client service. Flagged in `SKILL-INVENTORY.md` §5, not acted on.
+
+---
+
 ## D-015 · Krea still prompts are exact frame-one data, not assembled prose
 **Date:** 2026-08-03 · **Source:** Vince, this session · **Agent:** chatgpt
 

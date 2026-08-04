@@ -64,19 +64,40 @@ Current position and the road out:
 | Score | **Later.** ElevenLabs pass for the film score |
 
 **The prioritization rule that follows:** work that does not move the Yu-Gi-Oh! film toward
-completion, or harden the pipeline carrying it, gets **parked — not built.** Apply this before the
-six criteria in `GOALS.md`.
+completion, or harden the pipeline carrying it, gets **parked — not built.** Apply this *before* the
+four questions in `GOALS.md` § *Keeping features tight*.
 
 **Note on the gate ledger:** `yugioh/status.yml` shows gates 0–3 as `pending` while gate 4 is
 approved — the film advanced faster than the ledger was maintained. Worth a ratification pass so the
 record matches reality.
 
+## Gaps opened by the revised North Star — 2026-08-03
+
+`GOALS.md` was rewritten to aim at **AI-filmmaking problems** rather than at a competitor. Three of
+its stated outcomes have no implementation. These are now roadmap items, not oversights.
+
+| Gap | Stated in | Where it stands |
+|---|---|---|
+| **The UI correction loop** — point at what is wrong, prompt gets intelligently corrected | Core problem 1 | The dashboard is **read-only**. Corrections go through chat. This is the largest gap between goal and product. |
+| **Audio generation** | Primary outcome 3 | Nothing produces audio. ElevenLabs score is a later phase. |
+| **Narrative-drift tracking** | Core problem 6 | `hearthlight-critique` does this on demand at one stage. Nothing holds narrative goals continuously across the film. |
+| **Cross-platform prompt shaping** | Core problem 2 | Partly present — `hearthlight-image-prompts`, `-video-prompts`, `seedance-prompt-maker`, `zit-prompt-writer` each target a surface. No shared abstraction; each is bespoke. |
+
 ## Long term
 
-**A repeatable studio.** *(CONFIRMED — `HANDOFF.md` §6)*
-Wire Stage 6 properly, template the pipeline so the next family story is faster than the first, and
-prove the partner behaviours in real use: the offer protocol firing at seams, `TASTE.md` actually
-shaping proposals, the crew arguing rather than complying.
+**A system that outlives its models.** *(CONFIRMED — `GOALS.md` core problem 5, 2026-08-03)*
+New models obsolete old workflows. Hearthlight is expected to adopt new ones, **retire skills that no
+longer earn their place**, and adapt what remains. Retirement is a goal, not housekeeping — which
+makes the `SKILL-INVENTORY.md` pruning list an adaptation backlog rather than a tidy-up.
+
+**Workflows systematized, not remembered.** *(CONFIRMED — `GOALS.md` core problem 4)*
+A workflow that worked gets written into the instruction layer; one that failed leaves a lesson.
+This is what makes experimentation cheap rather than lossy.
+
+**A repeatable studio.** *(CONFIRMED — `HANDOFF.md` §6, still current in intent)*
+Wire Stage 6 properly, template the pipeline so the next film is faster than the first, and prove the
+partner behaviours in real use: the offer protocol firing at seams, `TASTE.md` actually shaping
+proposals, the crew arguing rather than complying.
 
 ---
 
@@ -112,10 +133,17 @@ shaping proposals, the crew arguing rather than complying.
 
 ## Open questions
 
-1. Is the deliverable the film or the engine? *(See `GOALS.md`.)*
+1. ~~Is the deliverable the film or the engine?~~ ✅ **EFFECTIVELY ANSWERED 2026-08-03** — v1 requires
+   **both**: the finished film *and* the architecture that finished it. Neither alone.
 2. ~~What does "done" look like for v1?~~ ✅ **ANSWERED 2026-08-03** — see *The v1 target* above.
 3. Should `HANDOFF.md` be retired now that `GOALS.md` / `PRODUCT_SPEC.md` / `ROADMAP.md` exist?
-   It is the largest doc, the most stale, and the main source of client-into-engine leakage.
+   **Sharper now:** its §1 states the *old* problem framing (competitors producing generic memory
+   books) that the revised `GOALS.md` replaced with AI-filmmaking problems. It is no longer just
+   stale — it contradicts the North Star.
 4. Do the three vendored `krea-*` packs stay, or go?
-5. Is `hearthlight-dashboard` part of the product or a personal utility? Its absence from `AGENTS.md`
-   suggests it was never fully adopted, yet it is the most recently developed component.
+5. ~~Is `hearthlight-dashboard` product or personal utility?~~ ✅ **ANSWERED 2026-08-03** — product
+   surface. `GOALS.md` primary outcome 4.
+6. **New:** the revised `GOALS.md` dropped the non-goals section and the open North Star questions
+   (film-vs-engine, Talefeather-as-only-client, commercial shape). Deliberate, or lost in the edit?
+   The non-goals were doing real work — *"not an app that spits out a video"* in particular now sits
+   awkwardly against primary outcome 2, which asks for exactly that ease.

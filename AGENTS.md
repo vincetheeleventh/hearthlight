@@ -28,7 +28,7 @@ Five documents carry product intent. They answer different questions; do not con
 
 | Doc | Answers | Who may change it |
 |---|---|---|
-| **`GOALS.md`** | **WHY** Hearthlight exists — North Star, principles, non-goals, the test for whether a feature belongs | **Vince only.** No agent rewrites this, ever — not even when the implementation changes. Propose, never edit. |
+| **`GOALS.md`** | **WHY** Hearthlight exists — the v1 definition, the AI-filmmaking problems it solves, principles, and the test for whether a feature belongs | **Vince only.** No agent rewrites this, ever — not even when the implementation changes. Propose, never edit. |
 | **`PRODUCT_SPEC.md`** | **WHAT** currently exists — features, workflows, skills, constraints, known limits | Any agent, but strictly descriptive. If it is not built, it does not go here. |
 | **`ROADMAP.md`** | **WHAT WE ARE TRYING TO CHANGE** — active work, priorities, known problems, experiments, open questions | Any agent. Mark items CONFIRMED vs INFERRED. |
 | **`DECISIONS.md`** | **WHY** important choices were made | Append-only. Never rewrite an entry; supersede it. Never invent reasoning — write `Reason: NOT RECOVERABLE`. |
@@ -40,9 +40,9 @@ Five documents carry product intent. They answer different questions; do not con
 when you need to know what recently moved and why.
 
 Before starting substantial feature work: read `GOALS.md` and the relevant part of `PRODUCT_SPEC.md`,
-then check `ROADMAP.md` for whether someone is already on it. Run the feature past the six criteria in
-`GOALS.md` § *Does this feature advance the North Star?* If it fails criterion 1 or 2, say so out loud
-rather than building it.
+then check `ROADMAP.md` for whether someone is already on it. Run the feature past `GOALS.md`
+§ *Keeping features tight* — the prior question (does it move the Yu-Gi-Oh! film toward finished?)
+and then the four. If it fails the prior question, say so out loud rather than building it.
 
 ## Multi-agent working agreement
 **Three agents edit these files** — Claude Cowork, Hermes (the Telegram gateway), and ChatGPT — plus

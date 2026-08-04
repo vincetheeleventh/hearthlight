@@ -37,8 +37,11 @@ helper scripts, executed by an LLM agent that reads them.
 - **Timing round-trip with real editors.** Storyboard Pro Final Cut XML in; DaVinci Resolve FCP XML out.
 - **Persistent taste memory.** `profile/TASTE.md` records what Vince kills and reaches for, read by
   the critique, outline, and mise-en-scène stages.
-- **A read-only pipeline dashboard.** Local HTML + `serve.py`, plus a shot registry with stable
-  shot IDs.
+- **A visual production overview (the UI).** Local HTML + `serve.py`, plus a shot registry with
+  stable shot IDs. Per `GOALS.md` primary outcome 4 this is a **product surface**, not a status
+  utility — it is where the filmmaker sees the whole film, spots what is not working, and drives the
+  iterate-and-correct loop. Currently **read-only**; the correction loop described in core problem 1
+  (point at a flaw, have the prompt intelligently corrected) is **not yet built here**.
 - **Plumbing self-check.** Separates mechanical failure (the system's fault, fixable) from quality
   judgment (Vince's call, unautomatable).
 
@@ -120,6 +123,15 @@ but no ✅ was recorded — it must be ratified, not assumed.
   WSL → Windows migration; the hand-drawn-board intake path depends on it.
 - **Stage 6 is unproven end to end.** The RunningHub key was leaked and needs rotating; no full
   film has passed every gate.
+- **Gaps against the revised `GOALS.md` (2026-08-03).** Three stated outcomes have no implementation
+  yet, and the spec must not imply otherwise:
+  - **Audio generation** — named in primary outcome 3; nothing in the pipeline produces it. The
+    ElevenLabs score pass is roadmap, not product.
+  - **The UI correction loop** — core problem 1 describes pointing at a flaw and having the prompt
+    intelligently corrected. The dashboard is read-only; corrections still go through chat.
+  - **Narrative-drift tracking** — core problem 6 expects Hearthlight to hold the narrative goals and
+    flag choices that pull away. `hearthlight-critique` does this **on demand at one stage**; nothing
+    tracks it continuously across the film.
 
 ## 7. Edge cases worth knowing
 

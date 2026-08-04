@@ -33,7 +33,7 @@ Keep the whole thing **readable in about two minutes** — this is a daily habit
 |---|---|
 | What changed? | Meaningful development only. Group by agent where attribution exists. Skip noise. |
 | Why does it matter? | Connect to a **named** goal, feature, roadmap item, or known problem. If you cannot name one, that is itself the finding. |
-| North Star alignment | One verdict — **ALIGNED** / **NEUTRAL-INFRASTRUCTURAL** / **QUESTIONABLE** / **POTENTIAL DRIFT** — then why, against the six criteria in `GOALS.md`. |
+| North Star alignment | One verdict — **ALIGNED** / **NEUTRAL-INFRASTRUCTURAL** / **QUESTIONABLE** / **POTENTIAL DRIFT** — then why, against `GOALS.md` § *Keeping features tight*: the prior question (does it move the Yu-Gi-Oh! film toward finished?) then the four. |
 | Product-spec discrepancies | Where implementation moved but `PRODUCT_SPEC.md` did not. Cite file and section. |
 | Complexity / orphan detection | Unused, redundant, overlapping, undocumented, goal-disconnected, or speculative-with-no-use-case. Include things that were already there, not just new ones. |
 | Unfinished work | TODOs, partial features, failing tests, abandoned implementation branches. |

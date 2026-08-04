@@ -23,12 +23,15 @@ see the caveat in §4.
 
 | Class | Count |
 |---|---|
-| CORE | 11 |
+| CORE | 12 |
 | SUPPORTING | 6 |
 | EXPERIMENTAL | 3 |
-| UNCLEAR | 1 |
+| UNCLEAR | 0 |
 | ORPHANED (non-skill components) | 4 |
 | DEPRECATED (non-skill components) | 2 |
+
+*Revised 2026-08-03 against the updated `GOALS.md`. `hearthlight-dashboard` moved UNCLEAR → CORE:
+the visual production overview is now a stated primary outcome, not a side utility.*
 
 **21 skills** in `skills/`, plus **1 router** that exists only in the Claude skill store.
 No `hearthlight-*` skill is orphaned — every one is referenced by `AGENTS.md` except
@@ -63,7 +66,7 @@ Columns: **AG** = mentions in `AGENTS.md` · **UG** = `USER-GUIDE.md` · **RM** 
 | `hearthlight-timing-intake` | 3 | 1 | 0 | 5 | 4 | **SUPPORTING** | Editor round-trip | Most `AGENTS.md` mentions and 4 scripts. **Partly blocked** — `transcribe.py` needs the dead `.venv-stt`. |
 | `hearthlight-reference-report` | 2 | 1 | 1 | 2 | 0 | **EXPERIMENTAL** | Review ergonomics | Convenience layer over research output. No evidence it has been used on a real project. |
 | `hearthlight-shot-crew` | 2 | 1 | 0 | 2 | 0 | **EXPERIMENTAL** | Principle 3 | 8 subagent roles. `HANDOFF.md` §6 names *verifying the roles give distinct opinions* as still-pending. Highest cost-per-shot in the system, least evidence it pays. Absent from README. |
-| `hearthlight-dashboard` | **0** | 1 | 0 | 1 | 5 | **UNCLEAR** | — | **Absent from `AGENTS.md` entirely** — a session reading only the operating index never learns it exists. Yet it is the most recently developed component (2026-08-03) and the largest sub-app: `index.html`, `serve.py`, `pipeline.json`, a shot registry, a backfill script, a test. Owns D-009, which *is* load-bearing. Either promote it to CORE and add it to `AGENTS.md`, or decide it is a personal utility. |
+| `hearthlight-dashboard` | 1 | 1 | 1 | 1 | 5 | **CORE** | **Primary outcome 4** | **Reclassified UNCLEAR → CORE, 2026-08-03.** The revised `GOALS.md` names *"a visual UI for the filmmaker to see an overview of the film and the current state of production"* as a primary outcome, and *"iteration speed"* as core problem 1. This is not a status utility — it is the surface the whole iterate-and-correct loop runs on. Largest sub-app: `index.html`, `serve.py`, `pipeline.json`, shot registry, backfill script, a test. Also owns D-009. Added to `AGENTS.md` and `README.md`. |
 
 ### The router
 | Component | Class | Notes |
@@ -114,21 +117,27 @@ drifted: it omits 7 of 21 skills and still describes a deleted `hearthlight-asse
 
 Ordered by complexity added relative to demonstrated need.
 
+**Retiring what no longer earns its place is a stated goal** (`GOALS.md` core problem 5), not
+housekeeping. New models obsolete workflows; a system that only accumulates cannot keep pace. Read
+this list as the adaptation backlog, not a tidy-up.
+
 1. **`.agents/skills/krea-*` (3 packs, ~484 KB, 18+ scripts).** Zero references, direct functional
    overlap with the Hearthlight pipeline. **Highest-value cleanup in the repository.**
    *Question: are these a precursor you replaced, or something you still intend to harvest?*
 2. **`hearthlight-shot-crew`.** The most conceptually ambitious component and the most expensive per
-   shot. Its own roadmap entry says the core premise — that eight roles give genuinely distinct,
-   arc-aware opinions — is still unverified. *Question: has a contested shot ever actually run
-   through it?*
-3. **`hearthlight-dashboard`.** Most recent work, largest sub-app, and invisible to the operating
-   index. *Question: product surface, or your personal utility?*
-4. **`hearthlight-reference-report`.** A presentation layer on research output. Plausible, but no
+   shot. Core problem 3 now explicitly endorses *a crew of agents supplying research and richness* —
+   so its **purpose** is goal-backed. What remains unverified is this **implementation**: that eight
+   roles produce genuinely distinct, arc-aware opinions rather than eight paraphrases. Stays
+   EXPERIMENTAL until a contested shot has actually run through it.
+3. **`hearthlight-reference-report`.** A presentation layer on research output. Plausible, but no
    evidence of real use. *Question: have you ever read one?*
-5. **The engine/client abstraction itself.** Built to support many clients; exactly one exists.
-   Genuinely load-bearing *if* more clients are coming — speculative if not. See `GOALS.md` open
-   question 3. *Not a recommendation to remove — a flag that its justification rests on an unanswered
-   question.*
-6. **`hearthlight-character`.** Owns the turnaround law inherited by every generated clip, yet has
+4. **The engine/client abstraction itself.** Built to support many clients; exactly one exists.
+   The revised `GOALS.md` is framed almost entirely around **AI-filmmaking problems** rather than
+   client service, which weakens the case for the abstraction rather than strengthening it.
+   *Not a recommendation to remove — a flag that its justification has grown thinner, not thicker.*
+5. **`hearthlight-character`.** Owns the turnaround law inherited by every generated clip, yet has
    zero peer references and no README entry. The risk here is the opposite of the others: not too
    much complexity, but too little integration for how much it affects.
+
+**Resolved 2026-08-03:** *"Is `hearthlight-dashboard` a product surface or a personal utility?"* —
+it is a product surface. Primary outcome 4 settles it.

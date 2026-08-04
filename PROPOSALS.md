@@ -11,6 +11,11 @@ by Vince.*
 architecture that finished it (`GOALS.md`). A proposal that cannot name what it unblocks is **parked**,
 not built — however clever it is. This is the sharpest anti-drift tool in the system.
 
+**Removal proposals are first-class.** `GOALS.md` core problem 5 makes retiring obsolete workflows a
+*goal*: new models make old skills worthless, and a system that only accumulates cannot keep pace.
+A proposal to delete or merge something is worth more than one that adds — it still needs Vince's ✅
+(deletion is RED), but it does not need to justify itself as harder than an addition would.
+
 ### The three brakes
 
 An agent asked to improve things will always find things to improve. Without limits this backlog
@@ -48,6 +53,8 @@ idea that keeps resurfacing is information.
 | P-002 | 2026-08-03 | AMBER | open | **Create `skills/hearthlight/SKILL.md`** — the router exists only in the Claude skill store with no canonical source, the one place D-002 is not followed. Make the store copy a stub like every other. | The session entry point can drift with nothing to reconcile against. It is the first file every agent reads. |
 | P-003 | 2026-08-03 | AMBER | open | **Write the image-pipeline stages into `hearthlight-image-prompts`** — style composition → likeness → final input image is being built by hand right now and exists nowhere in the instruction layer. | **Directly blocking.** This is where v1 is. Undocumented, it is not v1 of the skill — it is a draft that only works while Vince remembers it. |
 | P-004 | 2026-08-03 | GREEN | open | **Ratify `yugioh/status.yml`** — gates 0–3 read `pending` while gate 4 is `approved 2026-07-30`. The film outran its ledger. | The gate ledger is the only machine-readable record of v1 progress. Wrong, it makes every alignment judgment unreliable. |
+| P-005 | 2026-08-03 | AMBER | open | **Close the UI correction loop** — the dashboard is read-only; pointing at a flawed generation and having the prompt intelligently corrected still happens in chat. Smallest useful version: per-shot "what's wrong" capture that writes a structured revision note the image/video prompt skills consume. | **`GOALS.md` core problem 1 and primary outcome 4 — the largest gap between stated goal and built product.** This is the loop the image pipeline is being hand-run through right now on Shots 1–2. |
+| P-006 | 2026-08-03 | AMBER | open | **Retire `HANDOFF.md`, or gut it to a history note.** It no longer just carries stale facts — its §1 states the *superseded* problem framing (competitors making generic memory books) that the revised `GOALS.md` replaced. | A new agent reading it inherits the wrong North Star and the grief-cohort leak (D-003). Costs attention on every fresh session — including every checkpoint run. |
 
 ## Decided
 

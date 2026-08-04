@@ -39,27 +39,46 @@ it. The engine must not know or care who is watching. `client: none` is the norm
 
 ## The core problems it exists to solve
 
-1. **Iteration speed** - Often ai image and video generations come out incoherent or flawed. Hearthlight's UI and agent skills allow user to quickly point out things to fix, intelligently tweaks the prompt to rectify this.
-2. **Systematic workflow** - Establish a repeatable workflow that is ai assisted, solving current issues with AI filmmaking 
-3. **Avoid AI genericness.** Making an authored film alone means the era research, world population, prompt assembly (especially acting descriptions), continuity holding, etc. A crew of agents handle the research and richness of details that support the filmmaker vision, reducing their workload in establishing atmospheric details.
-4. **Solve current AI video generation issues** 
-   1. achieving aesthetic style consistency
-   2. writing good descriptive prompts for different image/video generation platforms
-5. **Adapts to new AI advances** - New models come out, making older workflows obsolete. The Hearthlight system will grow with these new workflows, retiring old workflows and skills, and adapting its existing system to work with new models.
-6. **Vince is free to experiment with workflows** - A successful workflow is not lost, its systematized into Hearthlight. Lessons are drawn from unsuccessful workflows.
-7. **User drift** - As creative decisions stack, user may drift from the original story, or creep in complexity. Hearthlight tracks key narrative goals, and reminds user when 
+The enemy is not a competitor. It is **AI filmmaking itself** — generations that come out wrong,
+prompt craft that differs per model, styles that drift, and workflows that go obsolete before
+they are learned.
 
-Hearthlight exists so that **one person with taste can make an authored film that reads as authored** — not as plausible-generic AI gloss.
+1. **Iteration is slow.** Generations come out incoherent or flawed. Hearthlight's UI and skills let
+   the filmmaker point at what is wrong and have the prompt intelligently corrected — rather than
+   rewriting it by hand and hoping.
+2. **Style will not hold, and every model wants a different prompt.** Aesthetic consistency across
+   shots, and descriptive prompts shaped for each image, video, and audio platform, are the two
+   craft problems the generation stage actually fails on.
+3. **AI output reads generic.** Authoring a film alone means doing the era research, populating the
+   world, writing acting description, and holding continuity. A crew of agents supplies that
+   richness in service of the filmmaker's vision, so his attention goes to the vision and not the
+   atmospheric detail.
+4. **Workflows live in one person's head.** A workflow that worked should be systematized into
+   Hearthlight, not remembered. A workflow that failed should leave a lesson behind.
+5. **The ground keeps moving.** New models obsolete old workflows. Hearthlight is expected to grow
+   into new ones, **retire skills that no longer earn their place**, and adapt what remains — this
+   is a goal, not maintenance.
+6. **The filmmaker drifts from his own story.** As creative decisions stack, the film can wander
+   from the original intent and accumulate complexity. Hearthlight holds the narrative goals and
+   says so when a choice pulls away from them. *(Vince: this sentence was truncated in your draft —
+   confirm the wording.)*
+
+Hearthlight exists so that **one person with taste can make an authored film that reads as
+authored** — not as plausible-generic AI gloss.
 
 ## The primary outcome
 
-1. Hearthlight handles the Translation from the core film idea, the narrative ideas into a systematized collection of documents. It serves both as an administrator and secretary, and keeps all these documents organized and easily fetchable by AI agents so that the user can be enriched with AI input and ideas.
-
-2. It makes it extremely easy for the user to go from idea to output, Hearthlight taking care of the prompt-writing and asset generation logistics. No more manually typing prompts in a webUI, creating comfyUI graphs for each one-off usecase, etc.
-
-3. It takes these documents and then also processes them to be reformatted for use for image generation and video generation and audio generation
-
-4. It provides a visual UI for the filmmaker to  see an overview of the film that they're making, the current state of production. This helps the user make creative choices and see where the film is not working, allowing a highly iterative process.
+1. **Translation.** The core idea and the narrative material become a systematized set of documents.
+   Hearthlight is administrator and secretary: it keeps them organized and **fetchable by agents**,
+   so the filmmaker's thinking is enriched by AI input rather than buried in filing.
+2. **Idea to output, without logistics.** Hearthlight owns the prompt-writing and asset-generation
+   plumbing. **No more hand-typing prompts into a web UI or wiring a ComfyUI graph for every
+   one-off.**
+3. **Documents become prompts.** Those same documents are reformatted into what image, video, and
+   audio generation each need.
+4. **A visual overview of the film.** A UI showing the whole film and the current state of
+   production, so the filmmaker can see where it is not working and make creative choices against
+   it. This is what makes the process highly iterative.
 
 ---
 
@@ -85,7 +104,7 @@ Hearthlight exists so that **one person with taste can make an authored film tha
 
 ## Keeping features tight
 
-
+Four questions. Ask them before building, and again before keeping.
 
 1. **Does it fight drift or add it?** Does it strengthen the single source of truth, or create a
    second place where the same fact can be stated and diverge?
@@ -96,5 +115,8 @@ Hearthlight exists so that **one person with taste can make an authored film tha
    `SKILL-INVENTORY.md`, not quietly absorbed into the pipeline.)*
 4. **Does it survive the seam test?** The handoffs between stages break more often than the stages.
    Does this make a handoff more reliable, or add one?
+
+**And the prior question, before all four:** does it move the Yu-Gi-Oh! film toward finished, or
+harden the pipeline carrying it? If not, it is parked — not built.
 
 ---
