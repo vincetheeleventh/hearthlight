@@ -78,7 +78,7 @@ its stated outcomes have no implementation. These are now roadmap items, not ove
 
 | Gap | Stated in | Where it stands |
 |---|---|---|
-| **The UI correction loop** — point at what is wrong, prompt gets intelligently corrected | Core problem 1 | The dashboard is **read-only**. Corrections go through chat. This is the largest gap between goal and product. |
+| **Intelligent UI prompt correction** — turn critique into a proposed prompt revision | Core problem 1 | The manual loop is built: comments, direct prompt editing, generation queueing, approval, hero reselection, and shot insert/retire/restore. Automatic critique-to-prompt rewriting is still missing. |
 | **Audio generation** | Primary outcome 3 | Nothing produces audio. ElevenLabs score is a later phase. |
 | **Narrative-drift tracking** | Core problem 6 | `hearthlight-critique` does this on demand at one stage. Nothing holds narrative goals continuously across the film. |
 | **Cross-platform prompt shaping** | Core problem 2 | Partly present — `hearthlight-image-prompts`, `-video-prompts`, `seedance-prompt-maker`, `zit-prompt-writer` each target a surface. No shared abstraction; each is bespoke. |

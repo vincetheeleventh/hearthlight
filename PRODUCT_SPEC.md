@@ -37,11 +37,14 @@ helper scripts, executed by an LLM agent that reads them.
 - **Timing round-trip with real editors.** Storyboard Pro Final Cut XML in; DaVinci Resolve FCP XML out.
 - **Persistent taste memory.** `profile/TASTE.md` records what Vince kills and reaches for, read by
   the critique, outline, and mise-en-scène stages.
-- **A visual production overview (the UI).** Local HTML + `serve.py`, plus a shot registry with
-  stable shot IDs. Per `GOALS.md` primary outcome 4 this is a **product surface**, not a status
-  utility — it is where the filmmaker sees the whole film, spots what is not working, and drives the
-  iterate-and-correct loop. Currently **read-only**; the correction loop described in core problem 1
-  (point at a flaw, have the prompt intelligently corrected) is **not yet built here**.
+- **A visual production cockpit (Hearthlight Studio).** The Film Study Tool now shares a URL-backed
+  shell with live Hearthlight projects. Its default project view is shot-first: stage-coloured hero
+  thumbnails, stable Shot IDs, compact review controls, a collapsible requirements/assets drawer,
+  and a direct opener for the registered shot-list workbook. From the overview or shot page, Vince
+  can comment, edit the current prompt, queue a generation, approve an asset stage, restore an older
+  hero, bulk-approve unflagged assets, and insert, retire, or restore shots without changing their
+  permanent identity. These controls do not approve Hearthlight gates. Comment-to-prompt intelligent
+  rewriting is not yet built; prompt changes are manual.
 - **Plumbing self-check.** Separates mechanical failure (the system's fault, fixable) from quality
   judgment (Vince's call, unautomatable).
 
@@ -127,8 +130,9 @@ but no ✅ was recorded — it must be ratified, not assumed.
   yet, and the spec must not imply otherwise:
   - **Audio generation** — named in primary outcome 3; nothing in the pipeline produces it. The
     ElevenLabs score pass is roadmap, not product.
-  - **The UI correction loop** — core problem 1 describes pointing at a flaw and having the prompt
-    intelligently corrected. The dashboard is read-only; corrections still go through chat.
+  - **Intelligent UI prompt correction** — the manual loop is built: comments, prompt edits,
+    generation queueing, approvals, and hero reselection all work in Hearthlight Studio. The missing
+    step is turning a visual critique/comment into a proposed prompt revision automatically.
   - **Narrative-drift tracking** — core problem 6 expects Hearthlight to hold the narrative goals and
     flag choices that pull away. `hearthlight-critique` does this **on demand at one stage**; nothing
     tracks it continuously across the film.
