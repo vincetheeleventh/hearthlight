@@ -112,12 +112,18 @@ but no ✅ was recorded — it must be ratified, not assumed.
 
 ## 6. Known limitations
 
-- **No test coverage of the pipeline itself.** Three test files exist, all covering helper scripts
-  (`test_shot_registry.py`, `test_image_pass.py`, `test_krea_style_comp.py`). The instruction layer —
+- **No test coverage of the pipeline itself.** Five test files exist (23 tests), all covering helper
+  scripts (`test_shot_registry.py`, `test_image_pass.py`, `test_krea_style_comp.py`,
+  `test_krea_style_comp_run.py`, `staging/overview-ui/test_productions.py`). The instruction layer —
   the actual product — has no automated verification.
-- **`pytest` must be present for the checkpoint to verify tests.** All 17 tests pass when it is
-  installed (verified 2026-08-03). Without it the checkpoint reports `not run` rather than falsely
-  passing, and `commit` will not block on test failures it could not observe.
+- **The image-prompt tests read live `projects/yugioh` data.** They assert exact generation counts,
+  shared-setup pairs, and workbook cell addresses, so editing the film's shot list fails the suite
+  and can block a checkpoint commit. A creative decision should not trip a code guard.
+- **`pytest` must be present for the checkpoint to verify tests.** Without it the checkpoint reports
+  `not run` rather than falsely passing, and `commit` will not block on failures it could not
+  observe. As of 2026-08-04, 9 of 23 pass in the agent sandbox: the image-prompt failures are the
+  live-data coupling above, and `test_shot_registry.py` cannot remove a temp directory on the
+  mounted Windows folder.
 - **Laws are advisory to any agent that skips the read.** Nothing prevents an agent from generating
   an image without loading the mise-en-scène.
 - **No shared state between the three agent surfaces.** Cowork, Hermes, and ChatGPT coordinate only

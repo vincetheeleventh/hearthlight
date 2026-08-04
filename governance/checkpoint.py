@@ -107,7 +107,7 @@ AGENT_SECTIONS = [
      "Connect the work to specific goals, features, roadmap items, or known problems. Name them."),
     ("north-star", "North Star alignment",
      "One verdict: ALIGNED / NEUTRAL-INFRASTRUCTURAL / QUESTIONABLE / POTENTIAL-DRIFT. "
-     "Then why, against GOALS.md's six criteria."),
+     "Then why, against GOALS.md's prior question and four criteria."),
     ("spec-discrepancies", "Product-spec discrepancies",
      "Where implementation moved but PRODUCT_SPEC.md did not. Cite file and section."),
     ("complexity", "Complexity / orphan detection",

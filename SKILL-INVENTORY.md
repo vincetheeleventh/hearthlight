@@ -52,7 +52,7 @@ Columns: **AG** = mentions in `AGENTS.md` · **UG** = `USER-GUIDE.md` · **RM** 
 | `hearthlight-consolidate` | 1 | 0 | 2 | 2 | 0 | **CORE** | Gate 0 | Bounded ideation + no-smuggling law. |
 | `hearthlight-outline` | 1 | 0 | 1 | 0 | 0 | **CORE** | Gate 1 | Zero peer refs — normal for a linear stage. Modified 2026-08-03, reason unrecorded. |
 | `hearthlight-mise-en-scene` | 1 | 0 | 1 | 1 | 0 | **CORE** | Principle 2 | The anti-drift keystone. Largest SKILL.md (14 KB). |
-| `hearthlight-image-prompts` | 1 | 0 | 1 | 4 | 6 | **CORE** | Gate 3 | Most code of any skill; 2 test files. Active front. |
+| `hearthlight-image-prompts` | 1 | 0 | 1 | 4 | 8 | **CORE** | Gate 3 | Most code of any skill; 3 test files. Active front. Stage A = `krea_style_comp.py` compile + `krea_style_comp_run.py` run; `image_pass.py`/`two_pass.py` Stage-A paths disabled but present. |
 | `hearthlight-storyboard` | 1 | 0 | 1 | 0 | 0 | **CORE** | Gate 4 | Modified 2026-08-03, reason unrecorded. |
 | `hearthlight-video-prompts` | 1 | 0 | 1 | 6 | 0 | **CORE** | Gate 5 | Highest peer-reference count. |
 | `hearthlight-comfyui-graph` | 1 | 0 | 1 | 3 | 0 | **CORE** | Gate 5 plumbing | Grounded in a real working RunningHub graph. |

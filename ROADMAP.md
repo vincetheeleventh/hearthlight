@@ -14,9 +14,10 @@ Last updated: 2026-08-03 · Source: `HANDOFF.md` §5–6 (2026-07-06), file mtim
 Canonical docs, skill inventory, daily checkpoint, Miro sync, multi-agent coordination.
 
 **Image generation pass.** *(INFERRED — highest recent churn)*
-`hearthlight-image-prompts` carries 6 scripts and 2 test files — by far the most code of any skill
-(`image_pass.py`, `two_pass.py`, `krea_style_comp.py`, `check_frame_one.py`). `.test-tmp/image-pass/`
-holds 10 temp run directories. This looks like the active engineering front.
+`hearthlight-image-prompts` carries 8 scripts and 3 test files — by far the most code of any skill.
+Stage A is now `krea_style_comp.py` (sole compiler) plus `krea_style_comp_run.py` (sole paid
+runner); the `image_pass.py` and `two_pass.py` Stage-A paths are disabled but still present.
+`.test-tmp/image-pass/` holds 10 temp run directories. This is the active engineering front.
 
 **Dashboard + shot identity.** *(INFERRED — most recently touched, 2026-08-03)*
 `hearthlight-dashboard` gained a shot registry, a backfill script, and
@@ -126,8 +127,8 @@ proposals, the crew arguing rather than complying.
 - **The shot crew as subagents.** Whether eight roles produce genuinely distinct, arc-aware opinions
   rather than eight paraphrases is untested. `HANDOFF.md` §6 names watching this in the TUI as the
   verification step. Cost per contested shot is unmeasured.
-- **Two-pass image generation** (`two_pass.py` + `krea_style_comp.py`) — no note explains whether
-  this beat single-pass.
+- **Two-pass image generation** (`krea_style_comp.py` compile + `krea_style_comp_run.py` run) — no
+  note explains whether this beat single-pass. The legacy `two_pass.py` Stage-A path is disabled.
 - **The pointer-stub layer.** Solves drift in principle; four stubs already carry a stale reference,
   which is early evidence that stubs still need maintenance.
 
