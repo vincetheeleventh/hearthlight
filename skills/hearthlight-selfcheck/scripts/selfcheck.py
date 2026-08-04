@@ -38,7 +38,7 @@ def check(label, status, detail=""):
 
 # ── 1. Skills present on disk ────────────────────────────────────
 EXPECTED_SKILLS = [
-    "conventions","distribution-spec","consolidate","outline","critique","research",
+    "conventions","distribution-spec","consolidate","outline","critique","research","character",
     "reference-report","mise-en-scene","shot-crew","clip-extractor","timing-intake",
     "image-prompts","storyboard","video-prompts","comfyui-graph","notion-log","selfcheck",
     "dashboard","shot-runner","terse",
@@ -141,7 +141,8 @@ if "--project" in sys.argv:
         mes = glob.glob(os.path.join(pdir, "03-bible", "mise-en-scene.md"))
         if mes:
             t = open(mes[0], errors="replace").read()
-            blessed = "LOCKED" in t and "DRAFT" not in t.upper()
+            header = t[:1000].upper()
+            blessed = ("CANON" in header or "LOCKED" in header) and not re.search(r"(?m)^\s*(?:>\s*)?\*\*DRAFT\b", header)
             check(f"project {proj}: style block blessed (gen unblocked)",
                   GREEN if blessed else WARN, "" if blessed else "style block still DRAFT — no images until blessed")
         else:
@@ -150,20 +151,23 @@ if "--project" in sys.argv:
               GREEN if os.path.isfile(os.path.join(pdir,"distribution-spec.md")) else WARN)
         check(f"project {proj}: 00-source has material",
               GREEN if os.listdir(os.path.join(pdir,"00-source")) else WARN)
-        image_pass = os.path.join(STUDIO, "skills", "hearthlight-image-prompts", "scripts", "image_pass.py")
+        compiler = os.path.join(STUDIO, "skills", "hearthlight-image-prompts", "scripts", "krea_style_comp.py")
         assets = os.path.join(pdir, "03-bible", "assets.json")
-        if os.path.isfile(assets) and os.path.isfile(image_pass):
-            r = subprocess.run([sys.executable, image_pass, "--project", proj, "preflight", "--phase", "first-pass"],
+        if os.path.isfile(assets) and os.path.isfile(compiler):
+            r = subprocess.run([sys.executable, compiler, "--project", proj, "--all", "--check-only"],
                                capture_output=True, text=True, timeout=20)
             try:
                 import json
                 readiness = json.loads(r.stdout)
-                detail = "; ".join(readiness.get("blockers", []))[:500]
-                check(f"project {proj}: Krea first-pass readiness",
-                      GREEN if readiness.get("ready") else WARN,
-                      detail if detail else "ready")
+                ready = r.returncode == 0 and readiness.get("generation_count", 0) > 0
+                detail = (f"{readiness.get('generation_count', 0)} unique prompts; "
+                          f"{len(readiness.get('shared_setups', []))} shared; "
+                          f"{len(readiness.get('source_only', []))} source-only")
+                check(f"project {proj}: Krea style/composition prompt readiness",
+                      GREEN if ready else WARN, detail)
             except Exception:
-                check(f"project {proj}: Krea first-pass readiness", RED, "preflight did not return valid JSON")
+                detail = (r.stderr or r.stdout or "preflight did not return valid JSON")[:500]
+                check(f"project {proj}: Krea style/composition prompt readiness", RED, detail)
 
 # ── Report ───────────────────────────────────────────────────────
 order = {RED:0, WARN:1, GREEN:2}

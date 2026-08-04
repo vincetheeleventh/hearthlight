@@ -83,18 +83,25 @@ character `must_hold` arrays. Character and style language must already be visib
 `Still (frame one)`. If it is missing there, block and amend the sheet; do not silently assemble a second prompt.
 Do not attach character-sheet images during Stage A. Facial likeness is provisional. Prompt the people as accurately as possible, but prioritize frame geometry and body construction. For adult/child scenes, state the relative scale explicitly.
 
-Run:
+Compile and verify the complete current board:
 
 ```bash
-python skills/hearthlight-image-prompts/scripts/krea_style_comp.py --project {slug} --shot {shot-id}
+python skills/hearthlight-image-prompts/scripts/krea_style_comp.py --project {slug} --all
+python skills/hearthlight-image-prompts/scripts/krea_style_comp_run.py --project {slug} --shots {shot-a} {shot-b} --dry-run
 ```
 
-The legacy `two_pass.py compile-prompts --stage style-composition` path is disabled because it mixed
-video/action material into image prompts.
+The compiler blocks stale registry/workbook hashes, unstable Shot IDs, shared-setup duplicates, source-photo jobs, forbidden motion text, and any packet that differs from its exact `Still (frame one)` cell. It writes `prompt-packets/frame-one-{revision}/batch-plan.json` plus one immutable packet per unique setup. The legacy `two_pass.py compile-prompts --stage style-composition` path is disabled because it mixed video/action material into image prompts.
 
-Show the live cost/time estimate, record it with `set-estimate --stage style-composition --cu {value} --minutes {value}`, then wait for Vince's explicit approval and record it with `approve-cost --stage style-composition --confirmed` before paid generation. Generate one owner per unique setup. Shared shots never dispatch twice. Source-photo shots never dispatch.
+Krea request parameters are separate from prompt text: `creativity=raw`, `intensity=0`, `complexity=0`, and `movement=0`. Raw mode prevents Krea prompt expansion from inventing subjects outside the authored still. Moodboard ID/strength, aspect ratio, resolution, prompt, model, and these K2 parameters form one request fingerprint; changing any field creates a new version instead of being mistaken for completed work.
 
-Download and record every completed output before the next paid job. Never overwrite. Never resubmit a recorded job ID.
+Generate two calibration shots first. Machine-check file readability, aspect ratio, exact prompt history, required/forbidden depicted elements, and crash resume. Vince alone judges aesthetic quality. Then show the full remaining-batch cost/time estimate, wait for explicit approval, and record `cost_approvals.style_composition_v4` in `03-bible/assets.json` before `--all` may submit.
+
+```bash
+python skills/hearthlight-image-prompts/scripts/krea_style_comp_run.py --project {slug} --shots {shot-a} {shot-b}
+python skills/hearthlight-image-prompts/scripts/krea_style_comp_run.py --project {slug} --all
+```
+
+Generate one owner per unique setup. Shared shots never dispatch twice. Source-photo shots never dispatch. Download and ledger every completed output before the next paid job. Never overwrite. A matching completed request fingerprint skips without spend; a submitted unfinished job resumes by Krea job ID.
 
 ### Gate 3A — composition review
 

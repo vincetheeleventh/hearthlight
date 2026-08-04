@@ -42,6 +42,24 @@ class KreaStyleCompositionCompilerTests(unittest.TestCase):
         self.assertEqual(packet["shot"], "23B")
         self.assertEqual(packet["title"], "Hiding It")
 
+    def test_full_batch_compiles_all_unique_v4_setups(self):
+        plan, packets = compiler.compile_batch(PROJECT)
+        self.assertEqual(plan["generation_count"], 28)
+        self.assertEqual(len(packets), 28)
+        self.assertEqual(
+            {(item["shot"], item["owner_shot"]) for item in plan["shared_setups"]},
+            {("5", "1"), ("18B", "17")},
+        )
+        self.assertEqual([item["shot"] for item in plan["source_only"]], ["29"])
+        self.assertEqual(len({packet["shot_id"] for _, packet in packets}), 28)
+
+    def test_every_batch_prompt_equals_its_frame_one_cell(self):
+        _, packets = compiler.compile_batch(PROJECT)
+        for _, packet in packets:
+            _, _, record, _ = compiler.source_row(PROJECT, packet["shot"])
+            self.assertEqual(packet["prompt"], compiler.normalize_prompt(record[compiler.STILL_COLUMN]))
+            compiler.validate_prompt(packet["prompt"])
+            self.assertEqual(packet["prompt_sha256"], compiler.text_sha256(packet["prompt"]))
     def test_source_photo_cannot_generate(self):
         with self.assertRaisesRegex(SystemExit, "source photography"):
             compiler.compile_packet(PROJECT, "29")

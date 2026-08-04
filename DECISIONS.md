@@ -296,7 +296,7 @@ around craft problems rather than client service. Flagged in `SKILL-INVENTORY.md
 
 ---
 
-## D-015 · Krea still prompts are exact frame-one data, not assembled prose
+## D-016 · Krea still prompts are exact frame-one data, not assembled prose
 **Date:** 2026-08-03 · **Source:** Vince, this session · **Agent:** chatgpt
 
 **Context:** The first Krea runs received prompts containing workflow labels, timed video action,

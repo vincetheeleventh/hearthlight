@@ -55,6 +55,12 @@ Shot level:
 - `staging.surfaced` — what the viewer consciously registers: `shot_type`, `camera_move`,
   `character_actions`, `setting`.
 - `staging.ambient` — what they feel but never notice: `props`, `lighting`, `sound`.
+- `beat` — which beat of the film brief the shot serves (label verbatim from the brief).
+- `charge` — one line: where the shot sits on the project's declared value axis
+  (file-level `value_axis`, from the FILM-BRIEF's charged value pair).
+- `motifs` — the brief's visual-system devices in play for this shot.
+- `never` — the brief's never-list constraints that bind this shot. Reviewers check these
+  before anything else; a render violating a `never` is a spec FAIL regardless of beauty.
 
 Rules:
 
