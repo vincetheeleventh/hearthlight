@@ -105,7 +105,9 @@ but no ✅ was recorded — it must be ratified, not assumed.
 - **No test coverage of the pipeline itself.** Three test files exist, all covering helper scripts
   (`test_shot_registry.py`, `test_image_pass.py`, `test_krea_style_comp.py`). The instruction layer —
   the actual product — has no automated verification.
-- **`pytest` is not installed** in the sandbox used by agents; the tests cannot currently run there.
+- **`pytest` must be present for the checkpoint to verify tests.** All 17 tests pass when it is
+  installed (verified 2026-08-03). Without it the checkpoint reports `not run` rather than falsely
+  passing, and `commit` will not block on test failures it could not observe.
 - **Laws are advisory to any agent that skips the read.** Nothing prevents an agent from generating
   an image without loading the mise-en-scène.
 - **No shared state between the three agent surfaces.** Cowork, Hermes, and ChatGPT coordinate only
