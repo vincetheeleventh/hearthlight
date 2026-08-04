@@ -372,6 +372,7 @@ function shotCard(production, shot, notice) {
   const header = node("div");
   header.append(node("strong", "", `Shot ${shot.displayNumber}`), node("span", "", formatRuntime(shot.durationSeconds)));
   text.append(header, node("h3", "", shot.title));
+  if (shot.narrative?.oneLiner) text.append(node("p", "production-shot-oneliner", shot.narrative.oneLiner));
   const active = reviewAssetForShot(shot) || shot.heroAsset;
   if (active) text.append(node("p", "shot-card-stage", `${stageLabel(active.stage)}${active.model ? ` \u00b7 ${active.model}` : ""}`));
   const badges = node("div", "production-badges");
@@ -604,6 +605,108 @@ function retiredShotTray(production, notice) {
 function detailSection(label, text) {
   const section = node("section", "production-copy-section");
   section.append(node("span", "eyebrow", label), node("p", "", text || "Not written yet."));
+  return section;
+}
+
+function stagingRow(label, value) {
+  const row = node("div", "staging-row");
+  row.append(node("span", "staging-label", label), node("span", "staging-value", value));
+  return row;
+}
+
+function narrativeSection(production, shot) {
+  const narrative = shot.narrative || {};
+  const section = node("section", "production-narrative");
+  const eyebrowRow = node("div", "narrative-eyebrow-row");
+  eyebrowRow.append(node("span", "eyebrow", "Narrative"));
+  if (narrative.beat) eyebrowRow.append(node("span", "narrative-beat", narrative.beat));
+  section.append(eyebrowRow);
+  if (!narrative.authored) {
+    section.append(node("p", "production-clear", "Narrative layer not yet authored for this shot."));
+    return section;
+  }
+  section.append(node("p", "production-oneliner", narrative.oneLiner || "One-liner not written yet."));
+
+  if (narrative.charge) {
+    const charge = node("div", "narrative-charge");
+    charge.append(
+      node("span", "staging-label", production.narrativeValueAxis ? `Charge · ${production.narrativeValueAxis}` : "Charge"),
+      node("span", "staging-value", narrative.charge),
+    );
+    section.append(charge);
+  }
+
+  if ((narrative.motifs || []).length) {
+    const motifs = node("div", "narrative-motifs");
+    narrative.motifs.forEach((motif) => motifs.append(node("span", "narrative-motif", motif)));
+    section.append(motifs);
+  }
+
+  if ((narrative.never || []).length) {
+    const nevers = node("div", "narrative-never");
+    nevers.append(node("span", "eyebrow", "Never"));
+    const list = document.createElement("ul");
+    narrative.never.forEach((rule) => {
+      const item = document.createElement("li");
+      item.textContent = rule;
+      list.append(item);
+    });
+    nevers.append(list);
+    section.append(nevers);
+  }
+
+  const hasDepth = narrative.expanded || narrative.whyThisShot || (narrative.openLoops || []).length;
+  if (hasDepth) {
+    const depth = node("details", "narrative-depth");
+    depth.append(node("summary", "", "The deeper story"));
+    if (narrative.expanded) depth.append(node("p", "", narrative.expanded));
+    if ((narrative.openLoops || []).length) {
+      const loops = node("div", "narrative-loops");
+      loops.append(node("span", "eyebrow", "Open loops"));
+      const list = document.createElement("ul");
+      narrative.openLoops.forEach((loop) => {
+        const item = document.createElement("li");
+        item.textContent = loop;
+        list.append(item);
+      });
+      loops.append(list);
+      depth.append(loops);
+    }
+    if (narrative.whyThisShot) {
+      const why = node("div", "narrative-why");
+      why.append(node("span", "eyebrow", "Why this shot"), node("p", "", narrative.whyThisShot));
+      depth.append(why);
+    }
+    section.append(depth);
+  }
+
+  const surfaced = narrative.staging?.surfaced || {};
+  const surfacedRows = [
+    ["Shot type", surfaced.shotType],
+    ["Camera", surfaced.cameraMove],
+    ["Actions", surfaced.characterActions],
+    ["Setting", surfaced.setting],
+  ].filter(([, value]) => value);
+  if (surfacedRows.length) {
+    const staging = node("div", "narrative-staging");
+    surfacedRows.forEach(([label, value]) => staging.append(stagingRow(label, value)));
+    section.append(staging);
+  }
+
+  const ambient = narrative.staging?.ambient || {};
+  const ambientRows = [
+    ["Props", ambient.props],
+    ["Lighting", ambient.lighting],
+    ["Sound", ambient.sound],
+  ].filter(([, value]) => value);
+  if (ambientRows.length) {
+    const felt = node("details", "narrative-ambient");
+    felt.append(node("summary", "", "Ambient — felt, not noticed"));
+    const rows = node("div", "narrative-staging");
+    ambientRows.forEach(([label, value]) => rows.append(stagingRow(label, value)));
+    felt.append(rows);
+    section.append(felt);
+  }
   return section;
 }
 
@@ -899,6 +1002,7 @@ function renderShotDetail(data) {
   intro.append(refs);
   hero.append(intro);
   page.append(hero);
+  page.append(narrativeSection(production, shot));
 
   const copyGrid = node("section", "production-copy-grid");
   copyGrid.append(
@@ -1093,14 +1197,148 @@ function productionReferences(references = []) {
   return grid;
 }
 
+
+const productionVisionDrafts = new Map();
+
+function productionVisionEditor(production, shot, notice) {
+  const vision = shot.shotVision || {};
+  const section = node("section", "shot-vision-editor");
+  const header = node("header");
+  const title = node("div");
+  title.append(node("strong", "", "Shot Vision"), node("span", "", `Revision ${vision.revision || 0} · ${vision.source || "draft"}`));
+  const dirty = node("span", "shot-vision-dirty", "Saved");
+  header.append(title, dirty);
+  const textarea = node("textarea", "shot-vision-input");
+  textarea.rows = 7;
+  textarea.value = productionVisionDrafts.get(shot.shotId)?.vision ?? vision.text ?? "";
+  textarea.placeholder = "Dictate what this shot should make us see and feel. Include staging intentions and anything that must never appear.";
+  const actions = node("div", "shot-vision-actions");
+  const save = node("button", "primary-button", "Save Shot Vision");
+  save.type = "button";
+  actions.append(save);
+  const updateDirty = () => {
+    const changed = textarea.value.trim() !== String(vision.text || "").trim();
+    if (changed) productionVisionDrafts.set(shot.shotId, { shotId: shot.shotId, vision: textarea.value, baseRevision: vision.revision || 0 });
+    else productionVisionDrafts.delete(shot.shotId);
+    dirty.textContent = changed ? "Unsaved" : "Saved";
+    dirty.classList.toggle("is-dirty", changed);
+    save.disabled = !changed;
+    document.dispatchEvent(new CustomEvent("hearthlight:vision-dirty"));
+    return changed;
+  };
+  textarea.addEventListener("input", updateDirty);
+  save.addEventListener("click", async () => {
+    if (!updateDirty()) return;
+    const change = productionVisionDrafts.get(shot.shotId);
+    try {
+      const result = await productionButton(save, () => postProductionJson(`/api/productions/${encodeURIComponent(production.slug)}/vision-batches`, { changes: [change] }), "Saving...");
+      productionVisionDrafts.delete(shot.shotId);
+      if (!result.compiled && result.error) window.alert(`Shot Vision saved, but prompt compilation stopped: ${result.error}`);
+      await refreshProductionRoute();
+    } catch (error) { showProductionNotice(notice, error.message, "error"); }
+  });
+  updateDirty();
+  section.append(header, textarea, actions);
+
+  const technical = node("details", "shot-vision-technical");
+  technical.append(node("summary", "", "Storyboard source and technical frame"));
+  const facts = node("dl");
+  const fields = [
+    ["Still / frozen instant", shot.imageDirection?.visualDescription || shot.story?.visualDescription],
+    ["Action (video context only)", shot.videoMotion?.actionDescription || shot.imageDirection?.actionDescription],
+    ["Camera movement", shot.videoMotion?.cameraMovement || shot.imageDirection?.cameraMovement],
+    ["Notes", shot.story?.notes || shot.imageDirection?.continuityNote],
+    ["Timing", shot.durationSeconds == null ? "" : `${shot.durationSeconds}s`],
+  ];
+  fields.forEach(([label, value]) => { if (value) facts.append(node("dt", "", label), node("dd", "", String(value))); });
+  technical.append(facts);
+  section.append(technical);
+
+  if ((vision.history || []).length) {
+    const history = node("details", "shot-vision-history");
+    history.append(node("summary", "", `Vision history · ${vision.history.length}`));
+    const list = node("div");
+    (vision.history || []).forEach((entry) => {
+      const item = node("article");
+      item.append(node("strong", "", `Revision ${entry.revision}`), node("span", "", `${formatDate(entry.createdAt)} · ${entry.event}`), node("p", "", entry.text));
+      if (entry.revision !== vision.revision) {
+        const restore = node("button", "ghost-button", "Restore this vision");
+        restore.type = "button";
+        restore.addEventListener("click", async () => {
+          if (!window.confirm(`Restore Shot ${shot.displayNumber} Vision revision ${entry.revision}? This creates a new revision; history remains intact.`)) return;
+          try {
+            await productionButton(restore, () => postProductionJson(`/api/productions/${encodeURIComponent(production.slug)}/shots/${encodeURIComponent(shot.shotId)}/vision/revert`, { revision: entry.revision }), "Restoring...");
+            productionVisionDrafts.delete(shot.shotId);
+            await refreshProductionRoute();
+          } catch (error) { showProductionNotice(notice, error.message, "error"); }
+        });
+        item.append(restore);
+      }
+      list.append(item);
+    });
+    history.append(list);
+    section.append(history);
+  }
+  return section;
+}
+
+function productionPromptBoard(production, notice) {
+  const batch = production.latestPromptBatch;
+  if (!batch) return node("section", "production-prompt-board is-empty", "Submit a Shot Vision change to create the first Prompt Board.");
+  const board = node("details", "production-prompt-board");
+  board.open = false;
+  const summary = node("summary");
+  summary.append(node("div", "", ""), badge(batch.approved ? "Approved" : batch.status, batch.status === "blocked" ? "warning" : batch.approved ? "" : "pending"));
+  summary.firstChild.append(node("strong", "", "Krea Prompt Board"), node("span", "", `${batch.job_count || 0} jobs · ${batch.model} · ${batch.aspect_ratio} · moodboard ${batch.moodboard?.strength ?? "?"}`));
+  board.append(summary);
+  const estimate = node("div", "prompt-board-estimate");
+  estimate.append(node("strong", "", batch.estimated_cu == null ? "Cost estimate unavailable" : `${batch.estimated_cu} compute units`), node("span", "", batch.estimated_minutes == null ? "Time estimate unavailable" : `about ${batch.estimated_minutes} minutes`));
+  const approve = node("button", "primary-button", batch.approved ? "Prompt batch approved" : "Approve prompts and cost ceiling");
+  approve.type = "button";
+  const hasBlockers = (batch.shots || []).some((entry) => (entry.blockers || []).length);
+  approve.disabled = batch.approved || batch.status !== "ready-for-approval" || hasBlockers || batch.estimated_cu == null || batch.estimated_minutes == null;
+  approve.addEventListener("click", async () => {
+    const message = `Approve exactly ${batch.job_count} Krea jobs using ${batch.model}, ${batch.aspect_ratio}, moodboard strength ${batch.moodboard?.strength}, up to ${batch.estimated_cu} compute units and about ${batch.estimated_minutes} minutes?`;
+    if (!window.confirm(message)) return;
+    try {
+      await productionButton(approve, () => postProductionJson(`/api/productions/${encodeURIComponent(production.slug)}/prompt-batches/${encodeURIComponent(batch.batch_id)}/approve`, { batchSha256: batch.batch_sha256 }), "Approving...");
+      await refreshProductionRoute();
+    } catch (error) { showProductionNotice(notice, error.message, "error"); }
+  });
+  estimate.append(approve);
+  board.append(estimate);
+  const grid = node("div", "prompt-board-grid");
+  (batch.shots || []).forEach((entry) => {
+    const shot = production.shots.find((item) => item.shotId === entry.shot_id);
+    const card = node("article", `prompt-board-card ${(entry.blockers || []).length ? "is-blocked" : ""}`);
+    if (shot?.heroAsset) card.append(mediaElement(shot.heroAsset));
+    const body = node("div");
+    const semantic = entry.semantic_review || {};
+    const reviewState = semantic.verdict === "pass" ? "Hermes semantic review passed" : semantic.verdict === "block" ? "Hermes semantic review blocked" : "Hermes semantic review not run";
+    const attempts = entry.author_attempts || 1;
+    body.append(node("strong", "", `Shot ${entry.shot} · ${entry.title || ""}`), node("span", "", `Vision revision ${entry.vision_revision} · author ${attempts === 1 ? "pass" : `${attempts} passes`} · ${reviewState}`));
+    if (entry.prompt) body.append(node("pre", "asset-prompt", entry.prompt));
+    (entry.blockers || []).forEach((value) => body.append(node("p", "prompt-board-blocker", `Blocked: ${value}`)));
+    (entry.warnings || []).forEach((value) => body.append(node("p", "prompt-board-warning", `Warning: ${value}`)));
+    (entry.supersedes || []).forEach((value) => body.append(node("p", "prompt-board-supersedes", `Supersedes storyboard: ${value}`)));
+    card.append(body);
+    grid.append(card);
+  });
+  board.append(grid);
+  return board;
+}
+
 function productionPromptEditor(production, shot, notice) {
   const details = node("details", "shot-card-prompt-details");
-  details.append(node("summary", "", "Edit prompt"));
+  const compiled = shot.currentPrompt?.source === "compiled Shot Vision";
+  details.append(node("summary", "", compiled ? "Compiled prompt (read only)" : "Edit prompt"));
   const body = node("div", "shot-card-prompt");
   const textarea = node("textarea", "shot-prompt-input");
   textarea.rows = 5;
   textarea.value = shot.currentPrompt?.prompt || "";
+  textarea.readOnly = compiled;
   const save = node("button", "ghost-button", "Save prompt");
+  save.hidden = compiled;
   save.type = "button";
   save.addEventListener("click", async () => {
     try {
@@ -1179,7 +1417,7 @@ shotCard = function(production, shot, notice) {
   for (const value of shot.badges || []) badges.append(badge(value, value.includes("missing") || value.includes("stale") || value.includes("unresolved") ? "warning" : value.includes("pending") ? "pending" : ""));
   copy.append(badges);
   open.append(copy);
-  card.append(open, productionQuickReview(production, shot, notice), shotStructureControls(production, shot, notice));
+  card.append(open, productionQuickReview(production, shot, notice));
   return card;
 }
 
@@ -1203,6 +1441,16 @@ function productionBatchToolbar(production, notice) {
   toolbar.append(copy, select, approve);
   return toolbar;
 }
+function productionOverviewTools(production, notice) {
+  const panel = node("details", "production-overview-tools");
+  const summary = node("summary");
+  summary.append(node("strong", "", "Project controls"), node("span", "", "New shots, bulk review, and prompt-board approval"));
+  const body = node("div", "production-overview-tools-body");
+  body.append(productionStructureToolbar(production, notice), productionBatchToolbar(production, notice), productionPromptBoard(production, notice));
+  panel.append(summary, body);
+  return panel;
+}
+
 function openShotListControl(production, notice) {
   const control = node("div", "production-document-control");
   const button = node("button", "primary-button", "Open spreadsheet");
@@ -1274,10 +1522,10 @@ renderProductionOverview = function(production) {
   const wallHeader = node("header", "production-wall-heading");
   wallHeader.append(node("div", "", ""), node("span", "", `${production.shotCount} shots \u00b7 ${production.uniqueIllustratedSetups} illustrated setups`));
   wallHeader.firstChild.append(node("span", "eyebrow", "Visual wall"), node("h2", "", "Every shot"));
-  page.append(wallHeader, productionStageLegend(), productionStructureToolbar(production, notice), productionBatchToolbar(production, notice));
+  page.append(wallHeader, productionStageLegend());
   const wall = node("section", "production-shot-wall");
   production.shots.forEach((shot) => wall.append(shotCard(production, shot, notice)));
-  page.append(wall);
+  page.append(wall, productionOverviewTools(production, notice));
   page.append(productionRequirementsPanel(production));
   const retired = retiredShotTray(production, notice);
   if (retired) page.append(retired);
@@ -1436,13 +1684,21 @@ function productionGenerationWorkspace(production, shot, notice) {
   const config = () => (shot.generationStages || {})[select.value] || {};
   const renderStage = () => {
     const stage = config();
+    const compiledStage = select.value === "style-composition";
+    const compiled = shot.promptCompilation || {};
+    if (compiledStage) prompt.value = compiled.prompt || "Submit Shot Vision changes to compile this prompt.";
+    else prompt.value = current.stage === select.value ? (current.prompt || "") : "";
+    prompt.readOnly = compiledStage;
+    save.hidden = compiledStage;
     model.querySelector("strong").textContent = stage.model || "Model not registered";
     model.querySelector("small").textContent = (stage.blockers || []).length
       ? `Blocked by: ${stage.blockers.join(", ")}`
       : `${stage.status || "unknown"}${stage.aspectRatio ? ` \u00b7 ${stage.aspectRatio}` : ""}${stage.resolution ? ` \u00b7 ${stage.resolution}` : ""}`;
     referenceSection.lastChild.replaceChildren(productionReferences(stage.references || []));
-    generate.disabled = stage.status !== "ready" || Boolean(shot.sharedSetupOwnerShotId);
-    generate.title = shot.sharedSetupOwnerShotId ? "Generate from the shared setup owner." : (stage.blockers || []).join(", ");
+    const promptBatch = (production.promptBatches || []).find((item) => item.batch_id === compiled.batchId);
+    const compilationBlocked = compiledStage && (!compiled.prompt || !promptBatch?.approved || (compiled.blockers || []).length);
+    generate.disabled = stage.status !== "ready" || Boolean(shot.sharedSetupOwnerShotId) || compilationBlocked;
+    generate.title = shot.sharedSetupOwnerShotId ? "Generate from the shared setup owner." : compilationBlocked ? "Approve this exact Prompt Board before generating." : (stage.blockers || []).join(", ");
   };
   const savePrompt = () => postProductionJson(`/api/productions/${encodeURIComponent(production.slug)}/shots/${encodeURIComponent(shot.shotId)}/prompt`, {
     prompt: prompt.value, stage: select.value, assetId: target?.assetId || current.assetId || "",
@@ -1466,8 +1722,11 @@ function productionGenerationWorkspace(production, shot, notice) {
     if (!window.confirm(`Generate one ${stage.label || stageLabel(select.value)} image with ${stage.model || "the registered model"}? This may incur provider cost.`)) return;
     try {
       const result = await productionButton(generate, async () => {
-        await savePrompt();
-        return postProductionJson(`/api/productions/${encodeURIComponent(production.slug)}/shots/${encodeURIComponent(shot.shotId)}/generate`, { prompt: prompt.value, stage: select.value, model: stage.model });
+        if (select.value !== "style-composition") await savePrompt();
+        return postProductionJson(`/api/productions/${encodeURIComponent(production.slug)}/shots/${encodeURIComponent(shot.shotId)}/generate`, {
+          prompt: prompt.value, stage: select.value, model: stage.model,
+          promptBatchId: select.value === "style-composition" ? shot.promptCompilation?.batchId : null,
+        });
       }, "Queueing...");
       showProductionNotice(notice, `Generation queued with ${result.model}. You can leave this page; the job is durable.`, "success");
       await pollProductionGeneration(production.slug, result.jobId, notice);
@@ -1528,18 +1787,24 @@ renderShotDetail = function(data) {
   }
   hero.append(intro);
   page.append(hero);
+  page.append(narrativeSection(production, shot));
 
+  page.append(productionVisionEditor(production, shot, notice));
+
+  const sourceDetails = node("details", "shot-source-details");
+  sourceDetails.append(node("summary", "", "Story, image direction, and video motion"));
   const copyGrid = node("section", "production-copy-grid");
   copyGrid.append(
     detailSection("Story", [shot.story.visualDescription, shot.story.dialogue && `Dialogue: ${shot.story.dialogue}`, shot.story.audio && `Audio: ${shot.story.audio}`, shot.story.notes].filter(Boolean).join("\n\n")),
     detailSection("Image direction", [shot.imageDirection.visualDescription, shot.imageDirection.continuityNote].filter(Boolean).join("\n\n")),
     detailSection("Video motion", [shot.videoMotion.actionDescription, shot.videoMotion.cameraMovement && `Camera: ${shot.videoMotion.cameraMovement}`].filter(Boolean).join("\n\n")),
   );
-  page.append(copyGrid, productionGenerationWorkspace(production, shot, notice));
+  sourceDetails.append(copyGrid);
+  page.append(sourceDetails, productionGenerationWorkspace(production, shot, notice));
 
-  const dependencies = node("section", "shot-dependencies");
-  dependencies.append(node("h3", "", "Required for this shot"));
+  const dependencies = node("details", "shot-dependencies");
   const dependencyIssues = [...(shot.missingDependencies || []), ...(shot.approvalDependencies || [])];
+  dependencies.append(node("summary", "", `Required for this shot · ${dependencyIssues.length ? `${dependencyIssues.length} need attention` : "ready"}`));
   dependencies.append(node("p", `dependency-explainer ${dependencyIssues.length ? "" : "is-clear"}`.trim(),
     dependencyIssues.length
       ? "Dependencies below are accurately separated into missing inputs and existing inputs awaiting approval. They do not necessarily block Style + composition; the generation panel above shows what is actually blocked."

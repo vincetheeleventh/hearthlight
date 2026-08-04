@@ -144,7 +144,7 @@ def validate_prompt(prompt: str) -> None:
         raise SystemExit("Still prompt contains forbidden non-image material: " + ", ".join(bad))
 
 
-def compile_packet(root: Path, shot_id: str) -> dict:
+def compile_legacy_packet(root: Path, shot_id: str) -> dict:
     source, headers, record, excel_row = source_row(root, shot_id)
     registry, by_label, by_id = load_registry(root, source)
     label = normalize_shot(record.get("Shot"))
@@ -235,7 +235,7 @@ def packet_path(root: Path, packet: dict) -> Path:
     return root / "04-images" / "prompt-packets" / f"frame-one-{version}" / f"shot-{safe_id}-style-composition.json"
 
 
-def compile_batch(root: Path) -> tuple[dict, list[tuple[Path, dict]]]:
+def compile_legacy_batch(root: Path) -> tuple[dict, list[tuple[Path, dict]]]:
     source, headers, rows = workbook_rows(root)
     registry, by_label, by_id = load_registry(root, source)
     packets: list[tuple[Path, dict]] = []
@@ -276,7 +276,7 @@ def compile_batch(root: Path) -> tuple[dict, list[tuple[Path, dict]]]:
                 "owner_shot_id": owner_id,
             })
             continue
-        packet = compile_packet(root, label)
+        packet = compile_legacy_packet(root, label)
         packets.append((packet_path(root, packet), packet))
     plan = {
         "schema_version": 1,
@@ -306,7 +306,7 @@ def compile_batch(root: Path) -> tuple[dict, list[tuple[Path, dict]]]:
                 "packet": base.relpath(packet_file, root),
                 "prompt_sha256": packet["prompt_sha256"],
                 "request_sha256": packet["request_sha256"],
-                "source_cell": packet["source"]["prompt_cell"],
+                "source_cell": packet.get("source", {}).get("prompt_cell"),
             }
             for packet_file, packet in packets
         ],
@@ -316,9 +316,153 @@ def compile_batch(root: Path) -> tuple[dict, list[tuple[Path, dict]]]:
     return plan, packets
 
 
-def batch_plan_path(root: Path, plan: dict) -> Path:
+def legacy_batch_plan_path(root: Path, plan: dict) -> Path:
     version = Path(plan["source"]["workbook"]).stem.rsplit("-", 1)[-1]
     return root / "04-images" / "prompt-packets" / f"frame-one-{version}" / "batch-plan.json"
+
+
+def vision_ledger(root: Path) -> Path:
+    return root / "04-images" / "shot-vision.jsonl"
+
+
+def load_jsonl(path: Path) -> list[dict]:
+    if not path.is_file():
+        return []
+    values = []
+    for line_number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
+        if not line.strip():
+            continue
+        try:
+            value = json.loads(line)
+        except json.JSONDecodeError as exc:
+            raise SystemExit(f"Invalid Shot Vision ledger line {line_number}: {exc}") from exc
+        if isinstance(value, dict):
+            values.append(value)
+    return values
+
+
+def approved_vision_packets(root: Path) -> dict[str, tuple[Path, dict]]:
+    events = load_jsonl(vision_ledger(root))
+    approvals = {
+        str(event.get("batch_id") or ""): str(event.get("batch_sha256") or "")
+        for event in events if event.get("event") == "prompt-batch-approved"
+    }
+    current_revision: dict[str, int] = {}
+    for event in events:
+        if event.get("event") in {"vision-migrated", "vision-updated", "vision-reverted"} and event.get("shot_id"):
+            current_revision[str(event["shot_id"])] = int(event.get("revision") or 0)
+    selected: dict[str, tuple[Path, dict]] = {}
+    batch_files = sorted((root / "04-images" / "prompt-specs").glob("*/batch.json"), key=lambda path: path.stat().st_mtime, reverse=True)
+    for batch_file in batch_files:
+        batch = read_json(batch_file)
+        batch_id = str(batch.get("batch_id") or "")
+        if not batch_id or approvals.get(batch_id) != str(batch.get("batch_sha256") or ""):
+            continue
+        for entry in batch.get("shots", []):
+            if not isinstance(entry, dict) or entry.get("blockers"):
+                continue
+            shot_id = str(entry.get("shot_id") or "")
+            if not shot_id or shot_id in selected:
+                continue
+            if int(entry.get("vision_revision") or 0) != current_revision.get(shot_id, 0):
+                continue
+            packet_rel = str(entry.get("packet") or "")
+            packet_file = (root / packet_rel).resolve()
+            if root.resolve() not in packet_file.parents or not packet_file.is_file():
+                raise SystemExit(f"Approved prompt packet missing or unsafe: {packet_rel}")
+            packet = read_json(packet_file)
+            if packet.get("prompt_sha256") != text_sha256(str(packet.get("prompt") or "")):
+                raise SystemExit(f"Approved prompt packet hash mismatch: {packet_rel}")
+            selected[shot_id] = (packet_file, packet)
+    return selected
+
+
+def compile_vision_packet(root: Path, shot_id: str) -> dict:
+    source, _headers, record, _excel_row = source_row(root, shot_id)
+    _registry, by_label, by_id = load_registry(root, source)
+    label = normalize_shot(record.get("Shot"))
+    registered = by_label.get(label)
+    if not registered:
+        raise SystemExit(f"Workbook shot has no stable registry identity: {label}")
+    if (registered.get("image_direction") or {}).get("render_mode") == "source-photo":
+        raise SystemExit(f"Shot {shot_id} is source photography; Krea generation forbidden")
+    if registered.get("shared_setup_owner_shot_id"):
+        owner = by_id.get(str(registered["shared_setup_owner_shot_id"]))
+        raise SystemExit(f"Shot {label} reuses Shot {normalize_shot((owner or {}).get('display_number'))}; generate the owner only")
+    selected = approved_vision_packets(root)
+    found = selected.get(str(registered["shot_id"]))
+    if not found:
+        raise SystemExit(f"Shot {label} has no approved prompt for its current Shot Vision revision")
+    packet = dict(found[1])
+    packet["_packet_path"] = base.relpath(found[0], root)
+    validate_prompt(str(packet.get("prompt") or ""))
+    return packet
+
+
+def compile_vision_batch(root: Path) -> tuple[dict, list[tuple[Path, dict]]]:
+    source, headers, rows = workbook_rows(root)
+    registry, by_label, by_id = load_registry(root, source)
+    selected = approved_vision_packets(root)
+    packets: list[tuple[Path, dict]] = []
+    aliases: list[dict] = []
+    source_only: list[dict] = []
+    for registered in sorted(by_label.values(), key=lambda item: item.get("order", 0)):
+        label = normalize_shot(registered["display_number"])
+        direction = registered.get("image_direction") or {}
+        if direction.get("render_mode") == "source-photo":
+            source_only.append({"shot": label, "shot_id": registered["shot_id"], "source_asset": direction.get("source_asset")})
+            continue
+        owner_id = registered.get("shared_setup_owner_shot_id")
+        if owner_id:
+            owner = by_id.get(str(owner_id))
+            if not owner:
+                raise SystemExit(f"Shared setup owner missing for Shot {label}")
+            aliases.append({"shot": label, "shot_id": registered["shot_id"], "owner_shot": normalize_shot(owner["display_number"]), "owner_shot_id": owner_id})
+            continue
+        found = selected.get(str(registered["shot_id"]))
+        if not found:
+            raise SystemExit(f"Shot {label} has no approved prompt for its current Shot Vision revision")
+        validate_prompt(str(found[1].get("prompt") or ""))
+        packets.append(found)
+    manifest = read_json(root / "03-bible" / "assets.json")
+    expected_aspect = str(manifest.get("master_aspect_ratio") or "").strip()
+    if not expected_aspect or any(packet.get("aspect_ratio") != expected_aspect for _, packet in packets):
+        raise SystemExit("Shot Vision batch conflicts with the Film Brief's master aspect ratio")
+    plan = {
+        "schema_version": 2, "created_at": now(), "project": root.name, "workflow_stage": "style-composition",
+        "source": {"kind": "shot-vision", "vision_ledger_sha256": sha256(vision_ledger(root)), "workbook": base.relpath(source, root), "workbook_sha256": registry["source_revision_hash"], "registry_revision_id": registry.get("registry_revision_id")},
+        "model": MODEL, "aspect_ratio": expected_aspect, "resolution": "1K",
+        "generation_parameters": packets[0][1].get("generation_parameters") if packets else None,
+        "prompt_contract": {"production_object": "visibility-aware-v1", "action_is_validation_context_only": True, "approved_prompt_required": True},
+        "generation_count": len(packets),
+        "packets": [{"shot": packet["shot"], "shot_id": packet["shot_id"], "title": packet["title"], "packet": base.relpath(path, root), "prompt_sha256": packet["prompt_sha256"], "request_sha256": packet["request_sha256"], "vision_revision": packet.get("vision_revision")} for path, packet in packets],
+        "shared_setups": aliases, "source_only": source_only,
+    }
+    return plan, packets
+
+
+def compile_packet(root: Path, shot_id: str) -> dict:
+    return compile_vision_packet(root, shot_id) if vision_ledger(root).is_file() else compile_legacy_packet(root, shot_id)
+
+
+def compile_batch(root: Path) -> tuple[dict, list[tuple[Path, dict]]]:
+    return compile_vision_batch(root) if vision_ledger(root).is_file() else compile_legacy_batch(root)
+
+
+def packet_path(root: Path, packet: dict) -> Path:
+    if packet.get("_packet_path"):
+        return root / str(packet["_packet_path"])
+    safe_id = re.sub(r"[^0-9A-Za-z_-]+", "-", packet["shot"]).strip("-")
+    workbook_stem = Path(packet["source"]["workbook"]).stem
+    version = workbook_stem.rsplit("-", 1)[-1]
+    return root / "04-images" / "prompt-packets" / f"frame-one-{version}" / f"shot-{safe_id}-style-composition.json"
+
+
+def batch_plan_path(root: Path, plan: dict) -> Path:
+    if (plan.get("source") or {}).get("kind") == "shot-vision":
+        return root / "04-images" / "prompt-packets" / "approved-shot-vision" / "batch-plan.json"
+    return legacy_batch_plan_path(root, plan)
+
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
@@ -334,8 +478,9 @@ def main() -> int:
         if args.check_only:
             print(json.dumps(plan, indent=2, ensure_ascii=False))
             return 0
-        for packet_file, packet in packets:
-            write_json(packet_file, packet)
+        if (plan.get("source") or {}).get("kind") != "shot-vision":
+            for packet_file, packet in packets:
+                write_json(packet_file, packet)
         out = batch_plan_path(root, plan)
         write_json(out, plan)
         print(json.dumps({
@@ -350,8 +495,9 @@ def main() -> int:
         print(json.dumps(packet, indent=2, ensure_ascii=False))
         return 0
     out = packet_path(root, packet)
-    write_json(out, packet)
-    print(json.dumps({"packet": base.relpath(out, root), "shot": packet["shot"], "source_cell": packet["source"]["prompt_cell"]}, ensure_ascii=False))
+    if not packet.get("_packet_path"):
+        write_json(out, packet)
+    print(json.dumps({"packet": base.relpath(out, root), "shot": packet["shot"], "source_cell": packet.get("source", {}).get("prompt_cell")}, ensure_ascii=False))
     return 0
 
 

@@ -269,6 +269,97 @@ def load_narrative(project: Path, findings: list[dict[str, object]]) -> dict[str
         return {}
 
 
+def narrative_vision(entry: dict[str, object]) -> str:
+    """Render the legacy narrative object as an editable human-facing Shot Vision draft."""
+    lines: list[str] = []
+    for label, key in [
+        ("Vision", "one_liner"), ("Meaning", "expanded"), ("Why this shot", "why_this_shot"),
+        ("Beat", "beat"), ("Emotional charge", "charge"),
+    ]:
+        value = str(entry.get(key) or "").strip()
+        if value:
+            lines.append(f"{label}: {value}")
+    for label, key in [("Motifs", "motifs"), ("Never", "never"), ("Open questions", "open_loops")]:
+        values = entry.get(key)
+        if isinstance(values, list):
+            value = "; ".join(str(item).strip() for item in values if str(item or "").strip())
+            if value:
+                lines.append(f"{label}: {value}")
+    staging = entry.get("staging") if isinstance(entry.get("staging"), dict) else {}
+    staging_values: list[str] = []
+    for group in (staging.get("surfaced"), staging.get("ambient")):
+        if isinstance(group, dict):
+            staging_values.extend(str(value).strip() for value in group.values() if str(value or "").strip())
+    if staging_values:
+        lines.append("Staging ideas: " + "; ".join(staging_values))
+    return "\n".join(lines)
+
+
+def load_vision_events(project: Path, findings: list[dict[str, object]]) -> list[dict[str, object]]:
+    events, event_findings = read_jsonl(project / "04-images" / "shot-vision.jsonl")
+    findings.extend(event_findings)
+    return events
+
+
+def attach_vision(
+    shots: list[dict[str, object]],
+    narrative_entries: dict[str, dict[str, object]],
+    events: list[dict[str, object]],
+) -> None:
+    by_shot: dict[str, list[dict[str, object]]] = {}
+    for event in events:
+        if event.get("event") in {"vision-migrated", "vision-updated", "vision-reverted"}:
+            by_shot.setdefault(str(event.get("shot_id") or ""), []).append(event)
+    for shot in shots:
+        shot_id = str(shot.get("shotId") or "")
+        seed = narrative_vision(narrative_entries.get(shot_id, {}))
+        history = sorted(by_shot.get(shot_id, []), key=lambda item: (int(item.get("revision") or 0), str(item.get("created_at") or "")))
+        latest = history[-1] if history else None
+        shot["shotVision"] = {
+            "text": str((latest or {}).get("vision") or seed),
+            "revision": int((latest or {}).get("revision") or 0),
+            "eventId": (latest or {}).get("event_id"),
+            "batchId": (latest or {}).get("batch_id"),
+            "source": (latest or {}).get("source") or ("shot-narrative.json draft" if seed else "blank"),
+            "updatedAt": (latest or {}).get("created_at"),
+            "seededDraft": not history and bool(seed),
+            "history": [
+                {
+                    "eventId": item.get("event_id"), "batchId": item.get("batch_id"),
+                    "revision": int(item.get("revision") or 0), "text": str(item.get("vision") or ""),
+                    "previousText": str(item.get("previous_vision") or ""),
+                    "source": item.get("source"), "createdAt": item.get("created_at"),
+                    "event": item.get("event"),
+                }
+                for item in reversed(history)
+            ],
+        }
+
+
+def load_prompt_batches(project: Path, events: list[dict[str, object]], findings: list[dict[str, object]]) -> list[dict[str, object]]:
+    approvals = {
+        str(event.get("batch_id") or ""): event
+        for event in events if event.get("event") == "prompt-batch-approved" and event.get("batch_id")
+    }
+    batches: list[dict[str, object]] = []
+    root = project / "04-images" / "prompt-specs"
+    for path in root.glob("*/batch.json") if root.is_dir() else []:
+        try:
+            batch = read_json(path, None)
+        except ProductionDataError as exc:
+            findings.append({"code": "prompt-batch-unreadable", "severity": "warning", "path": path.relative_to(project).as_posix(), "detail": str(exc)})
+            continue
+        if not isinstance(batch, dict) or not batch.get("batch_id"):
+            continue
+        value = dict(batch)
+        approval = approvals.get(str(value["batch_id"]))
+        value["approved"] = bool(approval and approval.get("batch_sha256") == value.get("batch_sha256"))
+        value["approvedAt"] = (approval or {}).get("created_at")
+        value["path"] = path.relative_to(project).as_posix()
+        batches.append(value)
+    return sorted(batches, key=lambda item: str(item.get("created_at") or ""), reverse=True)
+
+
 def attach_narrative(shots: list[dict[str, object]], entries: dict[str, dict[str, object]]) -> None:
     """Join narrative sidecar entries onto normalized shots. Missing entry = not yet authored."""
     for shot in shots:
@@ -811,6 +902,10 @@ class ProductionAdapter:
         shots, registry_source, registry_payload = load_shots(project, findings)
         narrative_entries = load_narrative(project, findings)
         attach_narrative(shots, narrative_entries)
+        vision_events = load_vision_events(project, findings)
+        attach_vision(shots, narrative_entries, vision_events)
+        prompt_batches = load_prompt_batches(project, vision_events, findings)
+        latest_prompt_batch = prompt_batches[0] if prompt_batches else None
         retired_shots = []
         for item in registry_payload.get("retired_shots", []) if isinstance(registry_payload, dict) else []:
             if not isinstance(item, dict):
@@ -819,6 +914,7 @@ class ProductionAdapter:
             retired.update({"retiredAt": item.get("retired_at"), "retiredReason": item.get("retired_reason")})
             retired_shots.append(retired)
         attach_narrative(retired_shots, narrative_entries)
+        attach_vision(retired_shots, narrative_entries, vision_events)
         latest_workbook = max((project / "05-storyboard").glob("*.xlsx"), key=lambda path: path.stat().st_mtime, default=None)
         registry_source_path = str(registry_payload.get("source") or "")
         registered_workbook = None
@@ -944,7 +1040,7 @@ class ProductionAdapter:
                     "label": "Style + composition", "model": style_settings.get("model") or assets_manifest.get("default_model"),
                     "aspectRatio": style_settings.get("aspect_ratio") or assets_manifest.get("master_aspect_ratio"),
                     "resolution": style_settings.get("resolution"), "references": style_references,
-                    "status": "ready" if str((assets_manifest.get("cost_approvals") or {}).get("style_composition", {}).get("status") or "").casefold() == "approved" else "cost approval required",
+                    "status": "ready" if str((assets_manifest.get("cost_approvals") or {}).get("style_composition_v4" if vision_events else "style_composition", {}).get("status") or "").casefold() == "approved" else "cost approval required",
                 },
                 "likeness": {
                     "label": "Likeness", "model": likeness_settings.get("model"),
@@ -955,6 +1051,26 @@ class ProductionAdapter:
             }
             prompt_asset = next((item for item in shot.get("assetHistory", []) if item.get("kind") == "image" and item.get("stage") in {"style-composition", "likeness"}), None)
             prompt_stage = str(prompt_asset.get("stage") if prompt_asset else "style-composition")
+            compiled_entry = next(
+                (
+                    entry
+                    for batch in prompt_batches
+                    for entry in batch.get("shots", [])
+                    if isinstance(entry, dict) and str(entry.get("shot_id") or "") == str(shot["shotId"])
+                ),
+                None,
+            )
+            shot["promptCompilation"] = {
+                **(dict(compiled_entry) if isinstance(compiled_entry, dict) else {}),
+                "batchId": next(
+                    (
+                        batch.get("batch_id")
+                        for batch in prompt_batches
+                        if any(isinstance(entry, dict) and str(entry.get("shot_id") or "") == str(shot["shotId"]) for entry in batch.get("shots", []))
+                    ),
+                    None,
+                ),
+            }
             matching_edits = [
                 event for event in prompt_edits
                 if str(event.get("workflow_stage") or "") == prompt_stage
@@ -962,7 +1078,13 @@ class ProductionAdapter:
             ]
             latest_edit = max(matching_edits, key=lambda event: str(event.get("created_at") or ""), default=None)
             configured_stage = shot["generationStages"].get(prompt_stage, shot["generationStages"]["style-composition"])
-            prompt_text = str((latest_edit or {}).get("prompt") or (prompt_asset or {}).get("prompt") or shot["imageDirection"].get("visualDescription") or "")
+            prompt_text = str(
+                (compiled_entry or {}).get("prompt")
+                or (latest_edit or {}).get("prompt")
+                or (prompt_asset or {}).get("prompt")
+                or shot["imageDirection"].get("visualDescription")
+                or ""
+            )
             shot["currentPrompt"] = {
                 "prompt": prompt_text,
                 "usedPrompt": str((prompt_asset or {}).get("prompt") or ""),
@@ -972,7 +1094,10 @@ class ProductionAdapter:
                 "assetId": (prompt_asset or {}).get("assetId"),
                 "assetVersion": (prompt_asset or {}).get("version"),
                 "references": (prompt_asset or {}).get("references") or configured_stage.get("references") or [],
-                "source": "edited draft" if latest_edit else "latest generation" if prompt_asset and prompt_asset.get("prompt") else "image direction",
+                "source": "compiled Shot Vision" if compiled_entry and compiled_entry.get("prompt") else "edited draft" if latest_edit else "latest generation" if prompt_asset and prompt_asset.get("prompt") else "image direction",
+                "promptBatchId": shot.get("promptCompilation", {}).get("batchId"),
+                "visionRevision": (compiled_entry or {}).get("vision_revision"),
+                "promptSha256": (compiled_entry or {}).get("prompt_sha256"),
                 "editedAt": (latest_edit or {}).get("created_at"),
             }
             missing_dependencies = [req for req in shot["requirements"] if req["status"] == "missing"]
@@ -1025,6 +1150,7 @@ class ProductionAdapter:
             "blockerCount": blocker_count, "pendingReviewCount": pending_count, "lastActivity": last_activity,
             "coverAsset": cover, "requirements": project_requirements, "missingNow": missing_now, "missingLater": missing_later,
             "shots": shots, "unmappedAssets": unmapped, "validationFindings": findings, "validationCount": len(findings),
+            "promptBatches": prompt_batches, "latestPromptBatch": latest_prompt_batch,
         }
 
     def get_shot(self, slug: str, shot_id: str) -> dict[str, object]:

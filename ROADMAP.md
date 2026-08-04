@@ -32,7 +32,7 @@ halves. Full definition in `GOALS.md`. `yugioh` is the active film.
 | Phase | State |
 |---|---|
 | Storyboard | **Done** — `yugioh/status.yml`, `gate4_storyboard: approved 2026-07-30` |
-| **Image pipeline** | **ACTIVE.** Stage-A compiler and paid runner calibrated on Shots 1–2. Registry revision 5 matches the v4 workbook: 28 unique setups, 2 shared, 1 source-only. Remaining setups await recorded batch cost approval. Likeness and final selection follow. |
+| **Image pipeline** | **ACTIVE.** Studio Shot Vision and the visibility-aware Krea compiler are built. The Film Brief's 16:9 widescreen master governs Stage A. Prompt Board approval precedes the remaining composition batch; likeness and final selection follow. |
 | Video | **Next.** Turn the project documents into a working video-generation prompt, then refine the process against real output. |
 | Score | **Later.** ElevenLabs pass. |
 
@@ -43,16 +43,21 @@ pipeline carrying it, is **parked — not built.** Apply it *before* the four qu
 ## Actively under development
 
 **Prompt quality per shot** *(CONFIRMED — Vince, 2026-08-04)*
-The craft problem, not the plumbing: language that makes a model render what he actually saw. This
-is the current front.
+The craft problem, not the plumbing: language that makes a model render what he actually saw. A
+focused Shot Prompt Author guide now turns the research into active LLM context; Python grounds and
+lints the result; an independent Hermes semantic reviewer blocks weak or unsupported prompts and
+permits one repair. Local author/reviewer contract tests pass. Real OpenRouter forward-testing awaits
+Vince's explicit approval to send the project source bundle to that external provider.
 
 **Image generation pass** *(INFERRED — highest churn)*
-`hearthlight-image-prompts` carries 8 scripts and 3 test files, the most of any skill. Stage A is
-`krea_style_comp.py` (compile) plus `krea_style_comp_run.py` (paid run).
+`hearthlight-image-prompts` carries 6 scripts and 4 test files. Stage A uses `prompt_authoring.py`
+(Shot Vision → production object), `krea_style_comp.py` (approved packet plan), and
+`krea_style_comp_run.py` (paid durable run).
 
 **Hearthlight Studio** *(CONFIRMED)*
-The production cockpit. Shot-first project view, review controls, prompt editing, generation
-queueing. Lives in `staging/overview-ui/`; where it should finally live is undecided.
+The production cockpit. Shot-first project view, editable/versioned Shot Vision, technical storyboard
+source, Prompt Board approval, review controls, and durable generation queueing. Lives in
+`staging/overview-ui/`; where it should finally live is undecided.
 
 **Governance layer** *(CONFIRMED)*
 Canon docs, checkpoint, weekly workshop, Miro sync, multi-agent attribution.
@@ -61,7 +66,7 @@ Canon docs, checkpoint, weekly workshop, Miro sync, multi-agent attribution.
 
 | Gap | Stated in | Where it stands |
 |---|---|---|
-| **Intelligent prompt correction** — turn a critique into a proposed prompt revision | Core problem 1 | The manual loop works in Studio: comment, edit the prompt, queue, approve, restore a hero. Automatic critique-to-revision is missing. |
+| **Voice-rant review parsing** — turn whole-board spoken critique into confirmed shot revisions | Core problem 1 | Shot Vision, compilation, prompt approval, generation history, and revert are built. Automatic parsing/confirmation of a whole-sequence rant remains. |
 | **Cross-platform prompt shaping** | Core problem 2 | Four bespoke translators (`image-prompts`, `video-prompts`, `seedance-prompt-maker`, `zit-prompt-writer`) with no shared abstraction between them. |
 | **Narrative-drift tracking** | Core problem 6 | `hearthlight-critique` does this on demand at one stage. Nothing holds the narrative goals continuously across the film. |
 | **Audio generation** | Primary outcome 3 | Nothing produces audio. |

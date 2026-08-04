@@ -68,40 +68,64 @@ Gate 3 has two separately approved image stages.
 
 ### Stage A — STYLE AND COMPOSITION CHECK
 
-Model: live-discovered `krea/krea-2/medium`.
+Model: live-discovered `krea/krea-2/medium`. Master: the Film Brief's declared aspect ratio; Yu-Gi-Oh is 16:9 widescreen.
 
-Goal: approved style, composition, camera, crop, body silhouette, relative height, pose, action, environment, light, palette.
+Goal: approve style and the visible arrangement of one frozen instant. Facial likeness remains
+provisional; Stage B owns identity replacement.
 
-Inputs:
-- `Still (frame one)` from the newest approved shot-list workbook — the sole prompt-body source;
-- master aspect ratio from `03-bible/assets.json` as an API parameter;
-- selected Krea moodboard ID and strength from `03-bible/assets.json` as API parameters.
+**Creative authority:** the latest submitted Shot Vision in `04-images/shot-vision.jsonl`. The
+workbook remains exact imported evidence: Still, Action, Camera Movement, Notes, and stable Shot ID
+stay separate. Beat and narrative material may explain meaning, but never enter a prompt as abstract
+prose. Generated prompts never rewrite Shot Vision.
 
-Never read `Action (motion — video only)` while compiling a Krea still prompt. Never append timecodes,
-camera motion, Notes, continuity bookkeeping, review rules, stage explanations, global negative lists, or
-character `must_hold` arrays. Character and style language must already be visible-image language inside
-`Still (frame one)`. If it is missing there, block and amend the sheet; do not silently assemble a second prompt.
-Do not attach character-sheet images during Stage A. Facial likeness is provisional. Prompt the people as accurately as possible, but prioritize frame geometry and body construction. For adult/child scenes, state the relative scale explicitly.
+**Focused author contract:** `references/PROMPT-AUTHOR.md` has one job: translate one validated shot
+bundle into one high-quality Krea prompt. `prompt_authoring.py` injects the full contract into every
+author and reviewer call; the broad Gate 3 workflow in this file is not the worker's context.
 
-Compile and verify the complete current board:
+**Compilation order:**
+1. Python loads and hashes film laws, full visual-system context, declared master aspect, current Shot
+   Vision, storyboard fields, narrative record, adjacent-shot continuity, region-tagged character
+   facts, mapped assets, special lighting laws, and the Krea provider profile.
+2. A tool-restricted Hermes Shot Prompt Author uses the focused guide to make the visual judgments:
+   crop-first visibility, observable emotion, atomic ownership, medium translation, semantic-density
+   reduction, and concise `prompt_body`. It returns strict structured JSON only.
+3. Python validates facts and invariants: source identity, one instant, canonical visible traits,
+   subject/prop ownership, counts, model-control separation, provider vocabulary, and prompt length.
+   A failed object gets one source-preserving author repair attempt.
+4. Python adds the fixed deliverable header and locked style sentence verbatim. An independent,
+   tool-restricted Hermes Shot Prompt Reviewer then checks source grounding, visual coherence,
+   continuity, attribute binding, illustration language, and likely Krea readability. It may block
+   but never invent direction. One repair attempt is allowed; a second failure stays blocked.
+5. Show the Prompt Board. Vince may correct Vision and recompile. Only approval of the exact batch
+   hash, job count, model, estimate, moodboard strength, and aspect ratio unlocks generation.
+
+Studio endpoints preserve append-only Vision revisions, prompt specs, prompt batches, approval
+events, and generation lineage. Revert appends a restoration revision; it never deletes history.
+Shared shots compile through their owner. Source-photo shots save Vision but never compile or spend.
+
+Krea request controls remain parameters, never prose: `creativity=raw`, `intensity=0`,
+`complexity=0`, `movement=0`, model, resolution, aspect ratio, moodboard ID, and moodboard strength.
+The full request fingerprint controls retry/resume and immutable versioning.
+
+Compile from Studio by editing Shot Vision and pressing **Submit changes**. For command-line batch
+execution after Prompt Board approval:
 
 ```bash
 python skills/hearthlight-image-prompts/scripts/krea_style_comp.py --project {slug} --all
 python skills/hearthlight-image-prompts/scripts/krea_style_comp_run.py --project {slug} --shots {shot-a} {shot-b} --dry-run
-```
-
-The compiler blocks stale registry/workbook hashes, unstable Shot IDs, shared-setup duplicates, source-photo jobs, forbidden motion text, and any packet that differs from its exact `Still (frame one)` cell. It writes `prompt-packets/frame-one-{revision}/batch-plan.json` plus one immutable packet per unique setup. The legacy `two_pass.py compile-prompts --stage style-composition` path is disabled because it mixed video/action material into image prompts.
-
-Krea request parameters are separate from prompt text: `creativity=raw`, `intensity=0`, `complexity=0`, and `movement=0`. Raw mode prevents Krea prompt expansion from inventing subjects outside the authored still. Moodboard ID/strength, aspect ratio, resolution, prompt, model, and these K2 parameters form one request fingerprint; changing any field creates a new version instead of being mistaken for completed work.
-
-Generate two calibration shots first. Machine-check file readability, aspect ratio, exact prompt history, required/forbidden depicted elements, and crash resume. Vince alone judges aesthetic quality. Then show the full remaining-batch cost/time estimate, wait for explicit approval, and record `cost_approvals.style_composition_v4` in `03-bible/assets.json` before `--all` may submit.
-
-```bash
 python skills/hearthlight-image-prompts/scripts/krea_style_comp_run.py --project {slug} --shots {shot-a} {shot-b}
 python skills/hearthlight-image-prompts/scripts/krea_style_comp_run.py --project {slug} --all
 ```
 
-Generate one owner per unique setup. Shared shots never dispatch twice. Source-photo shots never dispatch. Download and ledger every completed output before the next paid job. Never overwrite. A matching completed request fingerprint skips without spend; a submitted unfinished job resumes by Krea job ID.
+Once `shot-vision.jsonl` exists, `krea_style_comp.py` accepts only the newest approved prompt packet
+for each current Vision revision. It blocks missing approval, stale Vision, changed batch hashes,
+unstable identity, shared duplicates, source photos, motion text, schema drift, and packets that disagree with the declared master aspect.
+Before migration only, it can read the legacy exact frame-one packets so existing history remains
+recoverable. `two_pass.py` Stage A remains disabled.
+
+Generate one owner per unique setup. Download and ledger every result before the next paid job.
+Never overwrite. A matching completed request fingerprint skips without spend; a submitted unfinished
+job resumes by Krea job ID.
 
 ### Gate 3A — composition review
 
@@ -149,14 +173,24 @@ Approved final still paths are the sole conditioning inputs for later video gene
 
 ## Prompt construction
 
-For Stage A, submit the normalized `Still (frame one)` cell as the complete Krea prompt body. Do not wrap it in workflow instructions. Do not inject other spreadsheet columns or bible arrays. Rephrasing happens upstream when the Still cell is authored or amended; compilation is faithful extraction.
+Stage A prompt order:
+1. illustrated deliverable and declared master composition;
+2. one visible tableau and subject-specific clauses;
+3. framing and spatial relationships;
+4. visible environment and light;
+5. locked illustration language;
+6. required shot-specific constraints only.
 
-No incidental text. Preserve only text explicitly required by the board or character bible, such as SONICS or the canonical Warrior Returning Alive title.
+No workflow labels, motion, timecodes, camera movement, continuity bookkeeping, abstract emotion,
+unowned props, invisible identity detail, full signature strings, photographic medium collisions, or
+incidental text. Preserve only text visibly required by direction, such as SONICS or the canonical
+Warrior Returning Alive title.
 
 ## Durable contract
 
 - `03-bible/assets.json`: moodboard, critical assets, approval states, stage settings, cost approvals.
-- `04-images/shot-specs.json`: compiled live-board direction plus image-pass amendments.
+- `04-images/shot-vision.jsonl`: append-only Shot Vision revisions, reverts, compilation failures, and approvals.
+- `04-images/prompt-specs/{batch}/`: immutable structured production objects and exact batch fingerprint.
 - `04-images/image-workflow.json`: model routing and per-shot stage requirements.
 - `04-images/prompt-packets/`: exact submitted prompts and reference arrays.
 - `04-images/generations.jsonl`: append-only generation, review, and selection truth.
@@ -166,12 +200,13 @@ Read `references/versioned-review.md` for event and recovery rules. Never hand-e
 
 ## Verification
 
-- Every live board row maps to generated, shared, or source-photo mode.
-- Every Stage A prompt equals its current workbook Still (frame one) cell after whitespace normalization.
-- No Stage A prompt contains action timecodes, Frozen action, Camera law, Continuity, or character must_hold material.
-- Stage A packets contain moodboard references and no character-sheet image references.
-- Stage B packets contain the selected base plus all relevant approved character sheets.
-- Every likeness generation names its composition parent version.
-- Files are immutable `shot-{nn}-v{nn}.png`, open locally, and match 4:3.
+- Every live board row maps by permanent Shot ID to generated, shared, or source-photo mode.
+- Every Stage A prompt is tied to an approved current Shot Vision revision and structured spec.
+- Partial-body shots contain only useful traits from visible tagged regions; unknown/paraphrased traits block.
+- No Stage A prompt contains motion, timecodes, multiple temporal states, workflow labels, full signatures,
+  or character-sheet image conditioning.
+- Film Brief, assets manifest, compiled packet, and live Krea schema agree on the declared master aspect ratio.
+- Approval binds exact prompt-batch hash, job count, model, moodboard strength, estimate, and cost ceiling.
+- Files are immutable, open locally, and retain prompt/reference/Vision provenance.
 - Shared and source-photo shots never spend generation credits.
-- Quality remains Vince’s call.
+- Quality remains Vince's call.

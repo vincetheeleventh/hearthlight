@@ -7,6 +7,7 @@ generation records, media, gate state, and immutable Shot IDs are never erased.
 from __future__ import annotations
 
 import datetime as dt
+import hashlib
 import json
 import os
 import re
@@ -23,6 +24,7 @@ from .productions import (
     file_hash,
     is_approved,
     read_json,
+    read_jsonl,
     safe_child,
 )
 
@@ -38,11 +40,15 @@ def utc_now() -> str:
 
 
 def append_jsonl(path: Path, event: dict[str, object]) -> None:
+    append_jsonl_many(path, [event])
+
+
+def append_jsonl_many(path: Path, events: list[dict[str, object]]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    line = json.dumps(event, ensure_ascii=False, separators=(",", ":")) + "\n"
+    lines = "".join(json.dumps(event, ensure_ascii=False, separators=(",", ":")) + "\n" for event in events)
     with _EVENT_LOCK:
         with path.open("a", encoding="utf-8", newline="\n") as handle:
-            handle.write(line)
+            handle.write(lines)
             handle.flush()
             os.fsync(handle.fileno())
 
@@ -60,10 +66,12 @@ class ProductionActions:
         adapter: ProductionAdapter,
         launcher: Callable[[Path], None] | None = None,
         document_opener: Callable[[Path], None] | None = None,
+        prompt_compiler: Callable[[Path, str, list[str]], dict[str, object]] | None = None,
     ):
         self.adapter = adapter
         self._launcher = launcher
         self._document_opener = document_opener
+        self._prompt_compiler = prompt_compiler
 
     def _project(self, slug: str) -> Path:
         return self.adapter._project(slug)
@@ -71,6 +79,14 @@ class ProductionActions:
     @staticmethod
     def _ledger(project: Path) -> Path:
         return project / "04-images" / "generations.jsonl"
+
+    @staticmethod
+    def _vision_ledger(project: Path) -> Path:
+        return project / "04-images" / "shot-vision.jsonl"
+
+    @staticmethod
+    def _approved_prompt_batch(project: Path) -> Path:
+        return project / "04-images" / "approved-prompt-batch.json"
 
     @staticmethod
     def _job_dir(project: Path) -> Path:
@@ -371,6 +387,166 @@ class ProductionActions:
     def _adopt_if_inferred(project: Path, shot: dict[str, object], asset: dict[str, object]) -> dict[str, object]:
         return asset
 
+    def _compile_prompt_batch(self, project: Path, batch_id: str, shot_ids: list[str]) -> dict[str, object]:
+        if self._prompt_compiler:
+            return self._prompt_compiler(project, batch_id, shot_ids)
+        script = self.adapter.root / "skills" / "hearthlight-image-prompts" / "scripts" / "prompt_authoring.py"
+        if not script.is_file():
+            raise ProductionDataError("Prompt-authoring compiler is missing")
+        command = [sys.executable, str(script), "--project-root", str(project), "--batch-id", batch_id, "--shots", *shot_ids]
+        result = subprocess.run(command, cwd=self.adapter.root, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=600, check=False)
+        try:
+            payload = json.loads(result.stdout.strip().splitlines()[-1])
+        except (json.JSONDecodeError, IndexError) as exc:
+            detail = (result.stderr or result.stdout or "Prompt compiler returned no result").strip().splitlines()[-1]
+            raise ProductionDataError(detail[:500]) from exc
+        if result.returncode or not payload.get("compiled"):
+            raise ProductionDataError(str(payload.get("error") or "Prompt compilation failed"))
+        batch = payload.get("batch")
+        if not isinstance(batch, dict):
+            raise ProductionDataError("Prompt compiler returned no batch")
+        return batch
+
+    def compile_current_visions(self, slug: str) -> dict[str, object]:
+        project = self._project(slug)
+        production = self.adapter.get_production(slug)
+        shot_ids: list[str] = []
+        for shot in production.get("shots", []):
+            if shot.get("reconciliationStatus") not in {"stable", "new"} or shot.get("inferred"):
+                raise ProductionDataError(f"Shot {shot.get('displayNumber')} needs identity reconciliation")
+            if str((shot.get("imageDirection") or {}).get("renderMode") or "") == "source-photo":
+                continue
+            owner_id = str(shot.get("sharedSetupOwnerShotId") or shot.get("shotId") or "")
+            if owner_id and owner_id not in shot_ids:
+                shot_ids.append(owner_id)
+        if not shot_ids:
+            raise ProductionDataError("No generated shot setups are available to compile")
+        batch_id = str(uuid.uuid4())
+        try:
+            batch = self._compile_prompt_batch(project, batch_id, shot_ids)
+            return {"saved": True, "batchId": batch_id, "changed": 0, "compiled": True, "batch": batch}
+        except Exception as exc:
+            append_jsonl(self._vision_ledger(project), {
+                "schema_version": 1, "event": "prompt-batch-failed", "event_id": str(uuid.uuid4()),
+                "batch_id": batch_id, "created_at": utc_now(), "shot_ids": shot_ids,
+                "error": str(exc), "source": "hearthlight-studio:compile-current",
+            })
+            return {"saved": True, "batchId": batch_id, "changed": 0, "compiled": False, "error": str(exc)}
+
+    def submit_vision_batch(self, slug: str, payload: dict[str, object], *, event_type: str = "vision-updated", event_source: str = "hearthlight-studio") -> dict[str, object]:
+        project = self._project(slug)
+        production = self.adapter.get_production(slug)
+        shots = {str(shot["shotId"]): shot for shot in production.get("shots", [])}
+        raw_changes = payload.get("changes")
+        if not isinstance(raw_changes, list) or not raw_changes:
+            raise ProductionDataError("Submit at least one Shot Vision change")
+        if len(raw_changes) > 100:
+            raise ProductionDataError("Vision batch is too large")
+        batch_id = str(payload.get("batchId") or uuid.uuid4())
+        events: list[dict[str, object]] = []
+        changed_ids: list[str] = []
+        for raw in raw_changes:
+            if not isinstance(raw, dict):
+                raise ProductionDataError("Every Vision change must be an object")
+            shot_id = str(raw.get("shotId") or "")
+            shot = shots.get(shot_id)
+            if not shot:
+                raise ProductionDataError(f"Unknown Shot ID: {shot_id}")
+            if shot.get("reconciliationStatus") not in {"stable", "new"} or shot.get("inferred"):
+                raise ProductionDataError(f"Shot {shot.get('displayNumber')} needs identity reconciliation")
+            vision = str(raw.get("vision") or "").strip()
+            if not vision:
+                raise ProductionDataError(f"Shot {shot.get('displayNumber')} Vision cannot be blank")
+            if len(vision) > 100_000:
+                raise ProductionDataError(f"Shot {shot.get('displayNumber')} Vision is too long")
+            current = shot.get("shotVision") if isinstance(shot.get("shotVision"), dict) else {}
+            current_revision = int(current.get("revision") or 0)
+            base_revision = int(raw.get("baseRevision") if raw.get("baseRevision") is not None else current_revision)
+            if base_revision != current_revision:
+                raise ProductionDataError(f"Shot {shot.get('displayNumber')} Vision changed in another session; reload before submitting")
+            previous = str(current.get("text") or "")
+            if vision == previous:
+                continue
+            events.append({
+                "schema_version": 1, "event": event_type, "event_id": str(uuid.uuid4()),
+                "batch_id": batch_id, "created_at": utc_now(), "shot_id": shot_id,
+                "shot": shot.get("displayNumber"), "revision": current_revision + 1,
+                "previous_revision": current_revision, "previous_vision": previous, "vision": vision,
+                "source": event_source, "confirmed_by_user": True,
+            })
+            changed_ids.append(shot_id)
+        if not events:
+            return {"saved": True, "batchId": batch_id, "changed": 0, "compiled": False, "message": "No Vision text changed"}
+        append_jsonl_many(self._vision_ledger(project), events)
+        compile_ids: list[str] = []
+        for shot_id in changed_ids:
+            shot = shots[shot_id]
+            if str((shot.get("imageDirection") or {}).get("renderMode") or "") == "source-photo":
+                continue
+            owner_id = str(shot.get("sharedSetupOwnerShotId") or shot_id)
+            if owner_id not in compile_ids:
+                compile_ids.append(owner_id)
+        if not compile_ids:
+            return {"saved": True, "batchId": batch_id, "changed": len(events), "compiled": False, "message": "Vision saved; source-photo shots do not compile Krea prompts"}
+        try:
+            batch = self._compile_prompt_batch(project, batch_id, compile_ids)
+            return {"saved": True, "batchId": batch_id, "changed": len(events), "compiled": True, "batch": batch}
+        except Exception as exc:
+            failure = {
+                "schema_version": 1, "event": "prompt-batch-failed", "event_id": str(uuid.uuid4()),
+                "batch_id": batch_id, "created_at": utc_now(), "shot_ids": compile_ids,
+                "error": str(exc), "source": "hearthlight-studio",
+            }
+            append_jsonl(self._vision_ledger(project), failure)
+            return {"saved": True, "batchId": batch_id, "changed": len(events), "compiled": False, "error": str(exc)}
+
+    def revert_vision(self, slug: str, shot_id: str, payload: dict[str, object]) -> dict[str, object]:
+        shot = self._shot(slug, shot_id)
+        vision = shot.get("shotVision") if isinstance(shot.get("shotVision"), dict) else {}
+        target = int(payload.get("revision") or -1)
+        record = next((item for item in vision.get("history", []) if int(item.get("revision") or -1) == target), None)
+        if not record:
+            raise ProductionDataError("Vision revision not found")
+        return self.submit_vision_batch(slug, {"changes": [{
+            "shotId": shot_id, "vision": record.get("text"), "baseRevision": vision.get("revision"),
+        }]}, event_type="vision-reverted", event_source=f"hearthlight-studio:revision-{target}")
+
+    def approve_prompt_batch(self, slug: str, batch_id: str, payload: dict[str, object]) -> dict[str, object]:
+        project = self._project(slug)
+        batch_path = safe_child(project, Path("04-images") / "prompt-specs" / batch_id / "batch.json", must_exist=True)
+        batch = read_json(batch_path, None)
+        if not isinstance(batch, dict) or str(batch.get("batch_id") or "") != batch_id:
+            raise ProductionDataError("Prompt batch is invalid")
+        if batch.get("status") != "ready-for-approval" or any(item.get("blockers") for item in batch.get("shots", []) if isinstance(item, dict)):
+            raise ProductionDataError("Blocked prompt batch cannot be approved")
+        if batch.get("estimated_cu") is None or batch.get("estimated_minutes") is None:
+            raise ProductionDataError("Prompt batch has no cost/time estimate")
+        expected = str(payload.get("batchSha256") or "")
+        if expected != str(batch.get("batch_sha256") or ""):
+            raise ProductionDataError("Prompt batch changed; reload before approving")
+        event = {
+            "schema_version": 1, "event": "prompt-batch-approved", "event_id": str(uuid.uuid4()),
+            "batch_id": batch_id, "batch_sha256": batch["batch_sha256"], "created_at": utc_now(),
+            "job_count": batch.get("job_count"), "estimated_cu": batch.get("estimated_cu"),
+            "estimated_minutes": batch.get("estimated_minutes"), "source": "hearthlight-studio", "confirmed_by_user": True,
+        }
+        append_jsonl(self._vision_ledger(project), event)
+        atomic_write_json(self._approved_prompt_batch(project), {
+            "schema_version": 1, "batch_id": batch_id, "batch_sha256": batch["batch_sha256"],
+            "batch_path": batch_path.relative_to(project).as_posix(), "approved_at": event["created_at"],
+        })
+        manifest_path = project / "03-bible" / "assets.json"
+        manifest = read_json(manifest_path, {})
+        manifest = manifest if isinstance(manifest, dict) else {}
+        approvals = manifest.setdefault("cost_approvals", {})
+        approvals["style_composition_v4"] = {
+            **(approvals.get("style_composition_v4") or {}), "status": "approved",
+            "approved_at": event["created_at"], "prompt_batch_id": batch_id,
+            "prompt_batch_sha256": batch["batch_sha256"], "planned_jobs": batch.get("job_count"),
+        }
+        atomic_write_json(manifest_path, manifest)
+        return {"approved": True, "batchId": batch_id, "batchSha256": batch["batch_sha256"], "jobCount": batch.get("job_count")}
+
     def save_prompt(self, slug: str, shot_id: str, payload: dict[str, object]) -> dict[str, object]:
         project = self._project(slug)
         shot = self._shot(slug, shot_id)
@@ -482,11 +658,24 @@ class ProductionActions:
         prompt = str(payload.get("prompt") or shot.get("currentPrompt", {}).get("prompt") or "").strip()
         if not prompt:
             raise ProductionDataError("Save a prompt before generating")
+        prompt_batch_id = str(payload.get("promptBatchId") or shot.get("currentPrompt", {}).get("promptBatchId") or "")
+        prompt_sha256 = hashlib.sha256(prompt.encode("utf-8")).hexdigest()
+        if stage == "style-composition" and self._vision_ledger(project).is_file():
+            if not prompt_batch_id:
+                raise ProductionDataError("Approve this shot's Prompt Board before generation")
+            batch_path = safe_child(project, Path("04-images") / "prompt-specs" / prompt_batch_id / "batch.json", must_exist=True)
+            batch = read_json(batch_path, None)
+            approval = next((event for event in read_jsonl(self._vision_ledger(project))[0] if event.get("event") == "prompt-batch-approved" and str(event.get("batch_id") or "") == prompt_batch_id), None)
+            if not isinstance(batch, dict) or not approval or approval.get("batch_sha256") != batch.get("batch_sha256"):
+                raise ProductionDataError("Approve this shot's exact Prompt Board before generation")
+            entry = next((item for item in batch.get("shots", []) if isinstance(item, dict) and str(item.get("shot_id") or "") == str(shot["shotId"])), None)
+            if not entry or entry.get("prompt_sha256") != prompt_sha256:
+                raise ProductionDataError("Prompt differs from the approved Prompt Board")
         manifest = read_json(project / "03-bible" / "assets.json", {})
         manifest = manifest if isinstance(manifest, dict) else {}
         workflow = manifest.get("image_workflow") if isinstance(manifest.get("image_workflow"), dict) else {}
         stage_settings = workflow.get(stage.replace("-", "_")) if isinstance(workflow.get(stage.replace("-", "_")), dict) else {}
-        cost_key = "style_composition" if stage == "style-composition" else "likeness"
+        cost_key = "style_composition_v4" if stage == "style-composition" and self._vision_ledger(project).is_file() else "style_composition" if stage == "style-composition" else "likeness"
         approvals = manifest.get("cost_approvals") if isinstance(manifest.get("cost_approvals"), dict) else {}
         if str((approvals.get(cost_key) or {}).get("status") or "").casefold() != "approved":
             raise ProductionDataError(f"{stage} generation cost is not approved")
@@ -522,7 +711,8 @@ class ProductionActions:
         job = {
             "schemaVersion": 1, "jobId": job_id, "status": "queued", "slug": slug, "projectRoot": str(project),
             "shotId": shot["shotId"], "shot": shot["displayNumber"], "ownerShotId": owner_id, "ownerShot": owner_shot["displayNumber"],
-            "stage": stage, "model": model, "prompt": prompt,
+            "stage": stage, "model": model, "prompt": prompt, "promptBatchId": prompt_batch_id or None,
+            "promptSha256": prompt_sha256, "visionRevision": shot.get("currentPrompt", {}).get("visionRevision"),
             "aspectRatio": stage_settings.get("aspect_ratio") or manifest.get("master_aspect_ratio") or "16:9",
             "resolution": stage_settings.get("resolution") or "1K", "references": references,
             "parentAssetId": parent.get("assetId") if parent else None, "parentVersion": parent.get("version") if parent else None,

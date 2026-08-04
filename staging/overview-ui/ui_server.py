@@ -7915,6 +7915,14 @@ class FilmStudyRequestHandler(BaseHTTPRequestHandler):
                     self.send_json(actions.restore_shot(parts[2], parts[4], payload))
                 elif len(parts) == 4 and parts[0:2] == ["api", "productions"] and parts[3] == "bulk-approve":
                     self.send_json(actions.bulk_approve(parts[2], payload))
+                elif len(parts) == 4 and parts[0:2] == ["api", "productions"] and parts[3] == "vision-batches":
+                    self.send_json(actions.submit_vision_batch(parts[2], payload))
+                elif len(parts) == 5 and parts[0:2] == ["api", "productions"] and parts[3:5] == ["vision-batches", "compile-current"]:
+                    self.send_json(actions.compile_current_visions(parts[2]))
+                elif len(parts) == 6 and parts[0:2] == ["api", "productions"] and parts[3] == "prompt-batches" and parts[5] == "approve":
+                    self.send_json(actions.approve_prompt_batch(parts[2], parts[4], payload))
+                elif len(parts) == 7 and parts[0:2] == ["api", "productions"] and parts[3] == "shots" and parts[5:7] == ["vision", "revert"]:
+                    self.send_json(actions.revert_vision(parts[2], parts[4], payload))
                 elif len(parts) == 6 and parts[0:2] == ["api", "productions"] and parts[3] == "shots" and parts[5] == "prompt":
                     self.send_json(actions.save_prompt(parts[2], parts[4], payload))
                 elif len(parts) == 6 and parts[0:2] == ["api", "productions"] and parts[3] == "shots" and parts[5] == "generate":

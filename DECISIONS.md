@@ -45,5 +45,6 @@ file, and replace the row.
 | D-013 | The system improves itself under its own gate law: GREEN executes, AMBER proposes, RED never. | `PROPOSALS.md`, weekly workshop |
 | D-014 | Checkpoints commit but do not push. Vince pushes. | `governance/checkpoint.py` |
 | D-015 | The enemy is AI filmmaking itself — wrong generations, drifting style, obsolete workflows — not a competitor. | `GOALS.md` |
-| D-016 | A Stage-A prompt **is** the `Still (frame one)` cell, verbatim. No assembly, no motion text; taste controls are API parameters. | `krea_style_comp{,_run}.py` |
 | D-017 | Canon documents state the current state only. History moves to `archive/`; every canon doc carries YAML front matter. | `governance/canon.py`, all canon docs |
+| D-018 | Stage-A prompts compile from versioned Shot Vision into visibility-aware production objects; Action is validation context only, and exact Prompt Board approval precedes spend. | Studio, `hearthlight-image-prompts`, Krea runner |
+| D-019 | Stage-A prompt craft belongs to a focused LLM author; Python grounds and enforces invariants, and an independent LLM reviewer must pass semantic quality before approval. | hearthlight-image-prompts, Studio Prompt Board |

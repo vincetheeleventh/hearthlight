@@ -53,13 +53,18 @@ class ProductionFixture:
         self.write(self.project / "05-storyboard/shots.json", {"schema_version": 1, "source": "05-storyboard/board-v3.xlsx", "status": "ready", "shots": shots})
         (self.project / "05-storyboard/board-v3.xlsx").write_bytes(b"workbook")
         self.write(self.project / "05-storyboard/shot-narrative.json", {
-            "schema_version": 1,
+            "schema_version": 2,
+            "value_axis": "expression ↔ bottling up",
             "shots": {
                 "shot-2": {
                     "one_liner": "The boy digs while his father fills the doorway.",
                     "expanded": "Alienation before connection.",
                     "open_loops": ["Can they speak before he leaves?"],
                     "why_this_shot": "Doorway framing reads as distance.",
+                    "beat": "2 · The Attempt",
+                    "charge": "First on-screen test of the axis.",
+                    "motifs": ["hands before faces", "doorway as threshold"],
+                    "never": ["No dialogue restored."],
                     "staging": {
                         "surfaced": {"shot_type": "Two-shot", "camera_move": "None", "character_actions": "Boy sorts cards", "setting": "Boy's bedroom"},
                         "ambient": {"props": "Scattered cards", "lighting": "Hallway silhouette", "sound": "Card shuffle"},
@@ -146,9 +151,16 @@ class ProductionAdapterTests(unittest.TestCase):
         self.assertEqual(authored["openLoops"], ["Can they speak before he leaves?"])
         self.assertEqual(authored["staging"]["surfaced"]["shotType"], "Two-shot")
         self.assertEqual(authored["staging"]["ambient"]["sound"], "Card shuffle")
+        self.assertEqual(authored["beat"], "2 · The Attempt")
+        self.assertEqual(authored["charge"], "First on-screen test of the axis.")
+        self.assertEqual(authored["motifs"], ["hands before faces", "doorway as threshold"])
+        self.assertEqual(authored["never"], ["No dialogue restored."])
+        self.assertEqual(production["narrativeValueAxis"], "expression ↔ bottling up")
         unauthored = by_id["shot-1"]["narrative"]
         self.assertFalse(unauthored["authored"])
         self.assertEqual(unauthored["oneLiner"], "")
+        self.assertEqual(unauthored["beat"], "")
+        self.assertEqual(unauthored["never"], [])
 
     def test_reads_do_not_change_project_files(self) -> None:
         before = tree_snapshot(self.root)
@@ -235,6 +247,26 @@ class ProductionActionTests(unittest.TestCase):
         self.assertEqual(result["name"], "board-v3.xlsx")
         self.assertEqual(opened, [self.fixture.project / "05-storyboard/board-v3.xlsx"])
         self.assertEqual(self.adapter.get_production("demo")["shotListDocument"]["source"], "registered")
+
+    def test_one_shot_vision_save_versions_only_that_shot(self) -> None:
+        actions = ProductionActions(self.adapter)
+        before_one = self.adapter.get_shot("demo", "shot-1")["shot"]["shotVision"]
+        before_two = self.adapter.get_shot("demo", "shot-2")["shot"]["shotVision"]
+        with patch.object(actions, "_compile_prompt_batch", return_value={"job_count": 1}) as compile_mock:
+            result = actions.submit_vision_batch("demo", {"changes": [{
+                "shotId": "shot-1",
+                "vision": "Only this shot changes.",
+                "baseRevision": before_one["revision"],
+            }]})
+        self.assertTrue(result["saved"])
+        self.assertEqual(result["changed"], 1)
+        compile_mock.assert_called_once()
+        after_one = self.adapter.get_shot("demo", "shot-1")["shot"]["shotVision"]
+        after_two = self.adapter.get_shot("demo", "shot-2")["shot"]["shotVision"]
+        self.assertEqual(after_one["revision"], before_one["revision"] + 1)
+        self.assertEqual(after_one["text"], "Only this shot changes.")
+        self.assertEqual(after_two["revision"], before_two["revision"])
+        self.assertEqual(after_two["text"], before_two["text"])
 
     def test_review_prompt_selection_bulk_approval_and_generation_queue(self) -> None:
         launched: list[Path] = []
@@ -364,6 +396,10 @@ class ProductionUiSourceTests(unittest.TestCase):
         self.assertEqual(duplicates, [])
         self.assertIn("productionRequirementsPanel", source)
         self.assertIn("Open spreadsheet", source)
+        self.assertIn('"Save Shot Vision"', source)
+        self.assertIn("page.append(productionVisionEditor(production, shot, notice));", source)
+        self.assertNotIn("productionVisionToolbar(production, notice)", source)
+        self.assertNotIn('"Submit changes"', source)
 
 
 class ProductionMediaHttpTests(unittest.TestCase):

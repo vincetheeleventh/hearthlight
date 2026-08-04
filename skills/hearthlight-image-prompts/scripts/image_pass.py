@@ -210,7 +210,7 @@ def compile_specs(root: Path, source: Path) -> dict:
         amendment = "No image-pass amendment; spreadsheet row remains authoritative."
         if shot == 1:
             visual = (
-                "A 4:3 extreme close-up from directly overhead: only a small boy's active hands "
+                "A 16:9 extreme close-up from directly overhead: only a small boy's active hands "
                 "and forearms searching rapidly through overlapping Yu-Gi-Oh trading cards on a "
                 "patterned rug. Warm morning sunlight sifts across the cards in broken bands, "
                 "catching their faces as his hands push, flip, lift, inspect, and discard. " + STYLE_CLAUSE
@@ -226,7 +226,7 @@ def compile_specs(root: Path, source: Path) -> dict:
             )
         elif shot == 2:
             visual = (
-                "A 4:3 close insert at boot height. Only a lean father's hands tying one dark "
+                "A 16:9 close insert at boot height. Only a lean father's hands tying one dark "
                 "leather military boot, the boot and trouser cuff, and his wife's still lower legs "
                 "beside him are visible. Their faces and upper bodies remain outside frame. After "
                 "the knot is pulled tight, her hand lowers a pair of dog tags into the close-up and "
@@ -246,7 +246,7 @@ def compile_specs(root: Path, source: Path) -> dict:
         if shot == 17:
             amendment = (
                 "Live Krea schema exposes only generic image-to-image for Krea 2 Medium, not a "
-                "dedicated faithful content-reference control. Use openai/gpt-image-2 at 4:3 with "
+                "dedicated faithful content-reference control. Use openai/gpt-image-2 at 16:9 with "
                 "the uploaded real card in image_urls; exact card art and title outrank model uniformity."
             )
         render_mode = "source-photo" if shot == 23 else "generated"
@@ -283,7 +283,7 @@ def compile_specs(root: Path, source: Path) -> dict:
         "project": root.name,
         "source": relpath(source, root),
         "compiled_at": utc_now(),
-        "master_aspect_ratio": "4:3",
+        "master_aspect_ratio": "16:9",
         "default_model": "krea/krea-2/medium",
         "unique_generated_setups": 21,
         "shots": shots,
@@ -298,7 +298,7 @@ def default_assets(root: Path) -> dict:
     return {
         "schema_version": SCHEMA_VERSION,
         "project": root.name,
-        "master_aspect_ratio": "4:3",
+        "master_aspect_ratio": "16:9",
         "default_model": "krea/krea-2/medium",
         "moodboard": {"id": None, "name": None, "strength": 0.35, "status": "missing"},
         "assets": [
@@ -316,7 +316,7 @@ def default_assets(root: Path) -> dict:
             "first_pass": {"estimated_cu": None, "estimated_minutes": None, "status": "pending", "approved_at": None},
         },
         "optional_warnings": [
-            "Distribution platform and caption policy remain open; 4:3 master is authoritative.",
+            "Distribution platform and caption policy remain open; 16:9 master is authoritative.",
             "Mother remains absent from shots 14–20.",
             "Shot 23 final text line is still undrafted.",
         ],
@@ -555,7 +555,7 @@ def record_generation(root: Path, args) -> dict:
         ratio = dimensions[0] / dimensions[1]
         if abs(ratio - 4 / 3) > 0.03:
             destination.unlink()
-            raise SystemExit(f"Expected 4:3 image, got {dimensions[0]}x{dimensions[1]}")
+            raise SystemExit(f"Expected 16:9 image, got {dimensions[0]}x{dimensions[1]}")
     prompt = None
     if args.prompt_file:
         prompt = Path(args.prompt_file).read_text(encoding="utf-8").strip()
@@ -572,7 +572,7 @@ def record_generation(root: Path, args) -> dict:
         "asset_path": relpath(destination, root),
         "sha256": sha256(destination),
         "dimensions": list(dimensions) if dimensions else None,
-        "aspect_ratio": "4:3" if dimensions and abs(dimensions[0] / dimensions[1] - 4 / 3) <= 0.03 else "unknown",
+        "aspect_ratio": "16:9" if dimensions and abs(dimensions[0] / dimensions[1] - 16 / 9) <= 0.03 else "unknown",
         "prompt": prompt,
         "prompt_known": prompt is not None,
         "model": args.model,

@@ -20,3 +20,16 @@ two-command contract: `krea_style_comp.py` compiles immutable packets, `krea_sty
 runs them, two calibration shots precede `--all`, and D-016 records the prompt rule.
 
 ---
+
+## 2026-08-04 · P-005 — **done**
+**Outcome:** implemented by Vince's approved Visibility-Aware Shot Vision plan.
+
+> | P-005 | 2026-08-03 | AMBER | open | **Close the correction loop in Studio** — a per-shot
+> correction becomes versioned creative direction consumed by image prompting. | `GOALS.md` core
+> problem 1. |
+
+Studio now stores append-only Shot Vision revisions, compiles visibility-aware production objects,
+shows exact Krea prompts and estimates on a Prompt Board, and binds generation to that approval.
+Video prompt behaviour is unchanged in this milestone.
+
+---

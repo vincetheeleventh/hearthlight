@@ -12,11 +12,9 @@ PROJECT = ROOT / "projects" / "yugioh"
 
 
 class KreaStyleCompositionRunnerTests(unittest.TestCase):
-    def test_current_plan_validates_all_unique_setups(self):
-        plan, packets = runner.validate_plan(PROJECT)
-        self.assertEqual(plan["generation_count"], 28)
-        self.assertEqual(len(packets), 28)
-        self.assertEqual(plan["generation_parameters"]["creativity"], "raw")
+    def test_current_plan_blocks_until_current_shot_visions_are_approved(self):
+        with self.assertRaisesRegex(SystemExit, "no approved prompt"):
+            runner.validate_plan(PROJECT)
 
     def test_version_history_resolves_legacy_event_mapping(self):
         events = [

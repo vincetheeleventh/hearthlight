@@ -48,9 +48,13 @@ helper scripts, executed by an LLM agent that reads them.
   world tier; every prompt is assembled from it verbatim.
 - **Batch render execution with a durable ledger.** Fresh subagent per shot, two-stage review, and a
   progress ledger so a crashed session never re-pays for a completed generation.
-- **Deterministic Krea style/composition execution.** The current workbook's exact `Still (frame one)`
-  cells compile into stable-ID packets; Action/motion text is rejected, K2 parameters stay outside the
-  prompt, and request fingerprints make retries/resume spend-safe.
+- **Agent-authored, visibility-aware Krea style/composition execution.** Versioned Shot Vision and
+  source-grounded visual context feed a focused, tool-restricted Hermes Shot Prompt Author. The LLM
+  writes the intelligent shot-specific prompt body; Python enforces identity, visibility, ownership,
+  one-instant, provider-language, source-hash, and request-control invariants, then adds fixed text
+  verbatim. An independent Hermes semantic reviewer may block incoherent or unsupported prompts and
+  allows one source-preserving author repair before the Prompt Board. Exact approval and request
+  fingerprints make spend and resume safe.
 - **A deliberating shot crew.** Eight illustration roles negotiate contested shots as subagents.
 - **Timing round-trip with real editors.** Storyboard Pro Final Cut XML in; DaVinci Resolve FCP XML out.
 - **Persistent taste memory.** `profile/TASTE.md` records what Vince kills and reaches for, read by
@@ -59,9 +63,12 @@ helper scripts, executed by an LLM agent that reads them.
   projects share one URL-backed shell. The default project view is shot-first: stage-coloured hero
   thumbnails, stable Shot IDs, compact review controls, a collapsible requirements/assets drawer,
   and a direct opener for the registered shot-list workbook. From the overview or shot page, Vince
-  can comment, edit the current prompt, queue a generation, approve an asset stage, restore an older
-  hero, bulk-approve unflagged assets, and insert, retire, or restore shots without changing their
-  permanent identity. These controls do not approve Hearthlight gates; prompt changes are manual.
+  can edit/dictate and individually save versioned Shot Vision inside each shot page. Each save versions
+  only that shot and compiles its current Krea prompt. Vince can inspect compiled prompts, references,
+  warnings and spend estimates on the collapsed Prompt Board, approve the exact batch, queue generation,
+  review versions, and insert, retire, or restore shots without changing permanent identity. Compiled
+  Stage-A prompts are read-only outputs; likeness prompts remain manual. These controls do not approve
+  Hearthlight gates.
   Source: `staging/overview-ui/`.
 - **Plumbing self-check.** Separates mechanical failure (the system's fault, fixable) from quality
   judgment (Vince's call, unautomatable).
@@ -103,12 +110,13 @@ Full per-skill responsibilities, usage evidence, and classification: **`SKILL-IN
 - Image provider priority: OpenAI Codex OAuth → Krea MCP → OpenAI API key, unless a stage pins a surface.
 - Rights discipline — the McConaughey pilot is private use only, stylized resemblance, never photoreal.
 
-**Enforcement is by instruction, not by code.** Four areas are machine-checked:
-`hearthlight-selfcheck` checks style/composition prompt readiness; the Krea compiler blocks stale
-workbook/registry identity, motion-text contamination, shared/source-only dispatch, and prompt-cell
-drift; the runner fingerprints each complete request and resumes recorded jobs; and the shot registry
-refuses to move assets by row number when a regenerated workbook cannot prove a `Shot ID` match.
-Everything else depends on the agent having read the skill.
+**Enforcement is shared between instruction and code.** Five areas are machine-checked:
+`hearthlight-selfcheck` checks style/composition prompt readiness; the prompt-author compiler validates
+source hashes, visibility, ownership, temporal state, provider vocabulary, controls, and semantic-review
+pass state; the Krea packet compiler blocks stale approval and dispatch drift; the runner fingerprints
+each complete request and resumes recorded jobs; and the shot registry refuses to move assets by row
+number when a regenerated workbook cannot prove a `Shot ID` match. Everything else depends on the
+agent having read the skill.
 
 ## 5. Notable system behaviours
 
@@ -130,10 +138,11 @@ but no ✅ was recorded — it must be ratified, not assumed.
 
 ## 6. Known limitations
 
-- **No test coverage of the pipeline itself.** Five test files exist (23 tests), all covering helper
-  scripts (`test_shot_registry.py`, `test_image_pass.py`, `test_krea_style_comp.py`,
-  `test_krea_style_comp_run.py`, `staging/overview-ui/test_productions.py`). The instruction layer —
-  the actual product — has no automated verification.
+- **LLM prompt quality cannot be proven by deterministic tests.** The image-prompt suite has 25
+  helper tests, including seven focused author-contract and visibility golden tests. They verify source
+  grounding, rendering boundaries, blocking, and reviewer wiring—not whether the configured external
+  model makes a strong visual judgment on every raw shot. Real OpenRouter forward-testing requires
+  explicit approval because it sends project material to that provider.
 - **The image-prompt tests read live `projects/yugioh` data.** They assert exact generation counts,
   shared-setup pairs, and workbook cell addresses, so editing the film's shot list fails the suite
   and can block a checkpoint commit. A creative decision should not trip a code guard.
@@ -148,9 +157,11 @@ but no ✅ was recorded — it must be ratified, not assumed.
   WSL → Windows migration; the hand-drawn-board intake path depends on it.
 - **Stage 6 is unproven end to end.** The RunningHub key was leaked and needs rotating; no full
   film has passed every gate.
-- **Four goals in `GOALS.md` have no implementation** and the spec must not imply otherwise: audio
-  generation, intelligent prompt correction, cross-platform prompt shaping, and continuous
-  narrative-drift tracking. Detail in `ROADMAP.md` § *Gaps between stated goal and built product*.
+- **Three goals in `GOALS.md` still have no implementation:** audio generation, cross-platform
+  prompt shaping, and continuous narrative-drift tracking. Intelligent prompt correction now exists
+  before generation through semantic review and one repair; converting image-review feedback into a
+  targeted prompt correction remains partial. Detail in ROADMAP.md § *Gaps between stated goal and
+  built product*.
 
 ## 7. Edge cases worth knowing
 

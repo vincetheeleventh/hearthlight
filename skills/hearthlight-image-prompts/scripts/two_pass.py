@@ -48,7 +48,7 @@ def assets(root: Path) -> dict:
     return read(root / "03-bible" / "assets.json")
 
 
-MASTER_RATIO_DEFAULT = "4:3"
+MASTER_RATIO_DEFAULT = "16:9"
 
 
 def master_ratio(root: Path) -> str:
@@ -210,7 +210,7 @@ def compile_live_specs(root: Path) -> dict:
         "shots": compiled,
     }
     write(root / "04-images" / "shot-specs.json", payload)
-    lines = ["# Image-pass shot specifications — Warrior Returning Alive v3", "", f"> Source: `{payload['source']}` · 4:3 · {len(compiled)} shots · {payload['unique_generated_setups']} unique illustrated setups", ""]
+    lines = ["# Image-pass shot specifications — Warrior Returning Alive v3", "", f"> Source: `{payload['source']}` · {payload.get('master_aspect_ratio', MASTER_RATIO_DEFAULT)} · {len(compiled)} shots · {payload['unique_generated_setups']} unique illustrated setups", ""]
     for item in compiled:
         lines += [f"## Shot {item['shot']:02d} — {item['title']}", "", f"- Render: `{item['render_mode']}` · owner `{item['generation_owner']:02d}`", f"- Visual: {item['image_visual_description']}", f"- Action: {item['image_action_description']}", f"- Camera: {item['image_camera_movement']}", f"- Amendment: {item['image_pass_note']}", ""]
     (root / "04-images" / "shot-specs.md").write_text("\n".join(lines), encoding="utf-8")
