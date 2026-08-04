@@ -1,0 +1,7 @@
+﻿name: openai-oauth-api-fallback
+version: 1.1.0
+description: "Codex OAuth first, Krea second, then OpenAI API-key fallback."
+author: Hearthlight
+kind: backend
+requires_env:
+  - OPENAI_API_KEY

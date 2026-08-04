@@ -1,0 +1,172 @@
+# Hearthlight Story Studio — State & Handoff
+
+> ⚠️ **HISTORICAL SNAPSHOT — 2026-07-06. Superseded; do not treat as current.**
+>
+> Kept because it is the richest surviving record of *why* Hearthlight was built. Its §1 (purpose)
+> and §6 (roadmap) have been mined into `GOALS.md` and `ROADMAP.md`, which are now canonical.
+>
+> **Known-stale claims in this file:**
+> - Says "all 17 skills." There are **21**.
+> - Predates the engine/client split (`DECISIONS.md` D-003) and states Talefeather's grief-cohort
+>   reasoning as **engine** law — the exact bounded-context leak that split was made to fix. Treat
+>   every audience claim here as **client-level**, applying only to projects declaring
+>   `client: talefeather`. `client: none` is the normal case.
+> - Its §5 "open items" list has not been reviewed since 2026-07-06. Current status: `ROADMAP.md`.
+>
+> Current canon: **`GOALS.md`** (why) · **`PRODUCT_SPEC.md`** (what) · **`ROADMAP.md`** (what's next)
+> · **`DECISIONS.md`** (why choices) · **`SKILL-INVENTORY.md`** (every component).
+
+*Last updated: 2026-07-06 · Written to hand this project into a fresh conversation.*
+
+---
+
+## 0. Read-me-first
+
+Hearthlight is **an assistant filmmaker.** It turns a spoken family story — a recorded interview, a voicemail, a rant into a phone — into a short **illustrated film**: ink-and-watercolour stills and brief animated clips, carried by the storyteller's **own real voice** as narration. The person it serves is Vince, who directs. The machine drafts everything and holds the world together; Vince makes the charged calls and places the heart.
+
+Everything about the system is downstream of one sentence in `AGENTS.md`:
+
+> *"Your job shrinks to two things only Vince does: creative direction and approval. The machine drafts; Vince places the heart."*
+
+Two laws override every convenience, and a new assistant should internalize them before touching anything:
+
+- **The voice is the treasure.** The original recorded audio is the hero asset and is *never* replaced by a generated voice. Research into the grief cohort found the deepest fear isn't forgetting facts — it's forgetting *the sound* of a parent. A synthesized voice would be the exact betrayal the product exists to prevent. (`generateAudio: false` for remembrance work.)
+- **Consistency is the product.** The entire competitive reason to exist is that rivals' output "reads like a list of answers, not a story" and "every book looks the same." Hearthlight fights visual and narrative drift on purpose. The locked style, the character sheets, the single aesthetic source of truth — those *are* the deliverable, not polish on top of it.
+
+Canonical location of everything: **`C:\Users\vxi\AppData\Local\hermes\Story Studio\`**. (An older WSL copy exists; Windows is now the source of truth.)
+
+---
+
+## 1. What it does and why — the purpose
+
+### The problem
+Existing "record your parent's story" services (StoryWorth, Remento) fail on the same axis, over and over, in their own customers' words: *"it reads like a list of answers, not a story," "looks like a third-grade reading book," "every book ends up looking the same," "lacked emotional depth and personalization."* They capture facts and produce something generic. The thing families actually grieve — the *voice*, the specific texture of a person — is exactly what gets flattened.
+
+### Vince's goal
+Not a render farm and not an app that spits out a video. Vince wants a **collaborator that makes an authored film** — one that feels like *them*, not like plausible-generic AI gloss — while keeping the pen firmly in his hand. Hearthlight is the crew he doesn't have: it researches the era tirelessly, populates the world, assembles the prompts, holds the character consistent frame to frame, critiques the telling, and argues honestly when he's about to make a weaker choice. But it never advances a creative decision without him. The ambition (from `AGENTS.md`) is to make the *big* decisions **with** him, better than he'd make them alone — never to take them off his plate.
+
+### Who it's for
+Two cohorts: **living-legacy** (a parent still alive, often declining — "while she still remembers") and **grief/remembrance** (after loss — "it's all I have left of him"). The register that works for both is **tenderness under a running clock** — specific, restrained, charged — *not* warm-nostalgia montage. The pilot (Matthew McConaughey's "don't half-ass it" call to his dad) is neither cohort; it's the **proof-of-craft trailer** — a public interview built to be undeniable on craft so a stranger watches it and immediately thinks of calling *their own* father. That "turn" is the emotional engine of the whole category. (Pilot is **private use only** — rights-constrained, stylized resemblance, never photoreal likeness.)
+
+---
+
+## 2. The agentic pipeline — the heart of the system
+
+**The skills ARE the pipeline.** Each `hearthlight-*` skill is one stage's constitution — the instructions the agent loads when it reaches that stage. They're not utilities the agent might call; together they *are* the assistant filmmaker's method. Work moves through **gates**, and *nothing passes a gate without Vince's explicit ✅ in Telegram.* Every artifact lands in `projects/{slug}/` — nothing important lives only in chat.
+
+Here is the full arc, and what each skill owns:
+
+**Intake → `hearthlight-conventions`.** Transcribe the raw material (the rant + the interview). Establishes the shared vocabulary and folder discipline the rest of the pipeline relies on.
+
+**Distribution spec (decided FIRST) → `hearthlight-distribution-spec`.** The technical target: platform, aspect ratio, length, captions, safe areas. Aspect ratio is treated as a **composition law, not an export setting** — 9:16 vs 16:9 changes how every shot is framed, so this is locked before anyone frames anything. (Pilot: 9:16 vertical, ~110s, burned-in captions.)
+
+**Gate 0 — Ideation / Consolidation → `hearthlight-consolidate`.** Bounded collaboration that turns loose material into a **Vision Brief**. Its defining rule is the "no-smuggling law": the agent may not quietly insert its own creative choices under the guise of consolidating Vince's — ideation is bounded and curfewed so it doesn't become never-ending noise.
+
+**Gate 1 — Outline → `hearthlight-outline`.** Builds the narrative architecture: **Story Arc → Beat Sheet → A/V Script.** This chain is the answer to "a list of answers, not a story" — the output is an *architected film*, not a transcript with pictures. Key idea: **withhold the payoff until the turn**; identify the single **detonation beat** the piece exists to deliver.
+
+**Gate 1.5 — Critique → `hearthlight-critique`.** An honest story pressure-test *before* any drawing: buried beats, echo shots, pacing, sentimentality creep. It argues its case, then lets Vince decide. This is the system being a partner rather than a yes-man.
+
+**Gate 2 — Mise-en-scène / Aesthetic Bible → `hearthlight-mise-en-scene`.** The **single aesthetic source of truth**. Two tiers: **Tier 1** is the *locked* style block + character sheets (copied **verbatim** into every prompt, never paraphrased — that's the anti-drift mechanism); **Tier 2** composes the world location by location. An **Overview visual thesis** states the film's look in one argument. Fed by research (`hearthlight-research` — era scan + research deck) and reference gathering (`hearthlight-reference-report`, which can publish a glanceable reference report to Notion). *This is the gate that most defines whether the film "feels like them."*
+
+**Timing round-trip → `hearthlight-timing-intake`.** The editing timeline is the **shared document** between Vince and the machine. Vince times panels to the VO in Storyboard Pro and exports Final Cut XML (one clip per panel); the skill parses that into real per-shot durations that feed the shot list, the audio cuts, and the Seedance length targets — so the system inherits *Vince's* pace instead of guessing. It also runs the other direction: it **exports an FCP XML** so generated panels/clips + VO assemble into a watchable timeline in **DaVinci Resolve**. The board's pace becomes the system's pace.
+
+**Clip prep → `hearthlight-clip-extractor`.** Cuts the audio master and per-moment clips (ffmpeg) that panels are drawn against, sharing exact timecodes with the timing intake.
+
+**Gate 3 — Images → `hearthlight-image-prompts`.** Conditioning stills, assembled *from* the mise-en-scène (not invented fresh) so the locked style carries through.
+
+**Shot design — the CREW → `hearthlight-shot-crew`.** *(This is the agentic core — see below.)*
+
+**Gate 4 — Storyboard → `hearthlight-storyboard`.** Motion intent, durations, and lip-sync policy. Notably: figures **don't** mouth the VO — the older voice *remembers*, the young figure is the memory. The picture serves the voice.
+
+**Gate 5 — Video → `hearthlight-video-prompts` + `hearthlight-comfyui-graph`.** Seedance 2.0 image-to-video via ComfyUI/RunningHub. `video-prompts` compiles the crew's per-dimension entries into one Seedance prompt; `comfyui-graph` holds the actual node graph (image1 = storyboard still, image2 = character sheet; audio fork defaults off for remembrance).
+
+**Cross-cutting:**
+- **Logging → `hearthlight-notion-log`.** Notion is Vince's preferred point of contact — working notes, a daily journal, a Threads database. Milestones get logged without being asked.
+- **Health → `hearthlight-selfcheck`.** Verifies the *plumbing* (skills loaded, scripts run, keys present, style block blessed). Its whole design philosophy is to separate a **mechanical** failure (the system's fault, fixable by a script) from a **quality** problem (Vince's call — no script can judge taste). Green means *wired*, never *good*.
+
+### The illustration crew — how the agentic part actually works
+Shot design is where Hearthlight stops being a linear pipeline and becomes a **crew of specialists that negotiate**. This is modeled as an ink-and-watercolour / stop-motion film crew — nothing is *captured*, everything is a deliberate mark — with eight domains: **Layout** (composition, viewpoint, negative space), **Value & Light** (where the paper stays white, where washes deepen, colour-as-emotion), **Background/Set** (how much world is painted vs suggested), **Continuity/Model Keeper** (the character's silhouette + the 180° geography so a phone call reads as *one* conversation), **Posing/Performance** (the key pose that carries the beat in silhouette), **Motion/Animation Lead** (what moves, held-still vs on-2's, defending the medium against photoreal creep), **Sound** (the held ring, the true-silent pause), and **Editor** (pace, cut rhythm, the close-up budget).
+
+How it runs — and why it's genuinely agentic:
+
+- **Crew members are conjured per shot as subagents, then gone.** There is deliberately no `hearthlight-layout` skill. The crew *is* the handbook (job descriptions) plus the `hearthlight-shot-crew` orchestrator. A crew member is born for one shot, gives its opinion, and dies — no memory between shots.
+- **One agent for routine shots; multiple only for contested ones.** For an ordinary shot the orchestrator just walks the roles as a checklist itself, one pass. For a *contested* shot it delegates only the 2–3 roles actually in tension to subagents, then reconciles and shows Vince the tradeoff.
+- **Each member writes a per-dimension ENTRY into the shot row** — a composition note, a value note, a continuity note. These entries **accumulate as the film's memory** and become the exact input `hearthlight-video-prompts` compiles into a single Seedance prompt. The crew thinks per-dimension; the prompt-writer assembles. Every entry must be **story-first**: not "what looks good here" but "what does my dimension *say* about this beat, and how does it connect to before and after."
+- **The two loudest voices get veto weight: Continuity/Model and the medium-defenders (Motion + Value).** They guard precisely the two things AI illustration breaks — character/geography drift, and the watercolour sliding into glossy photoreal. When they object, the orchestrator listens hardest.
+- **The orchestrator resolves conflicts in a fixed priority**, never by averaging into mush: the beat's emotional intent → the contrast-spine tension the location serves → Vince's taste (`profile/TASTE.md`) → then pure aesthetics. It makes a directed choice, *names the tradeoff*, and Vince keeps or overrides. Overrides get written back into the taste memory.
+
+### The collaboration dynamic (why it's a partner, not an intern)
+Two behaviors make Hearthlight a collaborator rather than a tool:
+
+- **It argues honestly and remembers taste.** `profile/TASTE.md` is cross-project aesthetic memory — what the system *kills* (montage-success endings, sentimentality, echo shots, close-up inflation, AI-look, cute-literal) and what it *reaches for* (restraint, the held wide, counterpoint, charged objects that change, the real voice, composition-as-argument). Aesthetic verdicts Vince makes get written here so the instruction layer gets smarter every project.
+- **The offer protocol (proactivity with restraint).** A capability Vince has to *remember to ask for* is half a capability — so the system offers the next useful step, but only at **stage seams** (a gate just passed, a doc just finished, new material just landed), never mid-flow. **One offer at a time; a declined offer is never re-pitched; offer, don't do.** E.g. after a beat sheet drafts → "Want a critique pass before we commit to drawing?"; when a Storyboard Pro XML lands → "Want me to read your panel timings in?"
+
+---
+
+## 3. Quickstart — run it
+
+1. **Start the Hearthlight gateway (the Telegram brain).** Double-click `Story Studio\start-hearthlight.bat`. The console window that opens *is* the running gateway — leave it open, then DM the bot on Telegram. *(Known noise: a `WinError 1920` traceback every ~30s is the cron dashboard, not the bot — see §5. The bot works despite it.)*
+2. **(Optional) Start the local model on the 3090.** Only for the local/wiki profile + cheap summarization. Needs the llama.cpp CUDA build in `C:\llama.cpp\` (see `profile/LLAMACPP-WINDOWS.md`), then `start-gemma-model.bat`; verify `curl http://127.0.0.1:8081/v1/models`.
+3. **Health check whenever something feels off:** `python skills/hearthlight-selfcheck/scripts/selfcheck.py --project mcconaughey-call`.
+
+Orientation files worth reading first: **`AGENTS.md`** (operating index — the pipeline, the laws, the offer protocol), **`AUDIENCE-CONTEXT.md`** (the *why*), **`profile/TASTE.md`** (aesthetic memory), **`skills/hearthlight-shot-crew/references/crew-handbook.md`** (the crew in full).
+
+---
+
+## 4. Current state
+
+**The instruction layer — built.** All 17 skills exist and encode the pipeline above.
+
+**The pilot — scaffolded, not rendered.** The McConaughey call has a 28-shot list (9:16, ~110s). Its **mise-en-scène style block is still a DRAFT** — and selfcheck deliberately blocks image generation until it's blessed to `LOCKED`. Story and framing exist; no frames generated yet.
+
+**The machine — migrated, stabilizing.** Moved from WSL to native Windows. Five profiles: **hearthlight** (OpenRouter → `claude-opus-4.8`; Telegram/Notion/FAL/Tavily keys present; ready to run), plus **gemma, faithreview, architect, hermeslite.** This session the local-model profile (gemma, being renamed **LocalHermes**) was set to serve **Qwen3.6-35B-A3B (Q4_K_XL)** on the 3090 via llama.cpp at `127.0.0.1:8081`, context 32768.
+
+---
+
+## 5. Open items (do these next)
+
+1. **Confirm the Telegram bot responds.** The gateway launched; DM it to verify. If it replies, the primary goal is met.
+2. **Remove the dangling symlink flooding the log.** `profiles\gemma\skills` is a dead reparse point from the WSL→Windows copy; every 30s `is_dir()` on it throws `WinError 1920` (caught, non-fatal, but noisy). Fix from Command Prompt: `rmdir "C:\Users\vxi\AppData\Local\hermes\profiles\gemma\skills"` (removes the link only; gemma needs no skills folder).
+3. **Finish `gemma → LocalHermes` rename.** Paused mid-way: rename the profile directory, update `SOUL.md` + self-references, rename `start-gemma-model.bat` and its comments, update `LLAMACPP-WINDOWS.md`. (Fold item 2 into this.)
+4. **Stand up the local model on the 3090.** llama.cpp CUDA build (+ cudart) into `C:\llama.cpp\`, run the launcher, verify. *Optional:* copy the original `gemma-4-26B-A4B-it-UD-Q5_K_M.gguf` (~18 GB) from `\\wsl.localhost\ubuntu\home\vxi\models\` into `C:\Users\vxi\Documents\AI models\` as a switchable alternate — **before** retiring WSL.
+5. **Retire WSL Hermes** (only after the local model runs on Windows): `systemctl --user stop 'hermes-gateway-*'` then `disable`. Don't delete WSL data or uninstall WSL.
+6. **Rebuild the STT venv.** `.venv-stt` (faster-whisper, for VO transcription) was a Linux venv and died in the migration; needed for the hand-drawn-board intake path.
+7. **Rotate + wire the RunningHub key** (leaked; never commit). Only needed at Stage 6, so it blocks nothing earlier.
+8. **Verify the Notion MCP** token + page-shares so logging surfaces actually write.
+9. **Love list.** Give `profile/TASTE.md` a positive side: a growing swipe file of films, paintings, lines, and moments Vince loves — each with *why it works* — so the partner's taste memory reaches for things, not just kills them. Feed it between projects.
+10. **Interview section/skill.** Craft for the recording session itself (living-legacy cohort): question design, listening for the detonation beat live, when to stay silent. Inspiration: Humans of New York (Brandon Stanton's follow-up questions) and StoryCorps (Dave Isay's question craft).
+11. **Cold-viewer subagent.** A fresh-eyes pass: watches the assembled Resolve timeline with zero context and reports only what it understood and felt. Runs late (post-assembly), catches what insiders can't see.
+
+---
+
+## 6. Roadmap
+
+**Near term — make the machine solid.** Confirm the bot, silence the symlink, finish the LocalHermes rename, stand up Qwen on the 3090, retire WSL, rebuild STT. End state: one machine, one native Hermes, the GPU serving a local model, selfcheck green.
+
+**Mid term — run the pilot end-to-end.** Bless the McConaughey **mise-en-scène style block** (DRAFT → LOCKED, which unblocks image gen), then push the story through every gate once: intake → shot list → conditioning images → shot-crew on the contested shots → storyboard → video → the timing round-trip. The goal isn't polish — it's to **find where the seams fail**, because the handoffs between stages break more often than the stages. Watch the crew reason on one contested shot in the TUI (`/agents`) to confirm each subagent gives a real, distinct, arc-aware opinion.
+
+**Long term — a repeatable studio.** Wire Stage 6 properly (rotated RunningHub key, the Seedance node), template the pipeline so the *next* family story is faster than the first, and prove the partner behaviors in real use — the offer protocol firing at seams, `TASTE.md` actually shaping choices, the crew arguing instead of complying. The real ambition: not a render farm, but a collaborator that remembers what Vince loves and pushes back when it matters.
+
+---
+
+## 7. Quick reference — key paths
+
+| What | Where |
+|---|---|
+| Everything (canonical) | `C:\Users\vxi\AppData\Local\hermes\Story Studio\` |
+| Operating index (read first) | `Story Studio\AGENTS.md` |
+| The *why* (audience/purpose) | `Story Studio\AUDIENCE-CONTEXT.md` |
+| The crew, in full | `Story Studio\skills\hearthlight-shot-crew\references\crew-handbook.md` |
+| Taste memory | `Story Studio\profile\TASTE.md` |
+| Skills (the pipeline) | `Story Studio\skills\hearthlight-*\SKILL.md` |
+| The pilot | `Story Studio\projects\mcconaughey-call\` |
+| Start the Telegram gateway | `Story Studio\start-hearthlight.bat` |
+| Start the local model server | `Story Studio\start-gemma-model.bat` |
+| Health check | `Story Studio\skills\hearthlight-selfcheck\scripts\selfcheck.py` |
+| Local-model runbook | `Story Studio\profile\LLAMACPP-WINDOWS.md` |
+| Profiles | `C:\Users\vxi\AppData\Local\hermes\profiles\` |
+| Model files (Windows) | `C:\Users\vxi\Documents\AI models\` |
+
+---
+
+*The scaffolding is up and the wiring is nearly done; what remains is to light it and watch the first story come through. "Whatever your hand finds to do, do it with your might" (Ecclesiastes 9:10) — the same conviction the pilot itself is about. Go gently, and don't half-ass it.*

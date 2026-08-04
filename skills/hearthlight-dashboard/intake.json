@@ -1,0 +1,62 @@
+{
+  "comment": "Drop-zone manifest — where each kind of asset lands. Targets are relative to projects/{slug}/. 'named: true' means files go into a per-name subfolder (e.g. characters/{name}/).",
+  "zones": [
+    {
+      "id": "source",
+      "label": "Source Material",
+      "icon": "🎙",
+      "target": "00-source/",
+      "named": false,
+      "hint": "Interview video / audio / transcript / photos. Inputs only, forever."
+    },
+    {
+      "id": "characters",
+      "label": "Character Sheets",
+      "icon": "👤",
+      "target": "03-bible/characters/",
+      "named": true,
+      "name_label": "character name",
+      "hint": "Turnarounds + signature details, one folder per character."
+    },
+    {
+      "id": "environments",
+      "label": "Environments",
+      "icon": "🏞",
+      "target": "03-bible/refs/environments/",
+      "named": false,
+      "hint": "Location refs — the world by location, per set."
+    },
+    {
+      "id": "props",
+      "label": "Props",
+      "icon": "🕯",
+      "target": "03-bible/refs/props/",
+      "named": false,
+      "hint": "Objects that carry story weight."
+    },
+    {
+      "id": "style",
+      "label": "Style Refs",
+      "icon": "🎨",
+      "target": "03-bible/refs/",
+      "named": false,
+      "hint": "Ink-and-watercolour anchors feeding the style block."
+    },
+    {
+      "id": "panels",
+      "label": "Storyboard Panels",
+      "icon": "✏️",
+      "target": "03-bible/refs/storyboard-panels/",
+      "named": false,
+      "hint": "Your hand-drawn boards."
+    },
+    {
+      "id": "timing",
+      "label": "Timing / Shot List",
+      "icon": "⏱",
+      "target": "05-storyboard/",
+      "named": false,
+      "hint": "Storyboard Pro FCP XML (one clip per panel), shot list xlsx."
+    }
+  ]
+}

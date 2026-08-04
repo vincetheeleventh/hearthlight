@@ -1,0 +1,150 @@
+{
+  "comment": "Hearthlight pipeline manifest — the ONE place stage structure lives. The dashboard reads this; when the pipeline evolves (like Critique 3.5 or Timing 4.7 did), edit HERE, not the UI.",
+  "requirement_statuses": ["missing", "incomplete", "upcoming", "ready for approval", "approved", "warning", "not applicable"],
+  "requirements_manifest": "requirements.json",
+  "stages": [
+    {
+      "id": "distribution_spec",
+      "label": "Distribution Spec",
+      "gate": "Spec",
+      "kind": "gate",
+      "artifacts": ["distribution-spec.md"],
+      "expected": ["distribution-spec.md"],
+      "inputs": [
+        { "type": "decision", "label": "Decide format first: platform, aspect ratio, length, captions — tell the bot" }
+      ]
+    },
+    {
+      "id": "source",
+      "label": "Source Material",
+      "gate": null,
+      "kind": "support",
+      "artifacts": ["00-source/*"],
+      "inputs": [
+        { "type": "file", "label": "Drop interview video/audio/transcript", "path": "00-source\\" },
+        { "type": "decision", "label": "Voice-note the rant to the bot — off the cuff, the story you're pointing at" }
+      ]
+    },
+    {
+      "id": "gate0_vision",
+      "label": "Vision Brief",
+      "gate": "Gate 0",
+      "kind": "gate",
+      "artifacts": ["01-intake/vision-brief.md", "01-intake/*.md"],
+      "expected": ["01-intake/vision-brief.md"],
+      "inputs": [
+        { "type": "decision", "label": "Ideation loop: take/park/no on offers, then 'consolidate' → selects pass → ✅ the Vision Brief" }
+      ]
+    },
+    {
+      "id": "gate1_outline",
+      "label": "Outline",
+      "gate": "Gate 1",
+      "kind": "gate",
+      "artifacts": ["02-outline/*.md"],
+      "expected": ["02-outline/story-arc.md", "02-outline/beat-sheet.md", "02-outline/av-script.md"],
+      "inputs": [
+        { "type": "decision", "label": "Approve Story Arc, Beat Sheet, A/V Script separately; fill any [OPEN SLOT] markers" }
+      ]
+    },
+    {
+      "id": "critique",
+      "label": "Critique Pass",
+      "gate": null,
+      "kind": "support",
+      "artifacts": ["02-outline/critique*.md"],
+      "inputs": [
+        { "type": "decision", "label": "Say 'critique this' — then keep or reject each note" }
+      ]
+    },
+    {
+      "id": "gate2_mise_en_scene",
+      "label": "Mise-en-scène",
+      "gate": "Gate 2",
+      "kind": "gate",
+      "artifacts": ["03-bible/mise-en-scene.md", "03-bible/*.md"],
+      "expected": ["03-bible/mise-en-scene.md"],
+      "inputs": [
+        { "type": "decision", "label": "Bless the style block (Tier 1 LOCKED) + world-by-location calls. The sacred gate — no image generates before this ✅" },
+        { "type": "file", "label": "Drop reference images for the research report", "path": "03-bible\\refs\\" }
+      ]
+    },
+    {
+      "id": "characters",
+      "label": "Characters",
+      "gate": null,
+      "kind": "support",
+      "artifacts": ["03-bible/characters/*/CHARACTER.md", "03-bible/characters/*/character.json", "03-bible/characters/*/*sheet*.png"],
+      "expected": [],
+      "inputs": [
+        { "type": "decision", "label": "Approve the dossier and lighting-neutral turnaround sheet for every required character" }
+      ]
+    },
+    {
+      "id": "clip_prep",
+      "label": "Clip Prep",
+      "gate": null,
+      "kind": "support",
+      "artifacts": ["01-intake/clips/*"],
+      "expected": ["01-intake/clips/clips-manifest.md"],
+      "inputs": [
+        { "type": "decision", "label": "Choose the draw-to moments, then have the bot cut audio clips" }
+      ]
+    },
+    {
+      "id": "gate3_images",
+      "label": "Images",
+      "gate": "Gate 3",
+      "kind": "gate",
+      "artifacts": ["04-images/*"],
+      "expected": ["04-images/shot-specs.json", "04-images/generations.jsonl", "04-images/prompts.md", "04-images/status.md"],
+      "inputs": [
+        { "type": "decision", "label": "Review Telegram batches: ✅ / 🔁 with note / ✏️ per image. Spot-check full-res files before the gate ✅" }
+      ]
+    },
+    {
+      "id": "gate4_storyboard",
+      "label": "Storyboard",
+      "gate": "Gate 4",
+      "kind": "gate",
+      "artifacts": ["05-storyboard/*"],
+      "expected": ["05-storyboard/storyboard.md"],
+      "inputs": [
+        { "type": "file", "label": "Drop hand-drawn panels", "path": "03-bible\\refs\\storyboard-panels\\" },
+        { "type": "file", "label": "Timed in Storyboard Pro? Drop the FCP XML (one clip per panel)", "path": "05-storyboard\\" },
+        { "type": "decision", "label": "Approve per shot: motion intent, durations, lip-sync policy" }
+      ]
+    },
+    {
+      "id": "timing",
+      "label": "Timing",
+      "gate": null,
+      "kind": "support",
+      "artifacts": ["05-storyboard/shots.json", "05-storyboard/*.xml", "05-storyboard/*.fcpxml", "05-storyboard/*.xlsx"],
+      "expected": ["05-storyboard/shots.json"],
+      "inputs": [
+        { "type": "file", "label": "Drop Storyboard Pro XML or the timed shot-list workbook", "path": "05-storyboard\\" }
+      ]
+    },
+    {
+      "id": "gate5_video",
+      "label": "Video",
+      "gate": "Gate 5",
+      "kind": "gate",
+      "artifacts": ["06-video/*"],
+      "inputs": [
+        { "type": "decision", "label": "Review clips ✅/🔁 — does it still look PAINTED? Photoreal creep is the enemy" }
+      ]
+    },
+    {
+      "id": "final_edit",
+      "label": "Your Edit",
+      "gate": "Final",
+      "kind": "gate",
+      "artifacts": ["07-final/*"],
+      "inputs": [
+        { "type": "decision", "label": "Assemble in Resolve from 07-final: approved clips + real VO" }
+      ]
+    }
+  ]
+}

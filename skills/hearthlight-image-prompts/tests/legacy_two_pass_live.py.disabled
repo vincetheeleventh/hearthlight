@@ -1,0 +1,73 @@
+import importlib.util
+import json
+import unittest
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[3]
+SCRIPT = ROOT / "skills" / "hearthlight-image-prompts" / "scripts" / "two_pass.py"
+SPEC = importlib.util.spec_from_file_location("two_pass", SCRIPT)
+two_pass = importlib.util.module_from_spec(SPEC)
+SPEC.loader.exec_module(two_pass)
+PROJECT = ROOT / "projects" / "yugioh"
+
+
+class TwoPassLiveContractTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        two_pass.configure(PROJECT)
+        two_pass.compile_prompts(PROJECT, "style-composition", None)
+        cls.workflow = two_pass.read(PROJECT / "04-images" / "image-workflow.json")
+        cls.specs = two_pass.read(PROJECT / "04-images" / "shot-specs.json")
+
+    def test_live_v3_board_mapping(self):
+        self.assertEqual(len(self.workflow["shots"]), 28)
+        self.assertEqual(self.specs["unique_generated_setups"], 26)
+        self.assertEqual(self.workflow["shots"][3]["generation_owner"], 1)
+        self.assertEqual(self.workflow["shots"][27]["render_mode"], "source-photo")
+
+    def test_style_packets_attach_only_moodboard(self):
+        packets = sorted((PROJECT / "04-images" / "prompt-packets").glob("*-style-composition.json"))
+        self.assertEqual(len(packets), 26)
+        for path in packets:
+            packet = json.loads(path.read_text(encoding="utf-8"))
+            self.assertEqual(packet["model"], "krea/krea-2/medium")
+            self.assertEqual(packet["aspect_ratio"], "4:3")
+            self.assertEqual([ref["type"] for ref in packet["references"]], ["moodboard"])
+
+    def test_routing(self):
+        shot15 = self.workflow["shots"][14]
+        shot21 = self.workflow["shots"][20]
+        self.assertFalse(shot15["likeness_required"])
+        self.assertTrue(shot21["likeness_required"])
+        self.assertEqual(shot21["final_source"], "likeness")
+
+    def test_likeness_prompt_uses_base_and_required_refs(self):
+        selected = {"version": 1, "asset_path": "04-images/shot-02-v01.png", "krea_url": None}
+        prompt, refs = two_pass.likeness_prompt(PROJECT, 2, selected)
+        self.assertIn("do not create a new composition", prompt)
+        self.assertEqual(refs[0]["type"], "composition-base")
+        self.assertEqual({ref.get("id") for ref in refs[1:]}, {"character-father", "character-mother"})
+
+        prompt21, refs21 = two_pass.likeness_prompt(PROJECT, 21, selected)
+        self.assertIn("exact attached Warrior Returning Alive card", prompt21)
+        self.assertIn("canonical-prop", [ref["type"] for ref in refs21])
+
+    def test_project_identity_is_declared(self):
+        distribution = (PROJECT / "distribution-spec.md").read_text(encoding="utf-8")
+        self.assertIn("client: talefeather", distribution)
+        self.assertIn("format: short film", distribution)
+        self.assertIn("charged_register: expression — holding back", distribution)
+        self.assertIn("real_vo_only: true", distribution)
+    def test_stage_readiness_separation(self):
+        style = two_pass.preflight(PROJECT, "style-composition")
+        self.assertEqual(style["blockers"], ["cost approval pending: style_composition"])
+        likeness = two_pass.preflight(PROJECT, "likeness")
+        joined = "\n".join(likeness["blockers"])
+        self.assertIn("character-boy", joined)
+        self.assertIn("character-mother", joined)
+        self.assertNotIn("character-father", joined)
+        self.assertNotIn("shot-15", joined)
+
+
+if __name__ == "__main__":
+    unittest.main()

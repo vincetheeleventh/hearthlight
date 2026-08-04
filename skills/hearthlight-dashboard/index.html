@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hearthlight — Cockpit</title>
+<style>
+  :root{
+    --paper:#f7f1e5; --paper2:#efe6d3; --ink:#2b2620; --ink-soft:#6b6154;
+    --ember:#c4552a; --ember-soft:#e8c9b4; --glow:#f0a35e;
+    --moss:#4a7c59; --moss-soft:#dce8dd;
+    --amber:#b07d2e; --amber-soft:#f3e6c8;
+    --grey:#a99f90; --line:#d9cdb8;
+    --card:#fffdf8;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);
+       font-family:Georgia,'Iowan Old Style','Palatino Linotype',serif;}
+  .wrap{max-width:1080px;margin:0 auto;padding:28px 24px 80px}
+  .sans{font-family:ui-sans-serif,system-ui,sans-serif}
+
+  /* header */
+  header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:6px}
+  h1{font-size:26px;margin:0;letter-spacing:.5px;cursor:pointer}
+  h1 .flame{color:var(--ember)}
+  .live{font-size:12.5px;color:var(--ink-soft)} .live b{color:var(--moss)}
+  .spacer{flex:1}
+  .btn{border:1px solid var(--line);background:var(--card);padding:8px 16px;border-radius:9px;
+       cursor:pointer;font-size:13.5px;color:var(--ink);font-family:ui-sans-serif,system-ui,sans-serif}
+  .btn:hover{background:var(--paper2)}
+  .btn.primary{background:var(--ember);border-color:var(--ember);color:#fff}
+  .tabs{display:flex;gap:8px;margin:18px 0 22px;flex-wrap:wrap;align-items:center}
+  .tab{border:1px solid var(--line);background:var(--card);padding:7px 16px;border-radius:20px;
+       cursor:pointer;font-size:14.5px;font-family:inherit;color:var(--ink-soft)}
+  .tab.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+
+  /* hero */
+  .hero{background:linear-gradient(135deg,#fff8ec,#fdeeda);border:1px solid var(--ember-soft);
+        border-left:6px solid var(--ember);border-radius:14px;padding:22px 26px;margin-bottom:26px;
+        box-shadow:0 2px 14px rgba(196,85,42,.08)}
+  .hero .kicker{font-size:11.5px;letter-spacing:2px;text-transform:uppercase;color:var(--ember);
+        margin-bottom:6px;font-family:ui-sans-serif,system-ui,sans-serif}
+  .hero h2{margin:0 0 8px;font-size:21px;line-height:1.3}
+  .hero p{margin:0;color:var(--ink-soft);font-size:15.5px;line-height:1.55;max-width:62em}
+  .badge{display:inline-block;font-size:11.5px;padding:3px 10px;border-radius:12px;margin-left:10px;
+        vertical-align:2px;font-family:ui-sans-serif,system-ui,sans-serif}
+  .badge.tg{background:#dbe7f4;color:#2c5a86}
+  .badge.file{background:var(--amber-soft);color:var(--amber)}
+  .pathbox{display:flex;gap:8px;align-items:center;margin-top:14px;flex-wrap:wrap}
+  .pathbox code{background:#fff;border:1px dashed var(--line);padding:8px 12px;border-radius:8px;
+        font-size:13px;overflow-wrap:anywhere}
+  .copy{border:1px solid var(--line);background:var(--card);border-radius:8px;padding:7px 14px;
+        cursor:pointer;font-size:12.5px;color:var(--ink-soft);font-family:ui-sans-serif,system-ui,sans-serif}
+
+  /* rail */
+  .rail{display:flex;align-items:flex-start;overflow-x:auto;padding:8px 2px 26px}
+  .node{display:flex;flex-direction:column;align-items:center;min-width:86px;cursor:pointer;position:relative}
+  .node .dot{width:26px;height:26px;border-radius:50%;border:2.5px solid var(--grey);background:var(--card);
+        display:flex;align-items:center;justify-content:center;font-size:13px;z-index:1;
+        font-family:ui-sans-serif,system-ui,sans-serif}
+  .node.support .dot{width:16px;height:16px;margin-top:5px;border-width:2px}
+  .node .lbl{font-size:11.5px;margin-top:7px;text-align:center;color:var(--ink-soft);line-height:1.25;
+        max-width:96px;font-family:ui-sans-serif,system-ui,sans-serif}
+  .node .gt{font-size:9.5px;letter-spacing:1px;text-transform:uppercase;color:var(--grey);margin-top:2px;
+        font-family:ui-sans-serif,system-ui,sans-serif}
+  .node:not(:last-child)::after{content:"";position:absolute;top:12px;left:calc(50% + 15px);
+        width:calc(100% - 30px);height:2px;background:var(--line)}
+  .node.approved .dot{border-color:var(--moss);background:var(--moss);color:#fff}
+  .node.approved:not(:last-child)::after{background:var(--moss)}
+  .node.drafted .dot{border-color:var(--amber);background:var(--amber-soft);color:var(--amber)}
+  .node.current .dot{border-color:var(--ember);box-shadow:0 0 0 5px rgba(196,85,42,.16)}
+  .node.current .lbl{color:var(--ember);font-weight:600}
+
+  /* sections */
+  .sect{font-size:12px;letter-spacing:2.5px;text-transform:uppercase;color:var(--ink-soft);
+        margin:26px 0 12px;font-family:ui-sans-serif,system-ui,sans-serif}
+
+  /* summary strip */
+  .strip{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin:-8px 0 20px;
+        font-family:ui-sans-serif,system-ui,sans-serif}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 14px;
+        font-size:12.5px;color:var(--ink-soft)}
+  .stat b{font-size:15px;color:var(--ink)}
+  .stat.good b{color:var(--moss)} .stat.warn b{color:var(--amber)} .stat.hot b{color:var(--ember)}
+  .stat .minibar{display:inline-block;width:90px;height:6px;background:var(--paper2);border-radius:3px;
+        overflow:hidden;vertical-align:1px;margin-left:8px}
+  .stat .minibar i{display:block;height:100%;background:var(--moss)}
+
+  /* drop zones */
+  .zones{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:12px}
+  .zone{background:var(--card);border:1.5px dashed var(--line);border-radius:12px;padding:14px 16px;
+        cursor:pointer;transition:border-color .15s, background .15s}
+  .zone:hover{border-color:var(--amber)}
+  .zone.over{border-color:var(--ember);background:#fdf0e4;border-style:solid}
+  .zone.filled{border-style:solid;border-color:var(--moss);background:#fbfdf9}
+  .zone.filled h4{color:var(--moss)}
+  .zone h4{margin:0;font-size:14.5px;display:flex;gap:8px;align-items:center}
+  .zone .cnt{margin-left:auto;font-size:11.5px;color:var(--grey);font-family:ui-sans-serif,system-ui,sans-serif}
+  .zone .cnt.has{color:var(--moss);font-weight:600}
+  .zone .hint{font-size:12px;color:var(--ink-soft);margin-top:6px;line-height:1.4}
+  .zone .recent{font-size:11px;color:var(--grey);margin-top:6px;overflow-wrap:anywhere;
+        font-family:ui-sans-serif,system-ui,sans-serif}
+  .zone input[type=text]{width:100%;margin-top:8px;border:1px solid var(--line);border-radius:7px;
+        padding:6px 9px;font-size:12.5px;background:var(--paper);font-family:ui-sans-serif,system-ui,sans-serif}
+  .chips{margin-top:6px;display:flex;gap:5px;flex-wrap:wrap}
+  .chip{font-size:10.5px;background:var(--paper2);border-radius:9px;padding:2px 8px;color:var(--ink-soft);
+        font-family:ui-sans-serif,system-ui,sans-serif}
+
+  /* compose */
+  .compose{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+  .compose textarea{width:100%;min-height:92px;border:1px solid var(--line);border-radius:9px;
+        padding:10px 12px;font-family:inherit;font-size:15px;background:var(--paper);resize:vertical}
+  .compose .row{display:flex;gap:10px;margin-top:10px;align-items:center;flex-wrap:wrap}
+  .compose .note{font-size:12px;color:var(--grey);font-family:ui-sans-serif,system-ui,sans-serif}
+
+  /* stage cards */
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+  .card.approved{border-left:5px solid var(--moss)}
+  .card.drafted{border-left:5px solid var(--amber)}
+  .card.not_started{border-left:5px solid var(--line);opacity:.85}
+  .card.current{border-color:var(--ember);border-left:5px solid var(--ember);
+        box-shadow:0 2px 12px rgba(196,85,42,.10)}
+  .card h3{margin:0;font-size:16.5px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .gate-tag{font-size:10px;letter-spacing:1.2px;text-transform:uppercase;color:var(--grey);
+        font-family:ui-sans-serif,system-ui,sans-serif}
+  .pill{font-size:11px;padding:2.5px 10px;border-radius:11px;font-family:ui-sans-serif,system-ui,sans-serif}
+  .pill.approved{background:var(--moss-soft);color:var(--moss)}
+  .pill.drafted{background:var(--amber-soft);color:var(--amber)}
+  .pill.not_started{background:var(--paper2);color:var(--grey)}
+  .pill.unratified{background:#f4dcd2;color:var(--ember)}
+  .files{margin:10px 0 0;padding:0;list-style:none;font-size:13px;color:var(--ink-soft)}
+  .files li{padding:2px 0;overflow-wrap:anywhere}
+  .files li span{color:var(--grey);font-size:11.5px;margin-left:6px;font-family:ui-sans-serif,system-ui,sans-serif}
+  .more{color:var(--grey);font-style:italic}
+  .exp{margin:10px 0 0;padding:0;list-style:none;font-size:13px}
+  .exp li{padding:3px 0;display:flex;gap:8px;align-items:baseline}
+  .exp .ok{color:var(--moss);font-weight:700}
+  .exp .miss{color:var(--ember);font-weight:700}
+  .exp li.missing span.doc{color:var(--ember)}
+  .exp li.here span.doc{color:var(--ink-soft)}
+  .misscount{font-size:11px;background:#f4dcd2;color:var(--ember);border-radius:11px;padding:2.5px 10px;
+        font-family:ui-sans-serif,system-ui,sans-serif}
+  .needs{margin-top:12px;border-top:1px dashed var(--line);padding-top:10px}
+  .needs .nt{font-size:10.5px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ember);
+        margin-bottom:6px;font-family:ui-sans-serif,system-ui,sans-serif}
+  .need{display:flex;gap:8px;font-size:13.5px;line-height:1.45;padding:3px 0}
+  .need code{font-size:11.5px;background:var(--paper2);padding:1px 6px;border-radius:5px}
+
+  /* library */
+  .lib{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+  .proj{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 22px;cursor:pointer;
+        transition:box-shadow .15s}
+  .proj:hover{box-shadow:0 3px 16px rgba(43,38,32,.10)}
+  .proj h3{margin:0 0 8px;font-size:18px}
+  .proj .bar{height:7px;background:var(--paper2);border-radius:4px;overflow:hidden;margin:10px 0 8px}
+  .proj .bar i{display:block;height:100%;background:var(--moss)}
+  .proj .nx{font-size:13px;color:var(--ink-soft);line-height:1.45}
+  .proj .nx b{color:var(--ember);font-weight:600}
+  .proj .meta{font-size:11.5px;color:var(--grey);margin-top:8px;font-family:ui-sans-serif,system-ui,sans-serif}
+
+  footer{margin-top:36px;font-size:12.5px;color:var(--grey);line-height:1.6;
+        font-family:ui-sans-serif,system-ui,sans-serif}
+  .err{background:#f6e0d8;border:1px solid var(--ember-soft);padding:14px 18px;border-radius:10px;color:var(--ember)}
+  #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--paper);
+        padding:10px 20px;border-radius:10px;font-size:13.5px;opacity:0;transition:opacity .25s;
+        pointer-events:none;font-family:ui-sans-serif,system-ui,sans-serif;max-width:80vw}
+  #toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1 onclick="goLibrary()"><span class="flame">☾</span> Hearthlight</h1>
+    <span class="live" id="live"></span>
+    <span class="spacer"></span>
+    <button class="btn" onclick="goLibrary()">⌂ Library</button>
+    <button class="btn primary" onclick="newProject()">+ New Project</button>
+  </header>
+  <div class="tabs" id="tabs"></div>
+  <div id="main"></div>
+  <footer>
+    The cockpit takes your <b>inputs</b> — files, rants, ideas — and files them by convention.
+    Gates are approved in <b>Telegram</b> only; the bot records each ✅ in <code>status.yml</code>
+    and this page reads the stones. Refresh = rescan.
+  </footer>
+</div>
+<div id="toast"></div>
+<input type="file" id="picker" multiple style="display:none">
+
+<script>
+let DATA=null, ACTIVE=null, VIEW="library", PICK_ZONE=null;
+const ICONS={approved:"✓", drafted:"…", not_started:"", skipped:"–"};
+const PILL={approved:"approved", drafted:"awaiting your ✅", not_started:"not started", skipped:"skipped"};
+
+function esc(s){return (s??"").toString().replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");
+  clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove("show"),2600);}
+
+async function load(){
+  try{
+    const r=await fetch("/status.json",{cache:"no-store"});
+    DATA=await r.json();
+    if(ACTIVE && !DATA.projects.find(p=>p.slug===ACTIVE)) ACTIVE=null;
+    render();
+  }catch(e){
+    document.getElementById("main").innerHTML=
+      '<div class="err">Can\'t reach the scanner. Is start-dashboard.bat running?</div>';
+  }
+}
+
+function goLibrary(){VIEW="library";render();}
+function goProject(slug){ACTIVE=slug;VIEW="project";render();}
+
+function currentStageId(p){
+  const c=p.stages.filter(s=>s.kind==="gate").find(s=>s.status!=="approved"&&s.status!=="skipped");
+  return c?c.id:null;
+}
+
+function render(){
+  if(!DATA)return;
+  try{renderInner();}catch(e){
+    document.getElementById("main").innerHTML=
+      `<div class="err"><b>Render error:</b> ${esc(e.message)}.<br>
+       Most likely the server is running an older version — close the
+       start-dashboard.bat window and double-click it again.</div>`;
+  }
+}
+
+function renderInner(){
+  document.getElementById("live").innerHTML=`<b>●</b> live · ${esc(DATA.generated_at)}`;
+  const tabs=document.getElementById("tabs");
+  tabs.innerHTML="";
+  DATA.projects.forEach(p=>{
+    const b=document.createElement("button");
+    b.className="tab"+(VIEW==="project"&&p.slug===ACTIVE?" on":"");
+    b.textContent=p.slug;
+    b.onclick=()=>goProject(p.slug);
+    tabs.appendChild(b);
+  });
+  const main=document.getElementById("main");
+  if(DATA.projects.length && !DATA.projects[0].zones)
+    throw new Error("status.json has no intake zones (old scanner in memory)");
+  if(VIEW==="library"||!ACTIVE){main.innerHTML=library();return;}
+  const p=DATA.projects.find(x=>x.slug===ACTIVE);
+  main.innerHTML=p?hero(p)+strip(p)+rail(p)+intake(p)+compose(p)+
+    `<div class="sect">Stages</div>`+cards(p):library();
+  if(p)wireZones(p);
+}
+
+/* ---------- library ---------- */
+function library(){
+  if(!DATA.projects.length)return `<p>No projects yet. Start one with <b>+ New Project</b>.</p>`;
+  return `<div class="sect">Library</div><div class="lib">`+DATA.projects.map(p=>{
+    const pct=p.gates_total?Math.round(100*p.gates_approved/p.gates_total):0;
+    return `<div class="proj" onclick="goProject('${esc(p.slug)}')">
+      <h3>${esc(p.slug)}</h3>
+      <div class="bar"><i style="width:${pct}%"></i></div>
+      <div class="meta">${p.gates_approved}/${p.gates_total} gates approved${
+        p.days_idle!=null?` · touched ${p.days_idle===0?"today":p.days_idle+"d ago"}`:""}</div>
+      <div class="nx"><b>Next:</b> ${esc(p.next_action.label)}</div>
+    </div>`;
+  }).join("")+`</div>`;
+}
+
+async function newProject(){
+  const slug=prompt("Project slug (lowercase, hyphens — e.g. grandma-kitchen):");
+  if(!slug)return;
+  const r=await fetch("/api/new-project",{method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({slug:slug.trim()})});
+  const j=await r.json();
+  if(j.error){toast("✗ "+j.error);return;}
+  toast(`Project "${j.created}" scaffolded — first: lock the distribution spec`);
+  await load();goProject(j.created);
+}
+
+/* ---------- project view ---------- */
+function hero(p){
+  const a=p.next_action;
+  let badge="",extra="";
+  if(a.type==="decision")badge='<span class="badge tg">🗣 answer in Telegram</span>';
+  if(a.type==="file"){badge='<span class="badge file">📁 drop a file</span>';
+    extra=`<div class="pathbox"><code id="droppath">${esc(a.path)}</code>
+      <button class="copy" onclick="navigator.clipboard.writeText(document.getElementById('droppath').textContent);toast('Path copied')">copy path</button></div>`;}
+  return `<div class="hero"><div class="kicker">next — ${esc(p.slug)}</div>
+    <h2>${esc(a.label)}${badge}</h2><p>${esc(a.detail||"")}</p>${extra}</div>`;
+}
+
+function strip(p){
+  const pct=p.gates_total?Math.round(100*p.gates_approved/p.gates_total):0;
+  const missing=p.stages.flatMap(s=>s.status!=="approved"?s.expected.filter(e=>!e.present):[]).length;
+  const drafted=p.stages.filter(s=>s.kind==="gate"&&s.status==="drafted").length;
+  const idle=p.days_idle;
+  const idleCls=idle==null?"":idle>=7?"hot":idle>=3?"warn":"good";
+  return `<div class="strip">
+    <span class="stat good"><b>${p.gates_approved}/${p.gates_total}</b> gates approved
+      <span class="minibar"><i style="width:${pct}%"></i></span></span>
+    <span class="stat warn"><b>${drafted}</b> awaiting your ✅</span>
+    <span class="stat ${missing?"hot":"good"}"><b>${missing}</b> expected doc${missing===1?"":"s"} missing</span>
+    ${p.last_touched?`<span class="stat ${idleCls}"><b>${idle===0?"today":idle+"d ago"}</b> last touched</span>`:""}
+  </div>`;
+}
+
+function rail(p){
+  const cur=currentStageId(p);
+  return `<div class="rail">`+p.stages.map(s=>{
+    const cls=["node",s.kind==="support"?"support":"",s.status,s.id===cur?"current":""].join(" ");
+    return `<div class="${cls}" onclick="document.getElementById('c-${s.id}')?.scrollIntoView({behavior:'smooth',block:'center'})">
+      <div class="dot">${ICONS[s.status]??""}</div><div class="lbl">${esc(s.label)}</div>
+      ${s.gate?`<div class="gt">${esc(s.gate)}</div>`:""}</div>`;
+  }).join("")+`</div>`;
+}
+
+function intake(p){
+  return `<div class="sect">Give the system — drag &amp; drop, or click</div><div class="zones">`+
+    p.zones.map(z=>{
+      const chips=z.names.length?`<div class="chips">${z.names.map(n=>`<span class="chip">${esc(n)}</span>`).join("")}</div>`:"";
+      const nameField=z.named?`<input type="text" id="sub-${z.id}" placeholder="${esc(z.name_label)} (required)"
+          onclick="event.stopPropagation()">`:"";
+      return `<div class="zone ${z.count?"filled":""}" id="z-${z.id}" data-zone="${z.id}">
+        <h4>${z.icon} ${esc(z.label)} <span class="cnt ${z.count?"has":""}">${z.count?"✓ "+z.count+" file"+(z.count>1?"s":""):"nothing yet"}</span></h4>
+        <div class="hint">${esc(z.hint)}</div>${nameField}${chips}
+        ${z.recent.length?`<div class="recent">↳ ${z.recent.map(esc).join(" · ")}</div>`:""}
+      </div>`;
+    }).join("")+`</div>`;
+}
+
+function cards(p){
+  const cur=currentStageId(p);
+  return `<div class="cards">`+p.stages.map(s=>{
+    const unrat=s.status==="drafted"&&s.ledger_state==="unconfirmed"&&s.kind==="gate";
+    const nmiss=s.status!=="approved"?s.expected.filter(e=>!e.present).length:0;
+    const pills=`<span class="pill ${s.status}">${PILL[s.status]}</span>`+
+      (unrat?' <span class="pill unratified">unratified — no ✅ on record</span>':"")+
+      (nmiss?` <span class="misscount">${nmiss} doc${nmiss>1?"s":""} missing</span>`:"")+
+      (s.status==="approved"&&s.ledger_date?` <span class="gate-tag">${esc(s.ledger_date)}</span>`:"");
+    const exp=s.expected.length?`<ul class="exp">`+
+      s.expected.map(e=>`<li class="${e.present?"here":"missing"}">
+        <span class="${e.present?"ok":"miss"}">${e.present?"✓":"✗"}</span>
+        <span class="doc">${esc(e.name)}${e.present?"":" — missing"}</span></li>`).join("")+
+      `</ul>`:"";
+    const extra=s.files.filter(f=>!s.expected.some(e=>e.present&&f.rel.endsWith(e.name)));
+    const files=extra.length?`<ul class="files">`+
+        extra.map(f=>`<li>${esc(f.rel)}<span>${esc(f.mtime)}</span></li>`).join("")+
+        (s.file_count>s.files.length?`<li class="more">+ ${s.file_count-s.files.length} more…</li>`:"")+
+      `</ul>`:"";
+    const showNeeds=s.status!=="approved"&&s.inputs.length;
+    const needs=showNeeds?`<div class="needs"><div class="nt">waiting on you</div>`+
+      s.inputs.map(i=>`<div class="need"><span>${i.type==="file"?"📁":"🗣"}</span>
+        <span>${esc(i.label)}${i.type==="file"&&i.path?` — <code>${esc(s.drop_base+i.path)}</code>`:""}</span></div>`).join("")
+      +`</div>`:"";
+    return `<div class="card ${s.status} ${s.id===cur?"current":""}" id="c-${s.id}">
+      <h3>${s.gate?`<span class="gate-tag">${esc(s.gate)}</span>`:'<span class="gate-tag">support</span>'}
+          ${esc(s.label)}</h3>
+      <div style="margin-top:7px">${pills}</div>
+      ${exp}${files}${needs}
+    </div>`;
+  }).join("")+`</div>`;
+}
+
+function compose(p){
+  return `<div class="sect">Rant &amp; ideas — typed straight into the intake</div>
+  <div class="compose">
+    <textarea id="notetext" placeholder="Off the cuff. Tell it the story you're pointing at, or park an idea…"></textarea>
+    <div class="row">
+      <button class="btn primary" onclick="sendNote('rant')">Save as rant</button>
+      <button class="btn" onclick="sendNote('idea')">Save as idea</button>
+      <span class="note">Rants → <code>01-intake/rant-typed-….md</code> · ideas append to
+      <code>01-intake/ideas-inbox.md</code>. Then tell the bot to read them — Hermes and this cockpit
+      meet in the folders, not in each other.</span>
+    </div>
+  </div>`;
+}
+
+async function sendNote(kind){
+  const el=document.getElementById("notetext");
+  const text=el.value.trim();
+  if(!text){toast("Nothing to save");return;}
+  const r=await fetch("/api/note",{method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({project:ACTIVE,kind,text})});
+  const j=await r.json();
+  if(j.error){toast("✗ "+j.error);return;}
+  el.value="";
+  toast(`Saved → ${j.saved}`);
+  load();
+}
+
+/* ---------- uploads ---------- */
+function wireZones(p){
+  document.querySelectorAll(".zone").forEach(el=>{
+    const zid=el.dataset.zone;
+    el.addEventListener("dragover",e=>{e.preventDefault();el.classList.add("over");});
+    el.addEventListener("dragleave",()=>el.classList.remove("over"));
+    el.addEventListener("drop",e=>{e.preventDefault();el.classList.remove("over");
+      uploadFiles(zid,[...e.dataTransfer.files]);});
+    el.addEventListener("click",()=>{PICK_ZONE=zid;document.getElementById("picker").click();});
+  });
+}
+document.getElementById("picker").addEventListener("change",e=>{
+  if(PICK_ZONE)uploadFiles(PICK_ZONE,[...e.target.files]);
+  e.target.value="";
+});
+
+async function uploadFiles(zoneId,files){
+  if(!files.length)return;
+  const zone=DATA.projects.find(p=>p.slug===ACTIVE).zones.find(z=>z.id===zoneId);
+  let sub="";
+  if(zone.named){
+    sub=(document.getElementById("sub-"+zoneId)?.value||"").trim().toLowerCase().replace(/\s+/g,"-");
+    if(!sub){toast(`Type the ${zone.name_label} first, then drop`);return;}
+  }
+  let ok=0;
+  for(const f of files){
+    const q=new URLSearchParams({project:ACTIVE,zone:zoneId,name:f.name,sub});
+    try{
+      const r=await fetch("/api/upload?"+q,{method:"POST",body:f});
+      const j=await r.json();
+      if(j.saved)ok++;else toast("✗ "+f.name+": "+(j.error||"failed"));
+    }catch(e){toast("✗ "+f.name+" failed");}
+  }
+  if(ok)toast(`${ok} file${ok>1?"s":""} → ${zone.target}${sub?sub+"/":""}`);
+  load();
+}
+
+load();
+setInterval(load,60000);
+window.addEventListener("focus",load);
+</script>
+</body>
+</html>

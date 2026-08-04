@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "comment": "Machine-readable production requirements. The adapter computes status from evidence; this file declares scope and dependencies.",
+  "requirements": [
+    {"id": "distribution-spec", "label": "Distribution specification", "scope": "project", "stage_dependency": "distribution_spec", "gate_dependency": "distribution_spec", "expected_path": "distribution-spec.md", "evidence": {"type": "path"}},
+    {"id": "source-material", "label": "Source material", "scope": "project", "stage_dependency": "source", "gate_dependency": null, "expected_path": "00-source/*", "evidence": {"type": "glob", "minimum": 1}},
+    {"id": "vision-brief", "label": "Vision Brief", "scope": "project", "stage_dependency": "gate0_vision", "gate_dependency": "gate0_vision", "expected_path": "01-intake/vision-brief.md", "evidence": {"type": "path"}},
+    {"id": "story-arc", "label": "Story Arc", "scope": "project", "stage_dependency": "gate1_outline", "gate_dependency": "gate1_outline", "expected_path": "02-outline/story-arc.md", "evidence": {"type": "path"}},
+    {"id": "beat-sheet", "label": "Beat Sheet", "scope": "project", "stage_dependency": "gate1_outline", "gate_dependency": "gate1_outline", "expected_path": "02-outline/beat-sheet.md", "evidence": {"type": "path"}},
+    {"id": "av-script", "label": "A/V Script", "scope": "project", "stage_dependency": "gate1_outline", "gate_dependency": "gate1_outline", "expected_path": "02-outline/av-script.md", "evidence": {"type": "path"}},
+    {"id": "mise-en-scene", "label": "Mise-en-scène", "scope": "project", "stage_dependency": "gate2_mise_en_scene", "gate_dependency": "gate2_mise_en_scene", "expected_path": "03-bible/mise-en-scene.md", "evidence": {"type": "path"}},
+    {"id": "character-dossier", "label": "Character dossier", "scope": "project", "stage_dependency": "characters", "gate_dependency": "gate2_mise_en_scene", "expected_path": "03-bible/characters/{character}/CHARACTER.md", "evidence": {"type": "per-character-path"}},
+    {"id": "character-record", "label": "Character description", "scope": "project", "stage_dependency": "characters", "gate_dependency": "gate2_mise_en_scene", "expected_path": "03-bible/characters/{character}/character.json", "evidence": {"type": "per-character-path"}},
+    {"id": "character-sheet", "label": "Approved character sheet", "scope": "project", "stage_dependency": "characters", "gate_dependency": "gate3_images", "expected_path": "03-bible/characters/{character}/{character}-sheet.png", "evidence": {"type": "character-record-sheet"}},
+    {"id": "environment-sheet", "label": "Environment sheet", "scope": "project", "stage_dependency": "gate2_mise_en_scene", "gate_dependency": "gate3_images", "expected_path": "03-bible/refs/environments/*", "evidence": {"type": "asset-registry", "kind": "setting-sheet"}},
+    {"id": "clip-manifest", "label": "Audio clip manifest", "scope": "project", "stage_dependency": "clip_prep", "gate_dependency": "gate3_images", "expected_path": "01-intake/clips/clips-manifest.md", "evidence": {"type": "path"}},
+    {"id": "shot-registry", "label": "Stable shot registry", "scope": "project", "stage_dependency": "timing", "gate_dependency": "gate4_storyboard", "expected_path": "05-storyboard/shots.json", "evidence": {"type": "path"}},
+    {"id": "timing", "label": "Shot timing", "scope": "shot", "stage_dependency": "timing", "gate_dependency": "gate4_storyboard", "expected_path": "05-storyboard/shots.json", "evidence": {"type": "shot-field", "field": "duration_seconds"}},
+    {"id": "image-prompt", "label": "Image direction and prompt", "scope": "shot", "stage_dependency": "gate3_images", "gate_dependency": "gate3_images", "expected_path": "04-images/shot-specs.json", "evidence": {"type": "shot-spec"}},
+    {"id": "approved-still", "label": "Approved current still", "scope": "shot", "stage_dependency": "gate3_images", "gate_dependency": "gate3_images", "expected_path": "04-images/*", "evidence": {"type": "approved-image-event"}},
+    {"id": "storyboard-panel", "label": "Storyboard panel", "scope": "shot", "stage_dependency": "gate4_storyboard", "gate_dependency": "gate4_storyboard", "expected_path": "03-bible/refs/storyboard-panels/*", "evidence": {"type": "board-panel-map"}},
+    {"id": "approved-current-video", "label": "Approved current video clip", "scope": "shot", "stage_dependency": "gate5_video", "gate_dependency": "gate5_video", "expected_path": "06-video/*", "evidence": {"type": "approved-current-video-event"}},
+    {"id": "final-edit", "label": "Final edit", "scope": "project", "stage_dependency": "final_edit", "gate_dependency": "final_edit", "expected_path": "07-final/*", "evidence": {"type": "glob", "minimum": 1}}
+  ]
+}

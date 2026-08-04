@@ -1,0 +1,52 @@
+# Hearthlight — git tracks the INSTRUCTION LAYER (the reusable system) only.
+# Project work + media + secrets stay out (rights-constrained, large, or sensitive).
+
+# ─── Secrets — never commit ──────────────────────────────────────
+.env
+*.env
+**/.env
+*apikey*
+*api_key*
+*secret*
+*.key
+
+# ─── Project work — NOT in the system repo ───────────────────────
+# Per-project creative work + media + the storyteller's material live only in WSL,
+# not in version control. The repo is the reusable pipeline, not the films.
+projects/
+
+# ─── Sync internals & logs ───────────────────────────────────────
+_sync/logs/
+*.log
+SYNC-CHANGELOG.md
+
+# ─── Scratch & transient work ────────────────────────────────────
+# Ad-hoc inspection scratch and empty temp dirs left by test runs.
+.artifact-work/
+test-tmp/
+.test-tmp/
+node_modules/
+.venv-stt/
+
+# ─── Checkpoint internals ────────────────────────────────────────
+# The dated checkpoint .md files ARE tracked (they are the history).
+# The raw fact dumps behind them are not — they are regenerable.
+checkpoints/.facts-*.json
+
+# ─── OS / tooling junk ───────────────────────────────────────────
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db
+
+# ─── (Belt-and-suspenders) any stray media at the root ───────────
+*.png
+*.jpg
+*.jpeg
+*.mp4
+*.mov
+*.wav
+*.ogg
+*.mp3
+*.webm
+*.m4a
