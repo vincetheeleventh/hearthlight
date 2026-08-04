@@ -1,3 +1,19 @@
+---
+doc: USER-GUIDE
+role: guide
+authority: canon
+owner: agents
+updated: 2026-08-04
+answers:
+  - how to run a story through the pipeline
+  - what each gate asks of vince
+  - which command starts a given stage
+not_here:
+  what is built: PRODUCT_SPEC.md
+  one-time install: profile/SETUP.md
+archive: archive/user-guide.md
+---
+
 # Hearthlight — User Guide
 
 How to run a story through the pipeline, from your seat. (One-time install lives in `profile/SETUP.md`; this guide assumes the Hearthlight bot is alive in your Telegram.)

@@ -1,10 +1,25 @@
+---
+doc: SKILL-INVENTORY
+role: inventory
+authority: canon
+owner: agents
+updated: 2026-08-04
+answers:
+  - which components exist and what class each is
+  - what justifies a component's existence
+  - what has no inbound references and may be dead
+not_here:
+  what each skill does: skills/{name}/SKILL.md
+  what is being built: ROADMAP.md
+  whether to delete something: PROPOSALS.md
+archive: archive/skill-inventory.md
+---
+
 # SKILL-INVENTORY — what exists, what justifies it, what deserves review
 
-*Generated 2026-08-03 from the working tree. **Nothing here has been deleted.** This document
-surfaces components for Vince's review; the kill decision is his.*
-
-Refreshed by the daily checkpoint when the skill set changes. Usage evidence is necessarily weak —
-see the caveat in §4.
+*Derived from the working tree. **Nothing here has been deleted.** This document surfaces components
+for Vince's review; the kill decision is his.* Refreshed by the daily checkpoint when the skill set
+changes. Usage evidence is necessarily weak — see the caveat in §4.
 
 ## Classification key
 
@@ -30,12 +45,9 @@ see the caveat in §4.
 | ORPHANED (non-skill components) | 4 |
 | DEPRECATED (non-skill components) | 2 |
 
-*Revised 2026-08-03 against the updated `GOALS.md`. `hearthlight-dashboard` moved UNCLEAR → CORE:
-the visual production overview is now a stated primary outcome, not a side utility.*
-
 **21 skills** in `skills/`, plus **1 router** that exists only in the Claude skill store.
-No `hearthlight-*` skill is orphaned — every one is referenced by `AGENTS.md` except
-`hearthlight-dashboard`. The genuine complexity problems are **outside** `skills/`.
+No `hearthlight-*` skill is orphaned — every one is referenced by `AGENTS.md`. The genuine
+complexity problems are **outside** `skills/`.
 
 ---
 
@@ -66,7 +78,7 @@ Columns: **AG** = mentions in `AGENTS.md` · **UG** = `USER-GUIDE.md` · **RM** 
 | `hearthlight-timing-intake` | 3 | 1 | 0 | 5 | 4 | **SUPPORTING** | Editor round-trip | Most `AGENTS.md` mentions and 4 scripts. **Partly blocked** — `transcribe.py` needs the dead `.venv-stt`. |
 | `hearthlight-reference-report` | 2 | 1 | 1 | 2 | 0 | **EXPERIMENTAL** | Review ergonomics | Convenience layer over research output. No evidence it has been used on a real project. |
 | `hearthlight-shot-crew` | 2 | 1 | 0 | 2 | 0 | **EXPERIMENTAL** | Principle 3 | 8 subagent roles. `HANDOFF.md` §6 names *verifying the roles give distinct opinions* as still-pending. Highest cost-per-shot in the system, least evidence it pays. Absent from README. |
-| `hearthlight-dashboard` | 1 | 1 | 1 | 1 | 5 | **CORE** | **Primary outcome 4** | **Reclassified UNCLEAR → CORE, 2026-08-03.** The revised `GOALS.md` names *"a visual UI for the filmmaker to see an overview of the film and the current state of production"* as a primary outcome, and *"iteration speed"* as core problem 1. This is not a status utility — it is the surface the whole iterate-and-correct loop runs on. Largest sub-app: `index.html`, `serve.py`, `pipeline.json`, shot registry, backfill script, a test. Also owns D-009. Added to `AGENTS.md` and `README.md`. |
+| `hearthlight-dashboard` | 1 | 1 | 1 | 1 | 5 | **CORE** | **Primary outcome 4** | The surface the iterate-and-correct loop runs on, not a status utility. Largest sub-app: `index.html`, `serve.py`, `pipeline.json`, shot registry, backfill script, a test. Owns D-009. |
 
 ### The router
 | Component | Class | Notes |
@@ -132,9 +144,8 @@ this list as the adaptation backlog, not a tidy-up.
 3. **`hearthlight-reference-report`.** A presentation layer on research output. Plausible, but no
    evidence of real use. *Question: have you ever read one?*
 4. **The engine/client abstraction itself.** Built to support many clients; exactly one exists.
-   The revised `GOALS.md` is framed almost entirely around **AI-filmmaking problems** rather than
-   client service, which weakens the case for the abstraction rather than strengthening it.
-   *Not a recommendation to remove — a flag that its justification has grown thinner, not thicker.*
+   `GOALS.md` is framed around **AI-filmmaking problems** rather than client service, so the
+   abstraction's justification is thin. *Not a recommendation to remove — a flag.*
 5. **`hearthlight-character`.** Owns the turnaround law inherited by every generated clip, yet has
    zero peer references and no README entry. The risk here is the opposite of the others: not too
    much complexity, but too little integration for how much it affects.

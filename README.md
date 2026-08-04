@@ -1,3 +1,18 @@
+---
+doc: README
+role: index
+authority: canon
+owner: agents
+updated: 2026-08-04
+answers:
+  - what this folder is
+  - where each part of the system lives
+not_here:
+  what to read as an agent: AGENTS.md
+  how to run a story through it: USER-GUIDE.md
+archive: archive/readme.md
+---
+
 # Hearthlight Story Studio — Hermes workspace
 
 This folder is the working home of the Hearthlight pipeline (PRD lives in Notion: "PRD — Hearthlight").

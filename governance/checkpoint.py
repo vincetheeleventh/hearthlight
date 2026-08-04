@@ -772,6 +772,13 @@ def cmd_commit(args) -> int:
             print(f"  {f['path']}: {f['kind']}", file=sys.stderr)
         fail(f"secret scan found {len(findings)} issue(s) — refusing to commit")
 
+    # Canon hygiene (D-017): front matter valid, no history narration in the core docs.
+    canon = subprocess.run([sys.executable, str(REPO / "governance" / "canon.py"), "check"],
+                           capture_output=True, text=True)
+    if canon.returncode:
+        print(canon.stderr or canon.stdout, file=sys.stderr)
+        fail("canon check failed — history belongs in archive/ (governance/CANON-RULES.md)")
+
     if not have_git_repo():
         fail("no git repository")
 
@@ -784,7 +791,7 @@ def cmd_commit(args) -> int:
     # GOALS.md is deliberately NOT in this list and must never be added.
     safe = [str(md.relative_to(REPO)).replace("\\", "/"),
             "PRODUCT_SPEC.md", "ROADMAP.md", "DECISIONS.md", "SKILL-INVENTORY.md",
-            PROPOSALS, "AGENTS.md", "README.md", "governance"]
+            PROPOSALS, "AGENTS.md", "README.md", "governance", "archive"]
     for path in safe:
         if (REPO / path).exists():
             git("add", "--", path)

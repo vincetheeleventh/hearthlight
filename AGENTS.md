@@ -1,3 +1,21 @@
+---
+doc: AGENTS
+role: index
+authority: canon
+owner: agents
+updated: 2026-08-04
+answers:
+  - what to read at the start of a session
+  - which skill owns which stage
+  - what an agent may change without asking
+  - how the three agent surfaces coordinate
+not_here:
+  why a rule exists: DECISIONS.md
+  what is built: PRODUCT_SPEC.md
+  how to operate the pipeline: USER-GUIDE.md
+archive: archive/agents.md
+---
+
 # Hearthlight Story Studio — Project Context
 
 You are working in **Hearthlight**, Vince's pipeline that turns a spoken story into illustrated
@@ -24,20 +42,30 @@ prose as the session grows, and it governs subagent dispatch prompts and worker 
 Off only if Vince says "normal mode".
 
 ## The canon — read before substantial feature work
-Five documents carry product intent. They answer different questions; do not conflate them.
+
+**Every canon doc opens with YAML front matter.** Read the front matter first: `answers:` tells you
+whether this is the right document, `not_here:` routes you to the one that is. You can pick the
+right file from ~10 lines of metadata without loading six bodies.
+
+**Canon states the present. Nothing else.** No strikethrough, no "was X, now Y", no dated
+resolution stamps. Anything that leaves a canon doc goes to `archive/{doc}.md` with a date and one
+line on why. Full law and schema: `governance/CANON-RULES.md` (D-017). `governance/canon.py check`
+enforces it and blocks the checkpoint commit on a violation.
 
 | Doc | Answers | Who may change it |
 |---|---|---|
 | **`GOALS.md`** | **WHY** Hearthlight exists — the v1 definition, the AI-filmmaking problems it solves, principles, and the test for whether a feature belongs | **Vince only.** No agent rewrites this, ever — not even when the implementation changes. Propose, never edit. |
 | **`PRODUCT_SPEC.md`** | **WHAT** currently exists — features, workflows, skills, constraints, known limits | Any agent, but strictly descriptive. If it is not built, it does not go here. |
 | **`ROADMAP.md`** | **WHAT WE ARE TRYING TO CHANGE** — active work, priorities, known problems, experiments, open questions | Any agent. Mark items CONFIRMED vs INFERRED. |
-| **`DECISIONS.md`** | **WHY** important choices were made | Append-only. Never rewrite an entry; supersede it. Never invent reasoning — write `Reason: NOT RECOVERABLE`. |
+| **`DECISIONS.md`** | **WHICH RULES ARE IN FORCE** — one line each, and where each binds | Any agent may add a row. Never rewrite one; supersede it. The argument behind a rule lives in `archive/decisions/D-0XX.md`. |
 | **`SKILL-INVENTORY.md`** | What every component is, what justifies it, what deserves review | Any agent. **Surfaces components; never deletes them.** |
-| **`PROPOSALS.md`** | **WHAT THE SYSTEM WANTS TO CHANGE ABOUT ITSELF** — the improvement backlog | Any agent may add. Only Vince decides. Capped at 7 open. |
+| **`PROPOSALS.md`** | **WHAT THE SYSTEM WANTS TO CHANGE ABOUT ITSELF** — the open backlog | Any agent may add. Only Vince decides. Capped at 7 open. Decided rows go to `archive/proposals.md`. |
 
 **PRDs** describe substantial FUTURE changes (Notion: "PRD — Hearthlight").
-**`checkpoints/`** is the historical evidence of how the product actually evolved — read the last few
-when you need to know what recently moved and why.
+**`checkpoints/`** is the dated evidence of how the product evolved — read the last few when you
+need to know what recently moved and why.
+**`archive/`** holds what canon dropped. Do not read it by default; open it when you are about to
+challenge a rule or need a trail.
 
 Before starting substantial feature work: read `GOALS.md` and the relevant part of `PRODUCT_SPEC.md`,
 then check `ROADMAP.md` for whether someone is already on it. Run the feature past `GOALS.md`

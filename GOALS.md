@@ -1,3 +1,21 @@
+---
+doc: GOALS
+role: north-star
+authority: canon
+owner: vince
+updated: 2026-08-03
+answers:
+  - why hearthlight exists
+  - what done looks like for v1
+  - who it is for
+  - whether a feature earns its place
+not_here:
+  what is built: PRODUCT_SPEC.md
+  what is next: ROADMAP.md
+  which rules are in force: DECISIONS.md
+archive: archive/goals.md
+---
+
 # GOALS — Hearthlight's North Star
 
 *The stable document. Changes only when Vince deliberately changes the product's direction —

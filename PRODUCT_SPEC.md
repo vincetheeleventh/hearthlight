@@ -1,7 +1,25 @@
+---
+doc: PRODUCT_SPEC
+role: current-state
+authority: canon
+owner: agents
+updated: 2026-08-04
+answers:
+  - what is actually built and working today
+  - which stage each skill owns
+  - which rules are machine-enforced rather than advisory
+  - what the known limitations are
+not_here:
+  what is being built next: ROADMAP.md
+  why a rule exists: DECISIONS.md
+  how to operate it: USER-GUIDE.md
+archive: archive/product-spec.md
+---
+
 # PRODUCT_SPEC — Hearthlight as it actually exists
 
 *Descriptive, not aspirational. If it is not built, it does not belong here — it belongs in
-`ROADMAP.md`. Verified against the working tree on **2026-08-03**.*
+`ROADMAP.md`.*
 
 ---
 
@@ -37,14 +55,14 @@ helper scripts, executed by an LLM agent that reads them.
 - **Timing round-trip with real editors.** Storyboard Pro Final Cut XML in; DaVinci Resolve FCP XML out.
 - **Persistent taste memory.** `profile/TASTE.md` records what Vince kills and reaches for, read by
   the critique, outline, and mise-en-scène stages.
-- **A visual production cockpit (Hearthlight Studio).** The Film Study Tool now shares a URL-backed
-  shell with live Hearthlight projects. Its default project view is shot-first: stage-coloured hero
+- **A visual production cockpit (Hearthlight Studio).** The Film Study Tool and live Hearthlight
+  projects share one URL-backed shell. The default project view is shot-first: stage-coloured hero
   thumbnails, stable Shot IDs, compact review controls, a collapsible requirements/assets drawer,
   and a direct opener for the registered shot-list workbook. From the overview or shot page, Vince
   can comment, edit the current prompt, queue a generation, approve an asset stage, restore an older
   hero, bulk-approve unflagged assets, and insert, retire, or restore shots without changing their
-  permanent identity. These controls do not approve Hearthlight gates. Comment-to-prompt intelligent
-  rewriting is not yet built; prompt changes are manual.
+  permanent identity. These controls do not approve Hearthlight gates; prompt changes are manual.
+  Source: `staging/overview-ui/`.
 - **Plumbing self-check.** Separates mechanical failure (the system's fault, fixable) from quality
   judgment (Vince's call, unautomatable).
 
@@ -121,9 +139,7 @@ but no ✅ was recorded — it must be ratified, not assumed.
   and can block a checkpoint commit. A creative decision should not trip a code guard.
 - **`pytest` must be present for the checkpoint to verify tests.** Without it the checkpoint reports
   `not run` rather than falsely passing, and `commit` will not block on failures it could not
-  observe. As of 2026-08-04, 9 of 23 pass in the agent sandbox: the image-prompt failures are the
-  live-data coupling above, and `test_shot_registry.py` cannot remove a temp directory on the
-  mounted Windows folder.
+  observe.
 - **Laws are advisory to any agent that skips the read.** Nothing prevents an agent from generating
   an image without loading the mise-en-scène.
 - **No shared state between the three agent surfaces.** Cowork, Hermes, and ChatGPT coordinate only
@@ -132,16 +148,9 @@ but no ✅ was recorded — it must be ratified, not assumed.
   WSL → Windows migration; the hand-drawn-board intake path depends on it.
 - **Stage 6 is unproven end to end.** The RunningHub key was leaked and needs rotating; no full
   film has passed every gate.
-- **Gaps against the revised `GOALS.md` (2026-08-03).** Three stated outcomes have no implementation
-  yet, and the spec must not imply otherwise:
-  - **Audio generation** — named in primary outcome 3; nothing in the pipeline produces it. The
-    ElevenLabs score pass is roadmap, not product.
-  - **Intelligent UI prompt correction** — the manual loop is built: comments, prompt edits,
-    generation queueing, approvals, and hero reselection all work in Hearthlight Studio. The missing
-    step is turning a visual critique/comment into a proposed prompt revision automatically.
-  - **Narrative-drift tracking** — core problem 6 expects Hearthlight to hold the narrative goals and
-    flag choices that pull away. `hearthlight-critique` does this **on demand at one stage**; nothing
-    tracks it continuously across the film.
+- **Four goals in `GOALS.md` have no implementation** and the spec must not imply otherwise: audio
+  generation, intelligent prompt correction, cross-platform prompt shaping, and continuous
+  narrative-drift tracking. Detail in `ROADMAP.md` § *Gaps between stated goal and built product*.
 
 ## 7. Edge cases worth knowing
 
