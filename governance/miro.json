@@ -1,0 +1,21 @@
+{
+  "board_url": "https://miro.com/app/board/uXjVH-R45CM=/",
+  "panel_frame_id": "3458764679865659217",
+  "panel_frame_url": "https://miro.com/app/board/uXjVH-R45CM=/?moveToWidget=3458764679865659217",
+  "blocks": {
+    "stamp": "3458764679865659221",
+    "north_star": "3458764679865659222",
+    "non_goals": "3458764679865659223",
+    "what_exists": "3458764679865659224",
+    "roadmap": "3458764679865659225",
+    "health": "3458764679865659226",
+    "flags": "3458764679865659227",
+    "open_questions": "3458764679865659228"
+  },
+  "pipeline_diagram_id": "3458764677512299510",
+  "notes": [
+    "The daily checkpoint UPDATES the blocks above in place (layout_update) — it does not recreate the frame.",
+    "pipeline_diagram_id is Vince's hand-built flowchart. The job does NOT edit it. If the pipeline changes, the checkpoint reports the mismatch in the 'health' block and Vince updates the art deliberately.",
+    "If a block id 404s, someone deleted it by hand — recreate the panel and update this file."
+  ]
+}
