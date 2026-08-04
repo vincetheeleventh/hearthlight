@@ -30,6 +30,9 @@ helper scripts, executed by an LLM agent that reads them.
   world tier; every prompt is assembled from it verbatim.
 - **Batch render execution with a durable ledger.** Fresh subagent per shot, two-stage review, and a
   progress ledger so a crashed session never re-pays for a completed generation.
+- **Deterministic Krea style/composition execution.** The current workbook's exact `Still (frame one)`
+  cells compile into stable-ID packets; Action/motion text is rejected, K2 parameters stay outside the
+  prompt, and request fingerprints make retries/resume spend-safe.
 - **A deliberating shot crew.** Eight illustration roles negotiate contested shots as subagents.
 - **Timing round-trip with real editors.** Storyboard Pro Final Cut XML in; DaVinci Resolve FCP XML out.
 - **Persistent taste memory.** `profile/TASTE.md` records what Vince kills and reaches for, read by
@@ -76,11 +79,12 @@ Full per-skill responsibilities, usage evidence, and classification: **`SKILL-IN
 - Image provider priority: OpenAI Codex OAuth → Krea MCP → OpenAI API key, unless a stage pins a surface.
 - Rights discipline — the McConaughey pilot is private use only, stylized resemblance, never photoreal.
 
-**Enforcement is by instruction, not by code.** With three exceptions, no law is machine-checked:
-`hearthlight-selfcheck` blocks generation on an unblessed style block, the shot-runner's ledger
-prevents duplicate paid renders, and the shot registry refuses to move assets by row number when a
-regenerated workbook cannot prove a `Shot ID` match. Everything else depends on the agent having
-read the skill.
+**Enforcement is by instruction, not by code.** Four areas are machine-checked:
+`hearthlight-selfcheck` checks style/composition prompt readiness; the Krea compiler blocks stale
+workbook/registry identity, motion-text contamination, shared/source-only dispatch, and prompt-cell
+drift; the runner fingerprints each complete request and resumes recorded jobs; and the shot registry
+refuses to move assets by row number when a regenerated workbook cannot prove a `Shot ID` match.
+Everything else depends on the agent having read the skill.
 
 ## 5. Notable system behaviours
 

@@ -33,6 +33,7 @@ Five documents carry product intent. They answer different questions; do not con
 | **`ROADMAP.md`** | **WHAT WE ARE TRYING TO CHANGE** — active work, priorities, known problems, experiments, open questions | Any agent. Mark items CONFIRMED vs INFERRED. |
 | **`DECISIONS.md`** | **WHY** important choices were made | Append-only. Never rewrite an entry; supersede it. Never invent reasoning — write `Reason: NOT RECOVERABLE`. |
 | **`SKILL-INVENTORY.md`** | What every component is, what justifies it, what deserves review | Any agent. **Surfaces components; never deletes them.** |
+| **`PROPOSALS.md`** | **WHAT THE SYSTEM WANTS TO CHANGE ABOUT ITSELF** — the improvement backlog | Any agent may add. Only Vince decides. Capped at 7 open. |
 
 **PRDs** describe substantial FUTURE changes (Notion: "PRD — Hearthlight").
 **`checkpoints/`** is the historical evidence of how the product actually evolved — read the last few
@@ -63,15 +64,40 @@ coordination has to live in them. (`DECISIONS.md` D-012.)
 - **One canonical location per fact.** If you find yourself writing something already stated
   elsewhere, link to it instead. That rule is why the pointer stubs exist (`DECISIONS.md` D-002).
 
-## The daily checkpoint
-`governance/checkpoint.py` runs once a day and writes `checkpoints/YYYY-MM-DD.md`: what changed, why
-it matters, North Star alignment, spec discrepancies, orphan/complexity flags, unfinished work, and
-the top 3 next actions. It also refreshes the Miro board.
+## Two cadences — observe daily, improve weekly
+**Daily — the checkpoint** (`governance/DAILY-CHECKPOINT.md`). Writes `checkpoints/YYYY-MM-DD.md`:
+what changed, why it matters, North Star alignment, spec discrepancies, orphan flags, unfinished
+work, top 3 next actions. A two-minute read. It observes; it does not propose.
 
-It **may** write checkpoints and mechanical documentation updates. It **may not** redefine `GOALS.md`,
-change product strategy, delete a feature or a skill, perform speculative refactors, or rewrite a
-decision. Those surface as recommendations for Vince. Manual run: `python governance/checkpoint.py
-gather`, then fill the `<!-- AGENT: -->` sections, then `python governance/checkpoint.py commit`.
+**Weekly — the workshop** (`governance/WEEKLY-WORKSHOP.md`). Reads the week as a whole, audits
+architecture coherence, **executes safe improvements, and proposes the rest** into `PROPOSALS.md`.
+This is the part that does not wait for Vince to notice a problem.
+
+```
+python governance/checkpoint.py gather     # daily: facts + skeleton
+python governance/checkpoint.py workshop   # weekly: audit + propose
+python governance/checkpoint.py commit [--weekly]
+```
+
+Commits do **not** push — Vince pushes from Windows (`DECISIONS.md` D-014).
+
+## Autonomy tiers — the gate protocol, applied to the system itself
+Hearthlight's own law is *autonomy between gates, never through them*. The same rule governs agents
+changing Hearthlight. (`DECISIONS.md` D-013.)
+
+| Tier | What it covers | What you may do |
+|---|---|---|
+| **GREEN** | Mechanical, reversible, no product judgment: doc/index sync, stale counts, dead references, tests for existing code, Miro refresh, gitignore hygiene, descriptive `PRODUCT_SPEC.md` corrections | **Do it. Commit it. Report after.** |
+| **AMBER** | Changes how the system behaves: a new skill, a changed skill contract, merging or retiring a component, restructuring, a new dependency | **Propose only.** Write it into `PROPOSALS.md` and wait for Vince's ✅. |
+| **RED** | `GOALS.md` · the gate protocol · deleting any file, skill, or feature · product strategy · a project's charged register · `profile/TASTE.md` · rewriting a `DECISIONS.md` entry · resolving a `⚠️ NEEDS VINCE` marker | **Never autonomous. Ever.** Proposal only, permanently. |
+
+**If you are unsure whether something is GREEN, it is AMBER.** The cost of asking is a day. The cost
+of a wrong autonomous change to the constitution is that Vince stops trusting the system — and an
+untrusted governance layer is worse than none.
+
+**Every proposal names the v1 blocker it removes.** v1 is the finished Yu-Gi-Oh! film plus the
+architecture that finished it (`GOALS.md`). No named blocker → `parked`, not built. The backlog is
+capped at **7 open**; a new idea must displace a worse one. Open 30 days with no decision → expired.
 
 ## Essential docs — know these exist; read the relevant one before acting
 - **`README.md`** — folder map + how the pieces fit.

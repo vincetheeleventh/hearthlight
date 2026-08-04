@@ -194,3 +194,81 @@ touch is the files. So the files must carry the coordination.
 attribution are reported by the checkpoint as **unattributed** rather than silently absorbed — which
 is the detection path for ChatGPT edits, since it cannot run Git. See `AGENTS.md` § Multi-agent
 working agreement.
+
+---
+
+## D-013 · The system improves itself under the same gate law it enforces
+**Date:** 2026-08-03 · **Source:** Vince, this session · **Agent:** cowork
+
+**Context:** Vince asked for a system that does not wait to be told what to fix — one that infers
+work from the roadmap and goals, generates ideas, attacks problems creatively, prunes what is
+useless, and keeps the architecture coherent so technical debt does not accumulate.
+
+The obvious risk is that this becomes the thing it was built to prevent. An agent instructed to
+improve something daily will always find something to improve; a year of that is 365 ideas and a
+system more elaborate than the one that was confusing him in the first place.
+
+**Reason:** Hearthlight already solved this problem for filmmaking — *autonomy between gates, never
+through them*. Applying the same law to the system itself needed no new concept, just a mapping:
+
+- **GREEN** — mechanical, reversible, no product judgment → execute and report.
+- **AMBER** — changes how the system behaves → propose, wait for ✅.
+- **RED** — `GOALS.md`, the gate protocol, deletion, strategy, `TASTE.md` → never autonomous.
+
+Three brakes make the backlog self-limiting rather than accumulating: a **WIP cap of 7** (a new idea
+must displace a worse one, which forces ranking instead of appending), **30-day expiry** (if it
+mattered it comes back), and **the v1 test** — every proposal must name the v1 blocker it removes or
+it is parked. The v1 test is the strongest of the three: it is what keeps the system improving the
+*film* rather than improving the system.
+
+**Cadence is split deliberately.** Daily observes and stays a two-minute read; weekly proposes. Ideas
+generated daily would be restated before Vince had a chance to act, and patterns worth naming only
+become visible across several days.
+
+**Consequences:** `PROPOSALS.md` (the backlog), `governance/WEEKLY-WORKSHOP.md` (the runbook), and a
+coherence audit in `checkpoint.py workshop`. The audit is explicitly framed as **questions, not
+verdicts** — its checks are heuristics and it produces false positives, so an agent that treats a hit
+as a defect will delete something it should not have.
+
+The failure mode to watch: if a month of workshops adds more surface area than it removes, the
+workshop has become the problem. The runbook instructs the agent to say so.
+
+---
+
+## D-014 · Checkpoints commit but do not push
+**Date:** 2026-08-03 · **Source:** Vince, this session · **Agent:** cowork
+
+**Context:** The remote is `github.com/vincetheeleventh/hearthlight`. The agent sandbox that runs the
+checkpoint is ephemeral and holds no GitHub credentials, and cannot inherit the Windows credential
+manager. Pushing automatically would have required a token stored on disk.
+
+**Reason:** Vince chose to push manually rather than store a credential for an automated process.
+Fewer secrets at rest, and the push stays a deliberate act.
+
+**Consequences:** `commit` no longer pushes by default; `--push` is opt-in. Each run reports how many
+commits are waiting locally. **The tradeoff is real and should not be forgotten:** until Vince pushes,
+the entire history lives on one machine with no backup — the same single-point fragility that let a
+month of work go unrecorded. If commits start piling up unpushed, the checkpoint should say so
+loudly.
+
+---
+
+## D-015 · Krea still prompts are exact frame-one data, not assembled prose
+**Date:** 2026-08-03 · **Source:** Vince, this session · **Agent:** chatgpt
+
+**Context:** The first Krea runs received prompts containing workflow labels, timed video action,
+camera movement, continuity bookkeeping, character arrays, and global negatives. Those fields were
+being appended by the compiler even though the workbook now has separate `Still (frame one)` and
+`Action (motion — video only)` columns.
+
+**Reason:** For the style/composition pass, the authored still cell already defines everything visible
+in one image. Assembly from additional columns creates a second source of truth and turns motion into
+impossible still-image instructions. Exact extraction is simpler, auditable, and preserves Vince's
+approved framing. Krea taste controls belong in API parameters, not prompt prose.
+
+**Consequences:** `krea_style_comp.py` is the sole Stage-A compiler. It requires a current stable Shot
+ID registry, compiles one packet per unique setup, excludes shared and source-photo shots, and rejects
+motion/workflow contamination. `krea_style_comp_run.py` consumes packets without rewriting them, uses
+`creativity=raw` plus neutral K2 sliders, records the complete request fingerprint, downloads and
+ledgers each result before the next paid job, and resumes without resubmitting completed work. The
+legacy Stage-A path in `two_pass.py` remains disabled.

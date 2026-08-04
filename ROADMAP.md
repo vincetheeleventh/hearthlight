@@ -48,16 +48,28 @@ reading of the current tree, not Vince's confirmation.
 
 > ⚠️ **NEEDS VINCE** — this list has not been reviewed in four weeks. Which of these are still real?
 
-## Mid term
+## The v1 target — CONFIRMED by Vince, 2026-08-03
 
-**Run the pilot end to end.** *(CONFIRMED — `HANDOFF.md` §6)*
-Bless the McConaughey mise-en-scène style block (DRAFT → LOCKED, which unblocks image generation),
-then push one story through every gate. The stated goal is not polish — it is to **find where the
-seams fail**, because handoffs between stages break more often than the stages themselves.
+**v1 = the finished Yu-Gi-Oh! film + version one of the system architecture that finished it.**
+Full definition in `GOALS.md`. This supersedes `HANDOFF.md` §6, which named McConaughey as the pilot
+to push end to end. **`yugioh` is the active film; `mcconaughey-call` is not the v1 target.**
 
-**Blocked by:** the style block is still DRAFT, and `selfcheck` deliberately blocks generation until
-it is blessed. `mcconaughey-call/status.yml` shows seven gates as `unconfirmed` — work exists with no
-recorded ✅.
+Current position and the road out:
+
+| Phase | State |
+|---|---|
+| Storyboard | **Done** — `yugioh/status.yml` shows `gate4_storyboard: approved 2026-07-30` |
+| **Image pipeline** | **ACTIVE.** Style/composition compiler + paid runner calibrated on Shots 1–2: exact frame-one prompts, stable IDs, raw K2 parameters, durable resume. Remaining 26 unique setups await recorded batch cost approval. Likeness + final selection follow. |
+| Video | **Next.** Turn project documents into a working video-generation prompt, then refine the process against real output |
+| Score | **Later.** ElevenLabs pass for the film score |
+
+**The prioritization rule that follows:** work that does not move the Yu-Gi-Oh! film toward
+completion, or harden the pipeline carrying it, gets **parked — not built.** Apply this before the
+six criteria in `GOALS.md`.
+
+**Note on the gate ledger:** `yugioh/status.yml` shows gates 0–3 as `pending` while gate 4 is
+approved — the film advanced faster than the ledger was maintained. Worth a ratification pass so the
+record matches reality.
 
 ## Long term
 
@@ -101,7 +113,7 @@ shaping proposals, the crew arguing rather than complying.
 ## Open questions
 
 1. Is the deliverable the film or the engine? *(See `GOALS.md`.)*
-2. What does "done" look like for v1? No success criterion exists.
+2. ~~What does "done" look like for v1?~~ ✅ **ANSWERED 2026-08-03** — see *The v1 target* above.
 3. Should `HANDOFF.md` be retired now that `GOALS.md` / `PRODUCT_SPEC.md` / `ROADMAP.md` exist?
    It is the largest doc, the most stale, and the main source of client-into-engine leakage.
 4. Do the three vendored `krea-*` packs stay, or go?

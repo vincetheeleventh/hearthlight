@@ -15,7 +15,9 @@
   "pipeline_diagram_id": "3458764677512299510",
   "notes": [
     "The daily checkpoint UPDATES the blocks above in place (layout_update) — it does not recreate the frame.",
-    "pipeline_diagram_id is Vince's hand-built flowchart. The job does NOT edit it. If the pipeline changes, the checkpoint reports the mismatch in the 'health' block and Vince updates the art deliberately.",
+    "pipeline_diagram_id is a GENERATED diagram object, not hand-placed shapes. The WEEKLY workshop may regenerate it from DSL when the pipeline genuinely changes — a stage added, a skill renamed or retired. The DAILY checkpoint never touches it.",
+    "Only regenerate for substance, never cosmetics: the trigger is PRODUCT_SPEC.md § pipeline no longer matching what the diagram shows.",
+    "Known gaps as of 2026-08-03: hearthlight-character, hearthlight-dashboard, hearthlight-shot-runner are absent from the diagram.",
     "If a block id 404s, someone deleted it by hand — recreate the panel and update this file."
   ]
 }
