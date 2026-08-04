@@ -99,6 +99,15 @@ proposals, the crew arguing rather than complying.
    so editing the shot list fails the suite and can block a checkpoint commit.
 8. **`yugioh/status.yml` shows gates 0–3 `pending` while gate 4 is approved.** The film outran its
    ledger; it needs a ratification pass. (P-004)
+9. **A project's central document has no home the code reads.** `yugioh/02-outline/FILM-BRIEF.md`
+   declares itself authoritative and supersedes `distribution-spec.md`, but eight code paths read
+   `distribution-spec.md` and none read the brief. The conventions name no slot for a brief.
+10. **The image ledger is write-only.** `yugioh/04-images/` holds 68 PNGs; `generations.jsonl` knows
+    30, and all 30 read `selected_final: false`. Which still is the approved base for a shot is
+    answerable only by folder name — the row-number failure D-009 exists to prevent, one level up.
+
+*Both found by the structure audit: `governance/audits/2026-08-04-yugioh-structure.md`. The
+directory restructure that would fix the first is parked until `yugioh` ships (P-007).*
 
 ## Experiments
 
