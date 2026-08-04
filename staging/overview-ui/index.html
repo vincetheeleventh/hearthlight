@@ -1,0 +1,575 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#10141a">
+    <title>Hearthlight Studio</title>
+    <link rel="icon" href="/static/icons/wheel-favicon.png" type="image/png">
+    <link rel="apple-touch-icon" href="/static/icons/wheel-192.png">
+    <link rel="manifest" href="/static/manifest.webmanifest?v=20260713-wheel">
+    <link rel="stylesheet" href="/static/styles.css?v=20260728-research-workspaces">
+    <link rel="stylesheet" href="/static/production.css?v=20260803-shot-first">
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <div class="brand-block">
+          <h1>Hearthlight Studio</h1>
+          <p id="projectMeta">Loading projects...</p>
+        </div>
+        <nav class="workspace-tabs" aria-label="Studio library">
+          <button id="projectsTab" type="button">Projects</button>
+          <button id="filmStudiesTab" type="button">Film Studies</button>
+        </nav>
+        <div id="legacyToolbar" class="toolbar" aria-label="Film Study controls">
+          <button id="homeButton" class="ghost-button" type="button">Library</button>
+          <button id="researchButton" class="ghost-button" type="button">Research</button>
+          <select id="projectSelect" aria-label="Project"></select>
+          <button id="editToggle" class="ghost-button" type="button">Edit</button>
+          <button id="saveButton" class="primary-button" type="button" disabled>Save Corrections</button>
+        </div>
+      </header>
+      <section id="productionView" class="production-view" hidden>
+        <div id="productionContent"></div>
+      </section>
+
+      <section id="homeView" class="home-view">
+        <section class="home-intake" aria-label="Create studies">
+          <div class="upload-panel">
+            <div id="uploadDrop" class="upload-drop" role="button" tabindex="0">
+              <input id="uploadInput" type="file" accept="video/mp4,video/quicktime,video/webm,video/x-matroska" hidden>
+              <strong>Drop video</strong>
+              <span>or click to choose</span>
+            </div>
+          </div>
+          <section class="channel-import" aria-label="Channel import">
+            <label>
+              Link or copied list
+              <textarea id="channelUrlField" rows="3" placeholder="Paste one video URL, a channel URL, or a copied block of links"></textarea>
+            </label>
+            <div class="channel-import-row">
+              <label>
+                Videos
+                <select id="channelLimitField">
+                  <option value="5">Most popular 5</option>
+                  <option value="10">Most popular 10</option>
+                </select>
+              </label>
+              <button id="importChannelButton" class="primary-button" type="button">Import Links</button>
+            </div>
+          </section>
+        </section>
+        <div id="uploadStatus" class="upload-status" aria-live="polite"></div>
+        <header class="library-heading">
+          <div>
+            <h2>Library</h2>
+            <span id="libraryCount"></span>
+          </div>
+          <button id="createFolderButton" type="button">New Folder</button>
+        </header>
+        <section id="filmGrid" class="film-grid" aria-label="Past film breakdowns"></section>
+      </section>
+
+      <section id="researchView" class="research-view" hidden>
+        <header class="research-heading">
+          <div>
+            <span class="eyebrow">Purpose-aware discovery</span>
+            <h2>Research workspace</h2>
+            <p id="researchModeDescription">Set the question, tune the run, and keep an eye on its progress.</p>
+          </div>
+          <div class="research-heading-actions">
+            <nav class="research-mode-switcher" aria-label="Research workspace mode">
+              <button id="researchModeButton" class="is-active" type="button" aria-pressed="true">
+                <span>Research</span>
+                <small>Run the search</small>
+              </button>
+              <button id="researchStudyModeButton" type="button" aria-pressed="false">
+                <span>Study</span>
+                <small>Read the findings</small>
+              </button>
+            </nav>
+            <div id="researchStatus" class="research-status" aria-live="polite"></div>
+          </div>
+        </header>
+
+        <section id="researchModePanel" class="research-mode-panel">
+          <div class="research-console-layout">
+            <section class="research-profile-panel research-run-builder">
+              <header class="research-panel-heading">
+                <div>
+                  <span class="eyebrow">New run</span>
+                  <h3>What should we investigate?</h3>
+                </div>
+              </header>
+              <label>
+                Research profile
+                <select id="researchProfileSelect"></select>
+              </label>
+              <div id="researchProfileDescription" class="research-profile-description"></div>
+              <details class="research-ranking-summary">
+                <summary>What this profile rewards</summary>
+                <div id="researchCriteria" class="research-criteria"></div>
+                <div class="research-profile-actions">
+                  <button id="cloneResearchProfile" type="button">Clone as Custom</button>
+                  <button id="saveResearchProfile" type="button" hidden>Save Profile</button>
+                </div>
+              </details>
+
+              <label>
+                Research purpose
+                <textarea id="researchPurpose" rows="3" placeholder="What are you trying to learn or make?"></textarea>
+              </label>
+              <label>
+                Target viewer
+                <input id="researchTargetViewer" type="text" placeholder="Who should this speak to?">
+              </label>
+              <label>
+                Creator, hashtag, channel, or video sources
+                <textarea id="researchSources" rows="6" placeholder="Paste one public URL per line. Instagram Reel links are the dependable Instagram fallback."></textarea>
+              </label>
+
+              <details class="research-advanced-settings">
+                <summary>Filters and boundaries</summary>
+                <div class="research-form-row">
+                  <label>
+                    Language
+                    <input id="researchLanguage" type="text" placeholder="English">
+                  </label>
+                  <label>
+                    Geography
+                    <input id="researchGeography" type="text" placeholder="Optional">
+                  </label>
+                  <label>
+                    Lookback days
+                    <input id="researchLookback" type="number" min="0" max="36500" step="1" title="Use 0 for any age">
+                  </label>
+                </div>
+                <label>
+                  Topics and keywords
+                  <textarea id="researchKeywords" rows="2" placeholder="Themes, formats, and ideas to include"></textarea>
+                </label>
+                <label>
+                  Content exclusions
+                  <textarea id="researchExclusions" rows="2" placeholder="Topics or formats to exclude"></textarea>
+                </label>
+                <label>
+                  Sensitivity boundaries
+                  <textarea id="researchSensitivity" rows="3" placeholder="Graphic illness, deathbed imagery, religious framing, children, or other boundaries"></textarea>
+                </label>
+              </details>
+
+              <details id="customProfileEditor" class="custom-profile-editor" hidden>
+                <summary>Edit custom ranking and Qwen rubric</summary>
+                <label>
+                  Profile name
+                  <input id="customProfileName" type="text">
+                </label>
+                <div id="customCriteriaEditor" class="custom-criteria-editor"></div>
+                <p id="customWeightTotal" class="custom-weight-total"></p>
+                <label>
+                  Tie-breaker
+                  <select id="customTieBreaker">
+                    <option value="none">None</option>
+                    <option value="thoughtful_reception">Thoughtful reception</option>
+                    <option value="instructional_quality">Instructional quality</option>
+                  </select>
+                </label>
+                <label>
+                  Qwen research rubric
+                  <textarea id="customRubric" rows="9"></textarea>
+                </label>
+              </details>
+
+              <button id="startResearchRun" class="primary-button research-start" type="button">Start research run</button>
+              <p class="research-note">Up to 200 candidates, with the strongest references surfaced for study.</p>
+            </section>
+
+            <aside class="research-history-panel">
+              <header class="research-panel-heading">
+                <div>
+                  <span class="eyebrow">Activity</span>
+                  <h3>Run history</h3>
+                </div>
+                <span id="researchRunCount" class="research-history-count"></span>
+              </header>
+              <div class="research-history-toolbar">
+                <label>
+                  Show
+                  <select id="researchHistoryFilter">
+                    <option value="all">All runs</option>
+                    <option value="active">Active</option>
+                    <option value="completed">Completed</option>
+                    <option value="issues">Failed or cancelled</option>
+                  </select>
+                </label>
+              </div>
+              <select id="researchRunSelect" hidden aria-hidden="true"></select>
+              <section id="researchProgress" class="research-run-progress" hidden>
+                <div>
+                  <strong id="researchProgressStage">Preparing research</strong>
+                  <span id="researchProgressValue">0%</span>
+                </div>
+                <div class="analysis-progress-track"><span id="researchProgressBar"></span></div>
+                <p id="researchProgressMessage"></p>
+                <button id="cancelResearchRun" type="button" hidden>Cancel selected run</button>
+              </section>
+              <div id="researchRunHistory" class="research-run-history"></div>
+              <div id="researchEmpty" class="research-empty">
+                No research runs yet. Configure the first one on the left.
+              </div>
+            </aside>
+          </div>
+        </section>
+
+        <section id="researchStudyModePanel" class="research-study-mode-panel" hidden>
+          <div class="research-study-layout">
+            <aside class="research-report-library">
+              <header class="research-panel-heading">
+                <div>
+                  <span class="eyebrow">Archive</span>
+                  <h3>Reports</h3>
+                </div>
+                <span id="researchReportCount" class="research-history-count"></span>
+              </header>
+              <div id="researchReportHistory" class="research-report-history"></div>
+            </aside>
+
+            <main class="research-report-reader">
+              <div id="researchStudyEmpty" class="research-empty">
+                Complete a research run to create the first report.
+              </div>
+              <div id="researchStudyContent" hidden>
+                <header class="research-report-heading">
+                  <div>
+                    <span id="researchReportProfile" class="eyebrow"></span>
+                    <h2 id="researchReportTitle">Research report</h2>
+                    <p id="researchReportMeta"></p>
+                  </div>
+                  <button id="reuseResearchReport" type="button">Use these settings</button>
+                </header>
+                <section id="researchStudyStats" class="research-study-stats" aria-label="Report summary"></section>
+                <article id="researchReportArticle" class="research-report-article"></article>
+                <section class="research-evidence-section">
+                  <header>
+                    <div>
+                      <span class="eyebrow">Evidence library</span>
+                      <h3>Ranked references</h3>
+                    </div>
+                    <span id="researchResultCount"></span>
+                  </header>
+                  <section id="researchResults" class="research-result-grid" aria-label="Ranked research results"></section>
+                </section>
+              </div>
+            </main>
+          </div>
+        </section>
+      </section>
+
+      <section id="studyView" class="study-view" hidden>
+        <section class="status-row" aria-live="polite">
+          <div id="statusText">Preparing the shot board.</div>
+          <div id="studySourcePanel" class="study-source-panel" hidden>
+            <button id="openFolderButton" class="source-link" type="button">Open Folder</button>
+            <a id="sourceLink" class="source-link" href="#" target="_blank" rel="noreferrer">Open Original</a>
+            <div id="socialStats" class="social-stats"></div>
+          </div>
+          <div id="editHelp" class="edit-help" hidden>
+            Select adjacent shots to combine or link. Drag selected shots onto an existing sentence to move them there.
+          </div>
+        </section>
+
+        <section id="fullVideoPanel" class="full-video-panel" hidden>
+          <header class="full-video-header">
+            <div>
+              <strong>Full Video</strong>
+              <span>Watch the entire film without leaving the study.</span>
+            </div>
+            <button id="fullVideoToggle" type="button">Watch Full Video</button>
+          </header>
+          <div id="fullVideoFrame" class="full-video-frame" hidden>
+            <video id="fullVideo" playsinline controls preload="metadata"></video>
+          </div>
+        </section>
+
+        <section class="edit-panel" id="editPanel" hidden>
+          <div class="selection-readout">
+            <strong id="selectionCount">0 selected</strong>
+            <span id="selectionRange">Select shots to combine.</span>
+          </div>
+          <div class="edit-actions">
+            <button id="combineSelected" type="button" disabled>Combine Selected</button>
+            <button id="combineWithNext" type="button" disabled>Combine With Next</button>
+            <button id="linkSentence" type="button" disabled>Link as Sentence</button>
+            <button id="removeFromSentence" type="button" disabled>Remove from Sentence</button>
+            <details class="scope-menu">
+              <summary>Analysis Scope</summary>
+              <div class="scope-menu-popover">
+                <button id="useSelectedAnalysis" type="button" disabled>Analyze Only Selected</button>
+                <button id="excludeSelected" type="button" disabled>Exclude Selected</button>
+                <button id="includeSelected" type="button" disabled>Include Selected</button>
+                <button id="includeAllShots" type="button">Include All Shots</button>
+              </div>
+            </details>
+            <button id="clearSelection" type="button">Clear</button>
+            <button id="undoEdit" type="button" disabled>Undo</button>
+          </div>
+        </section>
+
+        <section class="llm-panel">
+          <label class="llm-context">
+            Your read on the film
+            <textarea id="filmContextField" rows="4" placeholder="Paste your thoughts, hypotheses, motifs, causality notes, editing questions, or things you want the model to look for."></textarea>
+          </label>
+          <div class="llm-controls">
+            <label>
+              Video analysis model
+              <select id="modelField">
+                <option value="qwen3.5-omni-plus" selected>Qwen 3.5 Omni Plus - default video + sound</option>
+                <option value="qwen3.7-plus">Qwen 3.7 Plus - visual reasoning</option>
+                <option value="qwen3-vl-plus">Qwen 3 VL Plus - dedicated vision</option>
+                <option value="qwen3-vl-flash">Qwen 3 VL Flash - faster vision</option>
+              </select>
+            </label>
+            <div class="analysis-actions">
+              <button id="generateDetails" class="primary-button" type="button">Analyze Film</button>
+              <details class="analysis-menu">
+                <summary aria-label="Analysis options" title="Analysis options">...</summary>
+                <div class="analysis-menu-popover">
+                  <button id="reprocessVideo" type="button" disabled>Reprocess Full Video</button>
+                </div>
+              </details>
+            </div>
+            <div class="study-handoff-actions">
+              <button id="askThisFilm" type="button">Ask This Film</button>
+              <button id="exportForAi" type="button">Export for AI</button>
+            </div>
+            <p id="analysisScopeStatus" class="analysis-scope-status"></p>
+            <p id="analysisStatus" class="analysis-status">Ready for first analysis.</p>
+            <div id="analysisProgress" class="analysis-progress" hidden>
+              <div class="analysis-progress-heading">
+                <span id="analysisPulse" class="analysis-pulse" aria-hidden="true"></span>
+                <strong id="analysisPhase">Preparing analysis</strong>
+                <span id="analysisElapsed">0:00</span>
+              </div>
+              <div class="analysis-progress-track" aria-hidden="true">
+                <span id="analysisProgressBar"></span>
+              </div>
+              <p id="analysisProgressDetail"></p>
+            </div>
+            <details id="analysisHistory" class="analysis-history">
+              <summary>
+                <span>Run History</span>
+                <span id="analysisHistoryCount">No runs</span>
+              </summary>
+              <div id="analysisUsage" class="analysis-usage" hidden></div>
+              <div id="analysisHistoryList" class="analysis-history-list"></div>
+            </details>
+          </div>
+        </section>
+
+        <section id="narrativeStrip" class="narrative-strip" aria-label="Runtime minimap" hidden>
+          <div class="narrative-bar">
+            <div class="narrative-chips" role="group" aria-label="Minimap lanes">
+              <button type="button" class="narrative-chip" data-lane="charge">charge</button>
+              <button type="button" class="narrative-chip" data-lane="questions">questions</button>
+              <button type="button" class="narrative-chip" data-lane="ledger">ledger</button>
+              <button type="button" class="narrative-chip" data-lane="questionLoad">question load</button>
+              <button type="button" class="narrative-chip" data-lane="movement">camera movement</button>
+            </div>
+            <div class="narrative-status">
+              <select id="chargeAxisFilter" class="narrative-axis-filter" aria-label="Show one value axis">
+                <option value="">all axes</option>
+              </select>
+              <input type="text" id="ledgerName" class="narrative-ledger-name"
+                     placeholder="what accrues (e.g. what he is owed)" autocomplete="off">
+              <span id="narrativeChargeState" class="narrative-charge-state"></span>
+              <button type="button" id="questionLedgerToggle" class="narrative-ledger-toggle" aria-expanded="false">
+                Question ledger
+              </button>
+            </div>
+          </div>
+          <div id="narrativeMinimap" class="narrative-minimap"></div>
+          <div class="narrative-axis" aria-hidden="true">
+            <span id="narrativeAxisStart">0:00</span>
+            <span id="narrativeAxisEnd"></span>
+          </div>
+          <div id="narrativeTooltip" class="narrative-tooltip" role="status" hidden></div>
+        </section>
+        <datalist id="chargeAxisOptions"></datalist>
+
+        <section id="questionLedger" class="question-ledger" aria-label="Question ledger" hidden>
+          <form id="questionOpenForm" class="question-open-form">
+            <input
+              type="text"
+              id="questionText"
+              class="question-text-field"
+              placeholder="What is the audience made to wonder?"
+              autocomplete="off"
+            />
+            <select id="questionKind" class="question-kind-field" aria-label="Question kind">
+              <option value="curiosity">curiosity &mdash; a gap about the past</option>
+              <option value="suspense" selected>suspense &mdash; uncertainty about the future</option>
+              <option value="surprise">surprise &mdash; a gap they didn't know existed</option>
+            </select>
+            <button type="submit" class="question-open-button">Open</button>
+          </form>
+          <p id="questionError" class="question-error" hidden></p>
+          <div class="question-lists">
+            <div class="question-column">
+              <h3>Open <span id="questionOpenCount" class="question-count"></span></h3>
+              <ul id="questionOpenList" class="question-list"></ul>
+            </div>
+            <details class="question-column question-closed">
+              <summary>
+                Closed <span id="questionClosedCount" class="question-count"></span>
+              </summary>
+              <ul id="questionClosedList" class="question-list"></ul>
+            </details>
+          </div>
+        </section>
+
+        <section id="shotGrid" class="shot-grid" aria-label="Shot overview"></section>
+      </section>
+    </main>
+
+    <section id="sentencePopover" class="sentence-popover" aria-label="Filmic sentence editor" hidden>
+      <div class="sentence-popover-card">
+        <div class="sentence-popover-header">
+          <span id="sentencePopoverLabel"></span>
+          <button id="closeSentencePopover" class="icon-button" type="button" aria-label="Close sentence editor">X</button>
+        </div>
+        <div id="sentencePopoverShots" class="sentence-popover-shots"></div>
+        <label>
+          Sentence Title
+          <input id="sentenceTitleField" type="text" autocomplete="off">
+        </label>
+        <label>
+          Idea / Description
+          <textarea id="sentenceIdeaField" rows="4"></textarea>
+        </label>
+        <div class="sentence-popover-actions">
+          <button id="selectSentenceShots" type="button">Select Shots</button>
+          <button id="removeSentence" type="button">Remove Sentence</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="detailResolution" class="detail-resolution" aria-modal="true" role="dialog" hidden>
+      <div class="detail-resolution-card">
+        <div class="detail-resolution-header">
+          <div>
+            <strong id="detailResolutionTitle">Resolve shot details</strong>
+            <p id="detailResolutionSummary"></p>
+          </div>
+          <button id="cancelDetailResolution" class="icon-button" type="button" aria-label="Cancel detail choice">X</button>
+        </div>
+        <div id="detailResolutionOptions" class="detail-resolution-options"></div>
+      </div>
+    </section>
+
+    <section id="detailView" class="detail-view" aria-modal="true" role="dialog" hidden>
+      <div class="detail-stage">
+        <button id="closeDetail" class="icon-button close-button" type="button" aria-label="Close detail view">X</button>
+        <button id="prevShot" class="nav-button nav-prev" type="button" aria-label="Previous shot">&lt;</button>
+        <figure class="shot-focus">
+          <div class="shot-media">
+            <img id="detailImage" alt="">
+            <video id="detailVideo" hidden playsinline controls></video>
+            <button id="detailPlayOverlay" class="detail-play-overlay" type="button" aria-label="Play this shot" title="Play this shot">
+              <span aria-hidden="true">&#9654;</span>
+            </button>
+          </div>
+          <figcaption>
+            <div class="detail-meta-line">
+              <span id="detailCounter"></span>
+              <span id="detailTiming"></span>
+            </div>
+            <div id="detailSentenceTitle" class="detail-sentence-title" hidden></div>
+          </figcaption>
+        </figure>
+        <button id="nextShot" class="nav-button nav-next" type="button" aria-label="Next shot">&gt;</button>
+      </div>
+      <div class="notes-drawer">
+        <section class="split-panel">
+          <div class="split-actions">
+            <button id="playDetailShot" type="button">Play Shot</button>
+            <button id="stopDetailShot" type="button" hidden>Stop</button>
+            <button id="startScreencap" type="button">Change Screencap</button>
+            <button id="startSplit" type="button">Split Shot</button>
+            <button id="cancelSplit" type="button" hidden>Cancel Split</button>
+            <button id="applyScreencap" class="primary-button" type="button" hidden>Apply Screencap</button>
+            <button id="applySplit" class="primary-button" type="button" hidden>Apply Split</button>
+          </div>
+          <div id="splitControls" class="split-controls" hidden>
+            <label>
+              <span id="timelineControlLabel">Cut point</span>
+              <input id="splitSlider" type="range" min="0" max="1" step="0.01" value="0">
+            </label>
+            <div class="split-readout">
+              <button id="nudgeBack" type="button">-0.05s</button>
+              <strong id="splitTime">00:00:00.00</strong>
+              <button id="nudgeForward" type="button">+0.05s</button>
+            </div>
+          </div>
+        </section>
+        <div class="notes-grid">
+          <label>
+            Shot Title
+            <textarea id="titleField" rows="4"></textarea>
+          </label>
+          <label>
+            Notes
+            <textarea id="notesField" rows="4"></textarea>
+          </label>
+          <label>
+            Visual Description
+            <textarea id="visualField" rows="4"></textarea>
+          </label>
+          <label>
+            Audio / Dialogue
+            <textarea id="audioField" rows="4"></textarea>
+          </label>
+          <label>
+            Action / Camera
+            <textarea id="actionField" rows="4"></textarea>
+          </label>
+          <label>
+            Narrative Function
+            <textarea id="narrativeField" rows="4"></textarea>
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <section id="filmChat" class="film-chat" aria-label="Ask this film" hidden>
+      <div class="film-chat-backdrop"></div>
+      <aside class="film-chat-panel">
+        <header class="film-chat-header">
+          <div>
+            <strong>Ask This Film</strong>
+            <span id="filmChatModel">Continuing from saved film memory</span>
+          </div>
+          <div class="film-chat-header-actions">
+            <button id="clearFilmChat" type="button">New Conversation</button>
+            <button id="closeFilmChat" class="icon-button" type="button" aria-label="Close conversation">X</button>
+          </div>
+        </header>
+        <div id="filmChatMessages" class="film-chat-messages" aria-live="polite"></div>
+        <form id="filmChatForm" class="film-chat-form">
+          <label for="filmChatQuestion">Ask about editing, cinematography, sound, narrative, or your own interpretation.</label>
+          <textarea id="filmChatQuestion" rows="3" placeholder="What am I missing about how this sequence works?"></textarea>
+          <div>
+            <span id="filmChatStatus"></span>
+            <button id="sendFilmChat" class="primary-button" type="submit">Send</button>
+          </div>
+        </form>
+      </aside>
+    </section>
+
+    <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+    <script src="/static/productions.js?v=20260803-shot-first" type="module"></script>
+    <script src="/static/app.js?v=20260728-research-workspaces" type="module"></script>
+  </body>
+</html>
