@@ -1,0 +1,41 @@
+// ─── Syncthing ignore rules — Film Study Tool / outputs ─────────────────────
+//
+// Folder ID:  film-study-outputs
+// Windows:    C:\Users\vxi\OneDrive\Documents\Film Study Tool\outputs
+// macOS:      ~/Documents/Film Study Tool/outputs
+//
+// ~291 MB: the actual film studies — workbooks, manifests, extracted frames.
+// This is the work. data/ is NOT synced (see PORTING.md): it holds 1.7 GB of
+// downloaded source video that is re-downloadable and includes ~800 MB of
+// duplicates.
+//
+// ⚠ OneDrive OVERLAP: this folder is inside OneDrive on Windows. Running both
+// OneDrive and Syncthing over the same files causes conflict storms. Pick one —
+// either exclude "Film Study Tool" from OneDrive (Settings → Account → Choose
+// folders), or drop this Syncthing folder and let OneDrive carry it.
+// ─────────────────────────────────────────────────────────────────────────────
+
+// ── Never sync ──────────────────────────────────────────────────────────────
+(?d).DS_Store
+(?d)Thumbs.db
+(?d)desktop.ini
+(?d)__pycache__
+*.pyc
+
+// Scratch and logs
+*.tmp
+*.swp
+~$*
+.~lock.*
+*.log
+
+// Syncthing's own conflict copies — resolve them, do not propagate them
+*.sync-conflict-*
+
+// OneDrive placeholder/lock artifacts, if OneDrive is still active here
+*.lnk
+.tmp.drivedownload
+
+// ── Everything else syncs ───────────────────────────────────────────────────
+// Workbooks (.xlsx), manifests (.json/.csv), extracted frames (.jpg),
+// per-project film-study folders.
