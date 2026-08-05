@@ -3,6 +3,7 @@ from __future__ import annotations
 import importlib.util
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 
 SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "prompt_authoring.py"
@@ -134,6 +135,16 @@ class VisibilityAwarePromptTests(unittest.TestCase):
         incomplete = {**spec, "prompt_body": "One still figure.", "quality_checks": {}}
         self.assertTrue(any("self-audit failed" in value.casefold() for value in self.validate(incomplete, {})))
 
+    def test_rant_event_is_loaded_as_current_confirmed_vision(self) -> None:
+        event = {
+            "event": "vision-rant-applied", "shot_id": "shot-8", "revision": 2,
+            "vision": "Current direction", "confirmed_by_user": True,
+        }
+        with patch.object(authoring, "seed_visions", return_value={}), patch.object(authoring, "read_jsonl", return_value=[event]):
+            current = authoring.current_visions(Path("."))["shot-8"]
+        self.assertEqual(current["revision"], 2)
+        self.assertEqual(current["vision"], "Current direction")
+        self.assertTrue(current["confirmed_by_user"])
     def test_focused_contract_is_injected_into_author_and_reviewer(self) -> None:
         guide = authoring.author_guide()
         self.assertIn("Five control layers", guide)

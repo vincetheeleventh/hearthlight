@@ -349,7 +349,7 @@ def approved_vision_packets(root: Path) -> dict[str, tuple[Path, dict]]:
     }
     current_revision: dict[str, int] = {}
     for event in events:
-        if event.get("event") in {"vision-migrated", "vision-updated", "vision-reverted"} and event.get("shot_id"):
+        if event.get("event") in {"vision-migrated", "vision-updated", "vision-reverted", "vision-rant-applied"} and event.get("shot_id"):
             current_revision[str(event["shot_id"])] = int(event.get("revision") or 0)
     selected: dict[str, tuple[Path, dict]] = {}
     batch_files = sorted((root / "04-images" / "prompt-specs").glob("*/batch.json"), key=lambda path: path.stat().st_mtime, reverse=True)

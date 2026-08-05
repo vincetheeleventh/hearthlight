@@ -73,10 +73,12 @@ Model: live-discovered `krea/krea-2/medium`. Master: the Film Brief's declared a
 Goal: approve style and the visible arrangement of one frozen instant. Facial likeness remains
 provisional; Stage B owns identity replacement.
 
-**Creative authority:** the latest submitted Shot Vision in `04-images/shot-vision.jsonl`. The
-workbook remains exact imported evidence: Still, Action, Camera Movement, Notes, and stable Shot ID
-stay separate. Beat and narrative material may explain meaning, but never enter a prompt as abstract
-prose. Generated prompts never rewrite Shot Vision.
+**Creative authority:** the latest submitted Shot Vision in `04-images/shot-vision.jsonl`, joined by
+permanent Shot ID to the current `05-storyboard/shots.json` technical baseline. Imported hand-drawn
+board workbooks are historical reference evidence only: archive them immutably, never let them regain
+authority, and never block compilation because an old workbook is stale. A spreadsheet is generated
+only as a human-readable handoff/export of current Studio state. Beat and narrative material may explain
+meaning, but never enter a prompt as abstract prose. Generated prompts never rewrite Shot Vision.
 
 **Focused author contract:** `references/PROMPT-AUTHOR.md` has one job: translate one validated shot
 bundle into one high-quality Krea prompt. `prompt_authoring.py` injects the full contract into every
@@ -84,7 +86,7 @@ author and reviewer call; the broad Gate 3 workflow in this file is not the work
 
 **Compilation order:**
 1. Python loads and hashes film laws, full visual-system context, declared master aspect, current Shot
-   Vision, storyboard fields, narrative record, adjacent-shot continuity, region-tagged character
+   Vision, current shot-registry fields, narrative record, adjacent-shot continuity, region-tagged character
    facts, mapped assets, special lighting laws, and the Krea provider profile.
 2. A tool-restricted Hermes Shot Prompt Author uses the focused guide to make the visual judgments:
    crop-first visibility, observable emotion, atomic ownership, medium translation, semantic-density
@@ -195,6 +197,8 @@ Warrior Returning Alive title.
 - `04-images/prompt-packets/`: exact submitted prompts and reference arrays.
 - `04-images/generations.jsonl`: append-only generation, review, and selection truth.
 - `04-images/status.md`: derived view only.
+- `05-storyboard/archive/hand-drawn-board-snapshots/`: immutable imported board workbooks and manifest.
+- `05-storyboard/exports/`: disposable human-readable handoffs generated from current Studio state; never authority.
 
 Read `references/versioned-review.md` for event and recovery rules. Never hand-edit derived workflow/status views.
 

@@ -308,7 +308,7 @@ def attach_vision(
 ) -> None:
     by_shot: dict[str, list[dict[str, object]]] = {}
     for event in events:
-        if event.get("event") in {"vision-migrated", "vision-updated", "vision-reverted"}:
+        if event.get("event") in {"vision-migrated", "vision-updated", "vision-reverted", "vision-rant-applied"}:
             by_shot.setdefault(str(event.get("shot_id") or ""), []).append(event)
     for shot in shots:
         shot_id = str(shot.get("shotId") or "")

@@ -44,14 +44,14 @@ class KreaStyleCompositionCompilerTests(unittest.TestCase):
 
     def test_full_batch_compiles_all_unique_v4_setups(self):
         plan, packets = compiler.compile_legacy_batch(PROJECT)
-        self.assertEqual(plan["generation_count"], 28)
-        self.assertEqual(len(packets), 28)
+        self.assertEqual(plan["generation_count"], 29)
+        self.assertEqual(len(packets), 29)
         self.assertEqual(
             {(item["shot"], item["owner_shot"]) for item in plan["shared_setups"]},
-            {("5", "1"), ("18B", "17")},
+            {("18B", "17")},
         )
         self.assertEqual([item["shot"] for item in plan["source_only"]], ["29"])
-        self.assertEqual(len({packet["shot_id"] for _, packet in packets}), 28)
+        self.assertEqual(len({packet["shot_id"] for _, packet in packets}), 29)
 
     def test_every_batch_prompt_equals_its_frame_one_cell(self):
         _, packets = compiler.compile_legacy_batch(PROJECT)

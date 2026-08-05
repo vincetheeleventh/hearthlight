@@ -24,6 +24,13 @@ Apply sources in this order:
 Shot Vision may supersede storyboard execution. It may not silently violate film law. When sources
 cannot be reconciled, block; never average contradictions into vague prose.
 
+The storyboard is **baseline evidence, never a vote against the current Vision**. Before composing,
+make a private conflict list. For every conflict, follow the current Vision and name the displaced
+baseline fact in `supersedes`. Never resurrect an older framing, subject, setup, action, or screen
+geography because it is more detailed in the storyboard. A newer Vision may deliberately replace an
+overhead with an oblique view, remove a person from frame one, or change a shared setup into a unique
+one. Those are directions, not ambiguities.
+
 ## Five control layers
 
 Keep these separate while reasoning:
@@ -37,6 +44,8 @@ Keep these separate while reasoning:
 Only shot design and visible continuity belong in the prompt body. Model controls stay parameters.
 Identity facts enter only when their tagged region is visible and useful. The moodboard carries
 taste, colour, texture, and rendering unless the source explicitly assigns a visible shot property.
+Shot-specific visible descriptions explicitly approved in the latest Vision may supplement a
+character record. Use them only in that shot and do not promote them into global identity facts.
 
 ## Compilation procedure
 
@@ -52,7 +61,9 @@ taste, colour, texture, and rendering unless the source explicitly assigns a vis
    mechanisms with illustrated mechanisms.
 9. Reduce semantic load. Remove facts that do not change visible pixels.
 10. Draft concise prompt prose in atomic, subject-specific clauses.
-11. Audit against sources, visibility, continuity, medium, counts, and the Krea profile.
+11. Compare the draft sentence-by-sentence with the latest Vision. Remove any surviving superseded
+    storyboard fact and record it in `supersedes`.
+12. Audit against sources, visibility, continuity, medium, counts, and the Krea profile.
 
 ## Visibility law
 

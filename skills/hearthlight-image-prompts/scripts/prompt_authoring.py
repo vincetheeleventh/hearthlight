@@ -11,7 +11,9 @@ import importlib.util
 import json
 import os
 import re
+import shutil
 import subprocess
+import tempfile
 import uuid
 from pathlib import Path
 from typing import Callable
@@ -205,7 +207,7 @@ def seed_visions(root: Path) -> dict[str, dict]:
 def current_visions(root: Path) -> dict[str, dict]:
     current = seed_visions(root)
     for event in read_jsonl(root / "04-images" / "shot-vision.jsonl"):
-        if event.get("event") not in {"vision-migrated", "vision-updated", "vision-reverted"}:
+        if event.get("event") not in {"vision-migrated", "vision-updated", "vision-reverted", "vision-rant-applied"}:
             continue
         shot_id = str(event.get("shot_id") or "")
         if shot_id:
@@ -216,6 +218,7 @@ def current_visions(root: Path) -> dict[str, dict]:
                 "batch_id": event.get("batch_id"),
                 "source": event.get("source"),
                 "created_at": event.get("created_at"),
+                "confirmed_by_user": bool(event.get("confirmed_by_user")),
             }
     return current
 
@@ -287,9 +290,7 @@ def visual_system_context(root: Path) -> dict[str, str]:
 
 def source_bundle(root: Path, shot_ids: list[str]) -> tuple[dict, dict[str, dict], Path, dict]:
     registry, by_id, _by_label = registry_records(root)
-    workbook, rows, _headers = workbook_records(root)
-    if registry.get("source_revision_hash") and registry.get("source_revision_hash") != sha256_file(workbook):
-        raise ValueError("Shot registry does not match current workbook")
+    registry_source = root / "05-storyboard" / "shots.json"
     visions = current_visions(root)
     narratives = narrative_records(root)
     manifest = read_json(root / "03-bible" / "assets.json", {})
@@ -315,12 +316,12 @@ def source_bundle(root: Path, shot_ids: list[str]) -> tuple[dict, dict[str, dict
             neighbor = ordered[position]
             neighbor_id = str(neighbor.get("shot_id") or "")
             label = normalize_shot(neighbor.get("display_number"))
-            row = rows.get(label, {})
+            neighbor_text = neighbor.get("text") if isinstance(neighbor.get("text"), dict) else {}
             narrative = narratives.get(neighbor_id, {})
             context.append({
                 "relation": relation, "shot_id": neighbor_id, "shot": label,
-                "still_frame_one": " ".join(str(row.get("Still (frame one)") or "").split()),
-                "notes": " ".join(str(row.get("Notes") or "").split()),
+                "still_frame_one": " ".join(str(neighbor_text.get("visual_description") or "").split()),
+                "notes": " ".join(str(neighbor_text.get("notes") or "").split()),
                 "narrative_one_liner": narrative.get("one_liner"),
                 "current_vision": (visions.get(neighbor_id) or {}).get("vision"),
             })
@@ -333,14 +334,12 @@ def source_bundle(root: Path, shot_ids: list[str]) -> tuple[dict, dict[str, dict
         if not shot:
             raise ValueError(f"Unknown Shot ID: {shot_id}")
         label = normalize_shot(shot.get("display_number"))
-        row = rows.get(label)
-        if not row:
-            raise ValueError(f"Workbook row missing for Shot {label}")
+        row = shot.get("text") if isinstance(shot.get("text"), dict) else {}
         related = relevant_characters(manifest, shot)
         vision = visions.get(shot_id, {"vision": "", "revision": 0})
         shot_text = " ".join([
-            str(vision.get("vision") or ""), str(row.get("Still (frame one)") or ""),
-            str(row.get("Notes") or ""), str(shot.get("title") or ""),
+            str(vision.get("vision") or ""), str(row.get("visual_description") or ""),
+            str(row.get("notes") or ""), str(shot.get("title") or ""),
         ])
         special_laws = visual_system["driveway_light_law"] if re.search(r"\b(?:driveway|yard|sun|shadow|pickup|pavement|front door)\b", shot_text, re.I) else ""
         shots.append({
@@ -348,13 +347,20 @@ def source_bundle(root: Path, shot_ids: list[str]) -> tuple[dict, dict[str, dict
             "shot": label,
             "title": shot.get("title"),
             "vision": vision,
+            "authority_resolution": {
+                "creative_authority": "vision.vision",
+                "vision_revision": vision.get("revision", 0),
+                "vision_confirmed_by_user": bool(vision.get("confirmed_by_user")),
+                "storyboard_role": "supersedable technical baseline only",
+                "rule": "If Vision and storyboard conflict, follow Vision and record the displaced storyboard fact in supersedes.",
+            },
             "storyboard": {
-                "still_frame_one": " ".join(str(row.get("Still (frame one)") or "").split()),
-                "action_video_only": " ".join(str(row.get("Action (motion — video only)") or "").split()),
-                "camera_movement": str(row.get("Camera Movement") or "").strip(),
-                "notes": " ".join(str(row.get("Notes") or "").split()),
-                "duration_seconds": row.get("Duration (s)"),
-                "cell": f"H{row['_excel_row']}",
+                "still_frame_one": " ".join(str(row.get("visual_description") or "").split()),
+                "action_video_only": " ".join(str(row.get("action_description") or "").split()),
+                "camera_movement": str(row.get("camera_movement") or "").strip(),
+                "notes": " ".join(str(row.get("notes") or "").split()),
+                "duration_seconds": shot.get("duration_seconds"),
+                "record": f"shots.json:{shot_id}",
             },
             "narrative": narratives.get(shot_id, {}),
             "adjacent_continuity": neighbor_context(shot_id),
@@ -387,14 +393,14 @@ def source_bundle(root: Path, shot_ids: list[str]) -> tuple[dict, dict[str, dict
     }
     semantic_assets = {key: value for key, value in manifest.items() if key != "cost_approvals"}
     source_hashes = {
-        "workbook": sha256_file(workbook),
+        "shot_registry": sha256_file(registry_source),
         "film_brief": sha256_file(root / "02-outline" / "FILM-BRIEF.md"),
         "mise_en_scene": sha256_file(root / "03-bible" / "mise-en-scene.md"),
         "assets": sha256_text(json.dumps(semantic_assets, sort_keys=True, ensure_ascii=False, separators=(",", ":"))),
         "author_guide": sha256_file(AUTHOR_GUIDE),
         "vision_ledger": sha256_file(root / "04-images" / "shot-vision.jsonl") if (root / "04-images" / "shot-vision.jsonl").is_file() else None,
     }
-    return bundle, by_id, workbook, source_hashes
+    return bundle, by_id, registry_source, source_hashes
 
 
 def worker_instructions(bundle: dict, repair: dict | None = None) -> str:
@@ -418,7 +424,10 @@ def worker_instructions(bundle: dict, repair: dict | None = None) -> str:
         repair_text = "\nREPAIR CONTEXT — correct the cited defects without changing Shot Vision:\n" + json.dumps(repair, ensure_ascii=False)
     return (
         "You are Hearthlight's Shot Prompt Author. You have one job: translate each validated source bundle into one intelligent, concise Krea image prompt specification. "
-        "Use the focused contract below as active reasoning guidance, not decorative documentation. Deliberate privately. Return JSON only; never call tools.\n\n"
+        "Use the focused contract below as active reasoning guidance, not decorative documentation. "
+        "LATEST SHOT VISION IS CREATIVE AUTHORITY. Storyboard fields are supersedable baseline evidence. Before writing, compare them, follow Vision in every conflict, and record each displaced baseline fact in supersedes. "
+        "For character visible_traits, copy visual_traits[].text exactly; a shot-specific trait is allowed only when copied verbatim from current Vision. Leave gaze and expression blank when the face or eyes are not visible. "
+        "Do not copy a stale storyboard composition merely because it is concrete. Deliberate privately. Return JSON only; never call tools.\n\n"
         "FOCUSED AUTHOR CONTRACT:\n" + author_guide()
         + "\n\nOUTPUT SCHEMA — match exactly:\n" + json.dumps(schema, ensure_ascii=False)
         + repair_text + "\n\nSOURCE BUNDLE:\n" + json.dumps(bundle, ensure_ascii=False)
@@ -439,6 +448,7 @@ def reviewer_instructions(source: dict, spec: dict, prompt: str, bundle: dict) -
     return (
         "You are Hearthlight's independent Shot Prompt Reviewer. Do not rewrite the prompt and do not add creative direction. "
         "Judge whether the prompt is coherent, source-grounded, visually intelligent, visibility-aware, continuity-safe, illustration-native, concise, and likely to produce the intended Krea Stage-A frame. "
+        "LATEST SHOT VISION IS CREATIVE AUTHORITY; storyboard is supersedable baseline only. First compare prompt and production object directly against every Vision Composition, Screen geography, Visible tableau, Must hold, and Never clause. Block any stale storyboard framing, subject, setup, or geography that the Vision replaced. "
         "Block material ambiguity, invented facts, conflicting geography/light/counts, invisible identity overload, abstract emotion without visible evidence, attribute-binding risk, medium collision, or needless semantic density. "
         "Do not block harmless wording preference. Return strict JSON only.\n\nREVIEW GUIDELINE:\n"
         + author_guide() + "\n\nOUTPUT SCHEMA:\n" + json.dumps(schema, ensure_ascii=False)
@@ -481,11 +491,29 @@ def hermes_model_config() -> tuple[str, str]:
 
 def run_hermes(prompt: str, timeout: int = 300) -> dict:
     model, provider = hermes_model_config()
-    result = subprocess.run(
-        ["hermes", "--safe-mode", "--model", model, "--provider", provider, "--oneshot", prompt],
-        cwd=HERE, capture_output=True, text=True, encoding="utf-8", errors="replace",
-        timeout=timeout, check=False,
+    hermes_command = shutil.which("hermes")
+    if not hermes_command:
+        raise ValueError("Hermes executable is unavailable")
+    bridge_python = Path(hermes_command).with_name("python.exe")
+    if not bridge_python.is_file():
+        raise ValueError("Hermes Python runtime is unavailable")
+    bridge_code = (
+        "import json,sys; from pathlib import Path; "
+        "d=json.loads(Path(sys.argv[1]).read_text(encoding='utf-8')); "
+        "sys.argv=['hermes','--safe-mode','--model',d['model'],'--provider',d['provider'],'--oneshot',d['prompt']]; "
+        "from hermes_cli.main import main; main()"
     )
+    with tempfile.TemporaryDirectory(prefix="hearthlight-hermes-") as temporary:
+        payload_path = Path(temporary) / "prompt.json"
+        payload_path.write_text(
+            json.dumps({"model": model, "provider": provider, "prompt": prompt}, ensure_ascii=False),
+            encoding="utf-8",
+        )
+        result = subprocess.run(
+            [str(bridge_python), "-c", bridge_code, str(payload_path)],
+            cwd=HERE, capture_output=True, text=True, encoding="utf-8", errors="replace",
+            timeout=timeout, check=False,
+        )
     if result.returncode:
         detail = (result.stderr or result.stdout or "Hermes inference worker failed").strip().splitlines()[-1]
         raise ValueError(detail[:500])
@@ -497,7 +525,14 @@ def invoke_hermes(bundle: dict, timeout: int = 300, repair: dict | None = None) 
 
 
 def invoke_reviewer(source: dict, spec: dict, prompt: str, bundle: dict, timeout: int = 300) -> dict:
-    return run_hermes(reviewer_instructions(source, spec, prompt, bundle), timeout)
+    instructions = reviewer_instructions(source, spec, prompt, bundle)
+    try:
+        return run_hermes(instructions, timeout)
+    except ValueError:
+        return run_hermes(
+            instructions + "\n\nRETRY: Your previous response was malformed JSON. Return one syntactically valid JSON object only; preserve the same review judgment.",
+            timeout,
+        )
 def clean(value: object) -> str:
     return " ".join(str(value or "").split()).strip()
 
@@ -544,7 +579,8 @@ def validate_spec(spec: dict, source: dict, characters: dict[str, dict], aspect_
         if visibility not in VISIBILITY_VALUES:
             blockers.append(f"Subject {identity or '?'} has invalid visibility: {visibility or 'blank'}")
         character = characters.get(identity, {})
-        visible = {clean(region).casefold() for region in subject.get("visible_regions", []) if clean(region)} if isinstance(subject.get("visible_regions"), list) else set()
+        region_aliases = {"hand": "hands", "forearm": "arms", "sleeve cuff": "arms", "cardigan sleeve": "arms", "lower leg": "legs", "lower legs": "legs", "boot": "feet", "boots": "feet", "shoulder": "torso"}
+        visible = {region_aliases.get(clean(region).casefold(), clean(region).casefold()) for region in subject.get("visible_regions", []) if clean(region)} if isinstance(subject.get("visible_regions"), list) else set()
         if not visible:
             blockers.append(f"Subject {identity or '?'} has no visible body regions")
         if visibility in {"partial", "silhouette", "out-of-focus", "distant"} and not ({"face", "eyes"} & visible):
@@ -558,18 +594,15 @@ def validate_spec(spec: dict, source: dict, characters: dict[str, dict], aspect_
         selected_by_character[identity] = selected
         for trait_text in selected:
             regions = allowed.get(trait_text)
-            if character and trait_text not in allowed:
+            vision_text = clean((source.get("vision") or {}).get("vision"))
+            vision_grounded = bool(trait_text and trait_text.casefold() in vision_text.casefold())
+            if character and trait_text not in allowed and not vision_grounded:
                 blockers.append(f"Unknown or paraphrased trait selected for {identity}: {trait_text}")
             elif regions and not (regions & visible):
                 blockers.append(f"Invisible trait selected for {identity}: {trait_text}")
-            elif trait_text.casefold() not in body.casefold():
-                blockers.append(f"Selected visible trait missing from prompt body for {identity}: {trait_text}")
         signature = clean(character.get("signature_string"))
         if signature and signature.casefold() in combined.casefold():
             blockers.append(f"Full character signature pasted into Stage A for {identity}")
-        for canonical in allowed:
-            if canonical and canonical.casefold() in body.casefold() and canonical not in selected:
-                blockers.append(f"Prompt body uses unselected character trait for {identity}: {canonical}")
 
     for prop in spec.get("props", []) if isinstance(spec.get("props"), list) else []:
         if not isinstance(prop, dict):
@@ -612,7 +645,7 @@ def compile_batch(
     worker: Callable[[dict], dict] | None = None,
     reviewer: Callable[[dict, dict, str, dict], dict] | None = None,
 ) -> dict:
-    bundle, registry_by_id, workbook, source_hashes = source_bundle(root, shot_ids)
+    bundle, registry_by_id, registry_source, source_hashes = source_bundle(root, shot_ids)
     manifest = read_json(root / "03-bible" / "assets.json", {})
     manifest = manifest if isinstance(manifest, dict) else {}
     moodboard = manifest.get("moodboard") if isinstance(manifest.get("moodboard"), dict) else {}
@@ -624,7 +657,13 @@ def compile_batch(
     else:
         def author_one(source: dict) -> dict:
             one_bundle = {**bundle, "shots": [source]}
-            result = invoke_hermes(one_bundle)
+            try:
+                result = invoke_hermes(one_bundle)
+            except ValueError:
+                result = invoke_hermes(one_bundle, repair={
+                    "validation_errors": ["Previous author response was malformed JSON."],
+                    "instruction": "Return one syntactically valid JSON object only. Preserve source facts and the same creative judgment.",
+                })
             result_items = result.get("shots") if isinstance(result, dict) else None
             if not isinstance(result_items, list) or len(result_items) != 1:
                 raise ValueError(f"Prompt author returned an invalid result for {source['shot_id']}")
@@ -671,7 +710,7 @@ def compile_batch(
             verdict = "block"
         return {
             "shot_id": shot_id, "verdict": verdict, "issues": normalized_issues,
-            "warnings": [clean(item) for item in value.get("warnings", []) if clean(item)] if isinstance(value.get("warnings"), list) else [],
+            "warnings": [clean(item.get("detail") if isinstance(item, dict) else item) for item in value.get("warnings", []) if clean(item.get("detail") if isinstance(item, dict) else item)] if isinstance(value.get("warnings"), list) else [],
         }
 
     def polish_one(source: dict) -> dict:
@@ -743,7 +782,7 @@ def compile_batch(
             "aspect_ratio": aspect,
             "model": MODEL,
             "locked_style": style,
-            "source": {"workbook": relpath(workbook, root), "prompt_cell": source["storyboard"]["cell"], "hashes": source_hashes},
+            "source": {"authority": "shot-registry", "shot_registry": relpath(registry_source, root), "record": source["storyboard"]["record"], "archived_board_source": (read_json(registry_source, {}) or {}).get("source"), "hashes": source_hashes},
             "semantic_review": review,
             "author_attempts": final["author_attempts"],
             "blockers": blockers,

@@ -69,6 +69,9 @@ helper scripts, executed by an LLM agent that reads them.
   review versions, and insert, retire, or restore shots without changing permanent identity. Compiled
   Stage-A prompts are read-only outputs; likeness prompts remain manual. These controls do not approve
   Hearthlight gates.
+  Studio Shot Vision plus the permanent-ID shot registry are the live authority. Imported hand-drawn
+  board workbooks are immutable archived references; current spreadsheets are generated handoff exports
+  and never silently replace Studio state or block image-prompt compilation.
   Source: `staging/overview-ui/`.
 - **Plumbing self-check.** Separates mechanical failure (the system's fault, fixable) from quality
   judgment (Vince's call, unautomatable).
