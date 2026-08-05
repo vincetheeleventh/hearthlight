@@ -3,7 +3,7 @@ doc: DECISIONS
 role: law
 authority: canon
 owner: agents
-updated: 2026-08-04
+updated: 2026-08-05
 answers:
   - which design rules are currently in force
   - where a given rule binds
@@ -47,4 +47,5 @@ file, and replace the row.
 | D-015 | The enemy is AI filmmaking itself — wrong generations, drifting style, obsolete workflows — not a competitor. | `GOALS.md` |
 | D-017 | Canon documents state the current state only. History moves to `archive/`; every canon doc carries YAML front matter. | `governance/canon.py`, all canon docs |
 | D-018 | Stage-A prompts compile from versioned Shot Vision into visibility-aware production objects; Action is validation context only, and exact Prompt Board approval precedes spend. | Studio, `hearthlight-image-prompts`, Krea runner |
-| D-019 | Stage-A prompt craft belongs to a focused LLM author; Python grounds and enforces invariants, and an independent LLM reviewer must pass semantic quality before approval. | hearthlight-image-prompts, Studio Prompt Board |
+| D-020 | Krea Stage-A prompt craft belongs to a focused LLM author; Python validates but appends no aspect, style, or acceptance prose, and an independent LLM reviewer must pass relational coherence before approval. | hearthlight-image-prompts, Krea packets, Studio Prompt Board |
+| D-021 | Code moves by git; creative work moves by Syncthing. Source media (`00-source/**`) syncs nowhere — it is immutable and rights-constrained. | `projects/.stignore`, `PORTING.md` |
