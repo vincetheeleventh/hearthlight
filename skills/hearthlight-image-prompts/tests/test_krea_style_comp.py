@@ -42,24 +42,18 @@ class KreaStyleCompositionCompilerTests(unittest.TestCase):
         self.assertEqual(packet["shot"], "23B")
         self.assertEqual(packet["title"], "Hiding It")
 
-    def test_full_batch_compiles_all_unique_v4_setups(self):
-        plan, packets = compiler.compile_legacy_batch(PROJECT)
-        self.assertEqual(plan["generation_count"], 29)
-        self.assertEqual(len(packets), 29)
-        self.assertEqual(
-            {(item["shot"], item["owner_shot"]) for item in plan["shared_setups"]},
-            {("18B", "17")},
-        )
-        self.assertEqual([item["shot"] for item in plan["source_only"]], ["29"])
-        self.assertEqual(len({packet["shot_id"] for _, packet in packets}), 29)
+    def test_archived_workbook_cannot_reintroduce_retired_shots(self):
+        with self.assertRaisesRegex(SystemExit, "Workbook/registry shot set mismatch"):
+            compiler.compile_legacy_batch(PROJECT)
 
-    def test_every_batch_prompt_equals_its_frame_one_cell(self):
-        _, packets = compiler.compile_legacy_batch(PROJECT)
-        for _, packet in packets:
-            _, _, record, _ = compiler.source_row(PROJECT, packet["shot"])
-            self.assertEqual(packet["prompt"], compiler.normalize_prompt(record[compiler.STILL_COLUMN]))
-            compiler.validate_prompt(packet["prompt"])
-            self.assertEqual(packet["prompt_sha256"], compiler.text_sha256(packet["prompt"]))
+    def test_current_registry_preserves_retired_shot_history(self):
+        registry = compiler.read_json(PROJECT / "05-storyboard" / "shots.json")
+        active = {str(item["display_number"]) for item in registry["shots"]}
+        retired = {str(item["retired_display_number"]) for item in registry["retired_shots"]}
+        self.assertTrue({"9", "10", "11"}.isdisjoint(active))
+        self.assertTrue({"9", "10", "11"}.issubset(retired))
+        self.assertEqual(len(registry["shots"]), 28)
+
     def test_source_photo_cannot_generate(self):
         with self.assertRaisesRegex(SystemExit, "source photography"):
             compiler.compile_legacy_packet(PROJECT, "29")
