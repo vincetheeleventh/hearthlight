@@ -85,15 +85,24 @@ assemble their intents into a single coherent i2v prompt, resolving phrasing (no
 - If a shot has no crew entries (routine, Mode A), compile from the shot row directly as before.
 - The crew entries are the score; you are the player. Don't override their dimension calls — translate them.
 
-## Companion reference — the structured skeleton
-`references/prompt-architecture.md` holds the full prompt skeleton and the craft behind it: the
-character-count header, reference role-naming, the `GEO SPATIAL LAYOUT` block that stops characters
-teleporting between shots, the one-second opening wide, optics by diagonal field of view rather than
-millimetres, positive-form constraints, scale anchors, and the iteration discipline (one line per
-change; ten-to-fifteen attempts then simplify the shot, not the words).
+## The prompt-director references
+Three companion files under `references/`. Adapted from an outside production practice, proprietary
+and platform-specific naming removed. **Required for WF-B/B2**; for WF-A, reach for them when a clip
+keeps missing.
 
-**Required for WF-B/B2.** For WF-A, reach for it when a clip keeps missing — the usual culprits are
-an unstated first frame, an unnamed reference role, or a constraint written in negative form.
+| File | Holds |
+|---|---|
+| `prompt-architecture.md` | The skeleton and its ordering · the character-count header · reference role-naming · the **`GEO SPATIAL LAYOUT`** block that stops characters teleporting between shots · the one-second opening wide · physics · scale anchors · positive-form constraints · iteration discipline |
+| `optics-language-bank.md` | Six ready-to-paste FOV blocks (8° → 107°) · the lens decision tree · telephoto and wide **visual outcome stacks** · anti-drift locks · multi-shot lens consistency · optics anti-patterns |
+| `failure-locks.md` | The four-D pass (deconstruct / diagnose / develop / deliver) · the diagnosis checklist · context isolation · when negatives are worth writing · safe verb and measurement vocabulary · the ban dictionary · the silent self-QA before sending |
+
+**Why references and not a separate skill:** this skill already owns *the prompt words*. A second
+skill claiming the same territory would create two places to state the same law — the drift D-002
+exists to prevent. The craft is deep enough to warrant three files; it is not a separate stage.
+
+**The three rules worth memorising:** positive control beats negative control · the model has no
+memory, so every prompt is a sealed current-shot document · describe observable optical *outcomes*,
+never lens metadata.
 
 ## Companion reference (vocabulary only)
 For Seedance-specific phrasing, camera/lighting vocabulary, and i2v technique, you may consult `references/seedance-os-bridge.md` (a curated bridge to the Seedance 2.0 Skill OS repo). Borrow wording, never process — this skill's gate logic, conservative motion register, lip-sync policy, file conventions, and preservation clause always win. For the pilot, read that repo's `seedance-copyright` notes: McConaughey is a public figure, stylized resemblance only (PRD §3).
