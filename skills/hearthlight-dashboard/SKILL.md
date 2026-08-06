@@ -83,3 +83,26 @@ section is the working rule.
 - Every structural write must follow `references/SHOT-IDENTITY-PROTOCOL.md`.
 - Voice register: mechanics terse. Status answers in chat mirror the
   dashboard's next-action line, nothing more.
+
+## Overriding a shot's chosen image
+
+The Studio UI resolves each shot's hero asset automatically and has no control for overriding it.
+`scripts/set_shot_image.py` does that override, using the mechanism the UI already honours — a
+`selection` event with `purpose: hero` in the append-only `04-images/generations.jsonl`.
+
+```bash
+python skills/hearthlight-dashboard/scripts/set_shot_image.py \
+    --project yugioh --shot 2 --image 04-images/some-image.png --note "why"
+
+python .../set_shot_image.py --project yugioh --shot 2 --show      # what is chosen now
+python .../set_shot_image.py --project yugioh --shot 2 --image X --dry-run
+```
+
+`--shot` accepts a display number, a `shot_id`, or a legacy label.
+
+**Nothing is overwritten and nothing is deleted.** The source image is copied to the next free
+`shot-{nn}-v{nn}.png` (immutability rule), a `generation` event registers it, and a `selection` event
+makes it the hero. Reverting is another selection event — the history stays intact and readable.
+
+Refresh the UI after running; the hero updates on rescan.
+
