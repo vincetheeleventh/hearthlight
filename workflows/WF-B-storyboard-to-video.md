@@ -39,41 +39,18 @@ more re-rolls than everything else in this document combined.
 An asset is a pair: **a descriptor (text) + a reference (image)**. The descriptor goes into every
 prompt word for word — the model has no memory. The image anchors identity.
 
-### Stress test before locking
+The rules that make an asset hold are **law, not workflow** — they live with the skills that own
+them, so there is exactly one statement of each:
 
-Ten generations, different poses, different light. The character must be recognizable **ten out of
-ten** — and not alone: next to the other assets, and in the light of the scenes actually coming. A
-character that is stable alone often breaks when sharing a frame.
+| What | Owner |
+|---|---|
+| The ten-out-of-ten stress test · state splitting · the tag dictionary | `hearthlight-conventions` |
+| Location sheets — 3/4, the anchor, one light logic, reverse angles | `hearthlight-mise-en-scene` |
+| Character sheet composition · believable-over-beautiful · catch-light | `hearthlight-character` |
+| The no-double-pass law — amend by mask, never regenerate | `hearthlight-image-prompts` |
 
-**If the test fails, the problem is the description, not the model.** Rewrite the words, test again.
-
-### Every state is a separate asset
-
-Wet, wounded, changed clothes — separate assets with separate tags and separate descriptors. Mix
-states in one text and the model mixes them between shots. Locations are the same: day, night and
-rain are three assets, not one with modifiers. Splitting states is cheaper than fighting the model.
-
-Tags are one dictionary across the whole project — the same `@name` in documents, prompts, and the
-UI.
-
-### What the sheets must be
-
-**Character sheets** — kept deliberately plain: neutral grey background, flat light, real skin with
-visible pores, no retouch. **Do not bake the film look into the sheet.** Grain and cinematic lensing
-baked into a sheet travel into every scene and stop the character reacting to new light. The cinema
-look lives in the locations and the video prompt.
-
-**Location sheets** — shot in 3/4, never frontal. A frontal sheet becomes flat wallpaper on wides and
-the model invents new surroundings past its edges; 3/4 gives depth to read and covers nearly a full
-circle of angles. Leave a physical **anchor** in every location — a column, a lamp, a sofa — and tie
-staging to it. *"The hero at the lamp, facing the door"* works. *"The hero in the room"* is a
-lottery. One light logic per sheet: one source, one shadow direction, never two suns.
-
-**Where each rule lives:** state splitting, the tag dictionary and the **ten-out-of-ten stress test**
-are in `hearthlight-conventions`. Location sheet craft — 3/4, the anchor, one light logic, reverse
-angles — is in `hearthlight-mise-en-scene`. Character sheet composition and the
-believable-over-beautiful and catch-light selection criteria are in `hearthlight-character`. The
-no-double-pass masking law is in `hearthlight-image-prompts`.
+**Read them before starting this route.** WF-A can paper over a weak sheet with an approved still;
+this route cannot.
 
 > ⚠️ One open conflict: `hearthlight-character` § Contents specifies three full-body views, which
 > competes with the headless-front finding. **P-011 open** — until Vince rules, that skill governs.
