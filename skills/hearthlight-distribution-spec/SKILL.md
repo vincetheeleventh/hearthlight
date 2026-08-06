@@ -58,7 +58,9 @@ charged_register: <one line: what is emotionally load-bearing in THIS film>
   brand piece: *"the founder's own words about why she started."* Every film has one. Naming it is
   what keeps the machine's brevity from flattening the thing that matters.
 
-Current projects: `yugioh` → `illustrated` / `short-film` / `none` (4:3 Academy master).
+Current projects: `yugioh` → `illustrated` / `short-film` / `none` (**16:9 widescreen master**;
+4:3 Academy and 9:16 are derivatives framed from it later. Sheets are generated 4:3 — a sheet is not
+a shot).
 `mcconaughey-call` → `illustrated` / `social-content` / `talefeather` (9:16, 2s hook).
 
 ### Format → distribution defaults (starting points, not laws)

@@ -95,11 +95,11 @@ is free, and control within it is gone.**
 6. **Gate 5 — Vince approves the clip.** There is no Gate 3 here; the clip review is the only quality
    gate on this route. Weight it accordingly.
 
-> ⚠️ **Not runnable on the current generator.** The active graph — local ComfyUI MiniMax H3 i2v — takes
-> a start frame, an optional end frame, and text. It has **no slot for a board sheet plus multiple
-> tagged asset references**, and it conditions on a frame by construction. board2video needs a
-> different surface: whatever Vince used for the successful board test, or the parked RunningHub
-> Seedance node, which accepts up to 9 images. **Resolve the surface before planning the trial.**
+> **Surface: `MiniMaxH3ReferenceToVideo`** — the same local ComfyUI graph that runs shot2video also
+> carries a reference node taking an expandable `ref_images` list plus `ref_videos` and `ref_audios`.
+> That is a board sheet **plus** character and location sheets as separate references, with a
+> one-line prompt. Untested for this purpose; worth one deliberate trial before planning the
+> comparison. Wiring: `skills/hearthlight-comfyui-graph`.
 
 ## Cost
 

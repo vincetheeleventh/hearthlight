@@ -64,17 +64,73 @@ meaningfully better instrument than a prompt alone, and it changes the craft:
    inputs were not logged cannot be reproduced** — and with a local graph there is no platform
    history to fall back on.
 
+## Node map
+
+Working copy: `references/minimax-h3-i2v-template.json` (versioned here — the project copy at
+`projects/yugioh/workflow-development/comfy_graphs/` is gitignored and would never travel).
+Verified no credentials. MiniMax H3 is omni-modal: text, image, video and audio in, video **with
+native stereo audio** out. Up to 2K, 24fps, ~15s max.
+
+| Node | Role |
+|---|---|
+| `LoadImage` "Starting Frame" | the conditioning still → `first_frame` |
+| `LoadImage` "Ending Frame" | the destination still → `last_frame`. Optional |
+| `ResolutionSelector` | aspect + megapixels → width/height, rounded to a multiple of 32 |
+| `ImageScaleToTotalPixels` | conforms the input frames to that canvas |
+| **`MiniMaxH3ImageToVideo`** | **the shot2video node.** `first_frame` / `last_frame` / `prompt` / `width` / `height` / `length` |
+| **`MiniMaxH3ReferenceToVideo`** | **see below — this is the board2video surface** |
+| subgraph `#105` | where the live config actually sits: prompt, 1344×768, duration, seed, model files |
+| `SaveVideo` | output, `filename_prefix: video/MiniMax_H3` |
+
+**Models:** `minimax_h3_fl2va_pruned_int8_convrot.safetensors` (diffusion) ·
+`qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors` (text encoder) · `minimax_h3_video_vae_fp16` +
+`minimax_h3_audio_vae_fp32` (VAEs).
+
+**Canvas.** Native short edge is 768, capped at 768×1344, multiple of 32. The graph is set to
+**16:9 @ 0.4 MP → 864×480**, which matches yugioh's declared 16:9 master. That is a **draft-grade
+canvas** — fine and fast for iteration, but the final pass wants more: 0.98 MP gives 1344×768.
+Decide deliberately rather than discovering it at the edit.
+
+**Duration.** Seconds are converted to frames on the model's **17k+5 grid** — 5, 22, 39, 56, 73, 90,
+107, 124 — snapping **up**. Generate generously and trim to the board's exact duration in the edit.
+
+**One shot per generation** on the i2v node.
+
+## `MiniMaxH3ReferenceToVideo` — the board2video surface
+
+This node takes **`ref_images.ref_image_0`** (an expandable list), plus `ref_videos`, `ref_audios`
+and a prompt. That is exactly what [board2video](../../workflows/board2video.md) needs and could not
+find: a board sheet **plus** character and location sheets as separate tagged references, with a
+one-line prompt.
+
+**The generator gap flagged in that workflow is closed — it is a different node in the same graph,
+not a different platform.** Untested for this purpose. Worth one deliberate trial before planning
+the comparison.
+
+## Audio — a real conflict to settle
+
+H3 generates **voice, SFX and music jointly in a single forward pass**, and the model's own guidance
+is to describe audio in the prompt alongside motion.
+
+The imported prompt practice says the opposite: *"SFX only. No music."* — because on that platform a
+generated soundtrack obstructed the edit. Both positions are reasonable and they cannot both be
+followed.
+
+**Unresolved.** Whether a project uses real recorded VO or generated audio is a per-project
+production decision — ask, note it in the project, never silently flip it. What is new here is that
+*declining* generated audio now needs saying out loud, because this model produces it by default.
+
 ## Open items
 
-- **The graph JSON is not in the repo.** Convention (D-001, and the parked Seedance template) is that
-  a working graph lives at `references/`. Copy it to
-  `references/minimax-h3-i2v-template.json` — sanitized, no keys — so the wiring is versioned rather
-  than living only on one machine.
-- **Node names and exact parameters are undocumented here** because the file is outside the mounted
-  folders. Fill in the node map on the next pass, the way the Seedance one was.
-- **Local generation has no spend meter.** The shot-runner ledger exists to stop re-paying for
-  finished shots; with local compute the cost is time and GPU rather than credits. The ledger still
-  earns its keep — a crashed session should not re-render an approved clip.
+- **Both `LoadImage` nodes point at the same test file** (`pasted/image (23).png`). Expected for a
+  first test; per-shot wiring must set them separately, and an end frame identical to the start frame
+  is a deliberate "hold" instruction, not a default.
+- **`width`/`height`/`length` on the top-level nodes are unlinked widgets** while the live config sits
+  in subgraph `#105`. Know which one you are editing before a batch.
+- **Local generation has no spend meter.** The shot-runner ledger still earns its keep — with local
+  compute the cost is time and GPU, and a crashed session should not re-render an approved clip.
+- **`workflow-development/` is a new folder** inside the project, not yet in
+  `hearthlight-conventions`. Harmless, but it should be named there or it will be reinvented.
 
 ---
 

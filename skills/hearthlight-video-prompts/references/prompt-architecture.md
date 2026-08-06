@@ -156,6 +156,32 @@ Say that directly, in the film's own terms:
 aberration · shutter or motion blur · "cinematic lens". These describe a camera the film does not
 have, and asking for them is an instruction to abandon the medium.
 
+### The illustrated register — say what the medium *is*
+
+Banning photographic vocabulary leaves a hole. Fill it with the language of animation, which controls
+the same thing — how motion reads — in terms the medium actually has.
+
+From Vince's working `yugioh` Shot 1 prompt, which is the model for this:
+
+```
+Animation on 2s with noticeable line boil
+```
+
+Two terms, and they do more work than a paragraph of camera talk.
+
+| Term | What it controls |
+|---|---|
+| **on 2s** (or 1s, 3s) | The animation cadence — how many frames each drawing is held. On 2s is the classic hand-drawn feel; on 1s is fluid and expensive-looking; on 3s is limited and deliberate |
+| **line boil** | The characteristic wobble of redrawn linework. **The single strongest anti-photoreal signal available** — a boiling line cannot read as a photograph |
+| **held cel / limited animation** | Only part of the frame moves; the rest is a held drawing |
+| **paper texture constant** | The ground stays paper, not film |
+| **wash edges / ink bleed** | How the colour meets the line |
+
+**Reach for these before reaching for camera language.** *"Animation on 2s with noticeable line
+boil"* defends the medium harder than any negative constraint, because it tells the model what to
+make instead of only what to avoid — and positive control beats negative control everywhere else in
+this file too.
+
 **Keep one framing register per beat.** Tight face, wide geography and a macro detail in the same
 beat will smear. If the scene needs all three, cut, and give each shot its own register.
 
