@@ -78,7 +78,7 @@ focus and grade of the original sheet.
 through the space; the video model draws the other sides consistently with your sheet. Screenshot the
 angle you need, take it to an image model, and prompt it to improve texture and lighting. **A full
 location sheet out of a single image** — the stronger of the two, and what makes a single-image
-location viable when there is no conditioning still (`workflows/WF-B-storyboard-to-video.md`).
+location viable when there is no conditioning still (`workflows/board2video.md`).
 
 Day, night and rain are **separate assets**, not one sheet with modifiers — see
 `hearthlight-conventions` § EVERY STATE IS A SEPARATE ASSET. No location locks until it passes the

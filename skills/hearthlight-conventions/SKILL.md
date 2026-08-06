@@ -166,24 +166,32 @@ manifest above.
 An asset is a pair: **a descriptor (text) + a reference (image)**. The descriptor goes into every
 prompt **word for word** — the model has no memory, and there is no "as established earlier".
 
-**No asset locks, and no shot generates from it, until it passes:**
+**Selecting a good sheet and testing whether it holds are two different jobs.** Generating until one
+looks right is selection — necessary, and what Vince already does. This is the second job: finding
+out whether the one he picked survives contact with the film. A sheet can look excellent and still
+fail the moment it shares a frame or meets the scene's light.
 
-1. **Ten generations**, varied poses and varied light.
-2. **Recognizable in ten out of ten.** Not eight. Not "mostly".
-3. **Not alone** — beside the other assets it will share frames with. An asset that is stable alone
-   often breaks when sharing a frame.
-4. **In the light of the scenes actually coming.** A sheet that holds under flat light and collapses
-   under the film's key light has not been tested.
+**Three checks, not ten generations.** The ten-out-of-ten discipline comes from feature production
+with a crew; at solo scale on a 90-second film it costs more than it returns. What actually catches
+failures:
 
-**If the test fails, the problem is the description, not the model.** Rewrite the words and test
-again — re-rolling the same descriptor is how a bad asset gets locked in.
+1. **A two-shot.** Generate the asset beside the other asset it shares the most screen time with.
+   *This is the check that earns its keep* — an asset stable alone very often breaks in company.
+2. **The hardest light in the film.** Not flat light. Whatever the mise-en-scène says is the most
+   extreme lighting state this asset appears in.
+3. **The widest framing it appears in.** Identity survives close-ups easily; wides are where a face
+   gets taken from the wrong part of the sheet.
 
-Record the result beside the asset (`10/10`, or `7/10 — jaw drifts in profile`). A failed test is
-evidence about the descriptor and is worth keeping. **An amended asset is an untested asset** — re-run
-the test.
+Three generations. If the asset holds in all three, lock it. **If it fails, the problem is the
+description, not the model** — rewrite the words and re-test rather than re-rolling the same
+descriptor, which is how a bad asset gets locked in.
 
-This matters most where there is no conditioning still to hide a weak asset behind — see
-`workflows/WF-B-storyboard-to-video.md`.
+Record the outcome in one line beside the asset (`holds 3/3` · `fails in two-shot — jaw drifts`). An
+amended asset is an untested asset; re-run the three.
+
+**Scale it up only where the cost of being wrong is high** — a character appearing in most shots,
+or any asset feeding `workflows/board2video.md`, where there is no conditioning still to hide behind
+and a weak sheet fails in every shot of a sequence at once.
 
 ## Gate protocol
 - Gates 0–5 map to stages 1.5–6 (see PRD §5). A gate passes only on Vince's explicit ✅ in Telegram.

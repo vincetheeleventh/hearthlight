@@ -3,8 +3,8 @@
 Adapted for Hearthlight from an outside production practice, stripped of platform-specific and
 proprietary references. Written against Seedance 2.0; the craft is model-agnostic.
 
-**Use this when** a shot needs per-beat control: WF-B variant B2, or any WF-A shot where the clip
-keeps missing. **Do not use it** for WF-B variant B1 (board image + plain instruction) — that
+**Use this when** a shot needs per-beat control: board2video variant B2, or any shot2video shot where the clip
+keeps missing. **Do not use it** for board2video variant B1 (board image + plain instruction) — that
 variant's whole value is skipping this.
 
 Every rule here exists because a shot failed without it.
@@ -44,10 +44,10 @@ language. Never bury placement rules inside style prose — the model weights wh
 - **The camera is written inside the action**, not as a separate wish.
 - **Up to three sentences per beat.** Overload a beat and the model smears it.
 - **Length depends on the route, and the two are opposite.**
-  - **WF-B (no conditioning still):** the prompt is the only source of framing, blocking and world.
+  - **board2video (no conditioning still):** the prompt is the only source of framing, blocking and world.
     Long is correct — the source practice ran 3,000–4,000 words. Length is not the enemy here; an
     overloaded beat is.
-  - **WF-A (i2v from an approved still):** **short.** The still already carries composition,
+  - **shot2video (i2v from an approved still):** **short.** The still already carries composition,
     character, palette and style. Re-describing them invites the model to repaint the frame — see
     the parent skill's i2v section. A 3,000-word prompt on an i2v job is that invitation.
     Describe **only what changes**: the motion, its quality and pace, and what stays still.
@@ -135,27 +135,32 @@ clips glue at the seam.
 
 Cost: one second of runtime. Saving: hours of reshoots.
 
-## Optics — describe outcomes, not metadata
+## Framing — how much world is in the frame
 
-Models respond to observable lens *results*, not to camera specs. **Avoid as primary control:**
-millimetres, f-stops, ISO, lens brand and vintage model names.
+**A drawn frame has no lens.** No bokeh, no focus plane, no sensor, no shutter. What survives from
+photographic craft is the one thing that is really about composition: **how much of the world the
+frame contains, and how close the viewer stands.**
 
-**Use diagonal field of view, camera distance, and the visible optical outcome.**
+Say that directly, in the film's own terms:
 
-| FOV | Character | Use for |
-|---|---|---|
-| 8° | Super-telephoto observation | Distant watching, surveillance, with foreground occlusion |
-| 18° | Classic telephoto | Tight emotional close-up |
-| 29° | Short telephoto portrait | Medium portrait |
-| 47° | Standard normal | Natural documentary action, human-eye perspective |
-| 84° | Classic wide | Intimate face with environment visible; wide environmental action |
-| 107° | Wide rectilinear | Large-scale environmental geography |
+| Instead of | Write |
+|---|---|
+| 8° super-telephoto | the figure small and far, seen past something in the foreground |
+| 18° telephoto close-up | tight on the face, the background reduced to a flat wash |
+| 29° portrait | head and shoulders, little room around them |
+| 47° normal | a natural distance — roughly what a person standing there would see |
+| 84° wide | the figure with the room around them, readable to the frame edges |
+| 107° very wide | the space dominant, the figure small within it |
 
-**Content–FOV alignment.** Wide works for environmental, spatial, physical, immersive content.
-Telephoto works for portrait, isolation, compression, distant watching. Macro works as its own insert
-beat. **Do not mix content classes inside one lens beat** — face portrait plus environmental
-geography plus macro detail in one beat causes lens drift. If the scene needs several, use internal
-cuts with a lens character assigned per shot.
+**Never write:** millimetres · f-stops · ISO · lens names · bokeh · depth of field · chromatic
+aberration · shutter or motion blur · "cinematic lens". These describe a camera the film does not
+have, and asking for them is an instruction to abandon the medium.
+
+**Keep one framing register per beat.** Tight face, wide geography and a macro detail in the same
+beat will smear. If the scene needs all three, cut, and give each shot its own register.
+
+> Live-action projects (`medium: live-action`) use the full photographic vocabulary instead —
+> `references/live-action/optics-language-bank.md`. Do not open that folder for an illustrated film.
 
 ## Physics
 
@@ -180,16 +185,18 @@ never re-rendered as intact, never multiplied. Two trays, never more. The camera
 side of the room for all twelve seconds.
 ```
 
-Close with the technical tags — **matched to the film's medium**:
+Close with the technical tags:
 
 ```text
-NON-IP. [aspect]. [duration]s. SFX only. NO CGI. Cinematic.
+NON-IP. [aspect]. [duration]s. SFX only.
 ```
 
-> ⚠️ The source practice ends this line with `Photoreal.` **Do not use that tag on a painted film.**
-> It contradicts the locked style block and the preservation clause in the parent skill, and it is
-> the single fastest route to photoreal creep. Add `Photoreal.` only when the project's locked style
-> is actually photographic.
+Then the medium's own preservation clause, verbatim from the parent skill — for an illustrated film
+that is what holds the look through the motion.
+
+> The source practice closed with `Photoreal. NO CGI. Cinematic.` **None of that belongs on an
+> illustrated film**; `Photoreal.` in particular is the fastest single route to losing the medium.
+> Those tags live with the live-action material.
 
 **Aspect comes from the distribution spec.** It is a composition law, not an export setting.
 

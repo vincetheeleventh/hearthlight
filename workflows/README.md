@@ -29,19 +29,19 @@ leaves a lesson. Neither should depend on Vince remembering.
 
 | ID | Name | Status | Route |
 |---|---|---|---|
-| **WF-A** | [Shot-Image → Video](WF-A-shot-image-to-video.md) | **ACTIVE — v1 path** | storyboard → one conditioning still per shot → i2v from that still |
-| **WF-B** | [Storyboard → Video Direct](WF-B-storyboard-to-video.md) | **ACTIVE — parallel trial** | storyboard → video, conditioned on asset sheets + style reference. No per-shot still. |
+| **shot2video** | [Shot-Image → Video](shot2video.md) | **ACTIVE — v1 path** | storyboard → one conditioning still per shot → i2v from that still |
+| **board2video** | [Storyboard → Video Direct](board2video.md) | **ACTIVE — parallel trial** | storyboard → video, conditioned on asset sheets + style reference. No per-shot still. |
 
-Both are live. WF-A is carrying the Yu-Gi-Oh! film; WF-B is being trialled alongside it on the same
+Both are live. shot2video is carrying the Yu-Gi-Oh! film; board2video is being trialled alongside it on the same
 shots to find where each one wins.
 
 ### The difference that matters
 
-**WF-A buys control and pays in passes.** Every shot gets a still that Vince approves before any
+**shot2video buys control and pays in passes.** Every shot gets a still that Vince approves before any
 video spend. Framing, likeness, and composition are settled in a cheap medium. The cost is two
 review loops per shot and a still that can itself drift.
 
-**WF-B buys speed and pays in specificity.** No still to approve, so a shot goes from board to
+**board2video buys speed and pays in specificity.** No still to approve, so a shot goes from board to
 motion in one step. Identity is held by the character and location sheets instead of by a frame.
 The cost is that the model decides framing, and a weak asset sheet has nowhere to hide.
 
@@ -55,11 +55,11 @@ Neither is the default yet — that is what the trial is for. Until there is evi
 
 | The shot is… | Try |
 |---|---|
-| A detonation beat, or any shot where composition *is* the meaning | **WF-A** — approve the frame before it moves |
-| A close-up carrying likeness | **WF-A** — likeness is cheaper to fix in a still |
-| Coverage, connective tissue, an establishing wide | **WF-B** — the specificity premium is not worth two loops |
+| A detonation beat, or any shot where composition *is* the meaning | **shot2video** — approve the frame before it moves |
+| A close-up carrying likeness | **shot2video** — likeness is cheaper to fix in a still |
+| Coverage, connective tissue, an establishing wide | **board2video** — the specificity premium is not worth two loops |
 | A shot already reshot twice through one route | **The other route.** Two strikes means the route is wrong, not the wording |
-| Motion the still cannot imply (a fall, a collapse, a fast reveal) | **WF-B** — a still of the midpoint teaches the model the wrong thing |
+| Motion the still cannot imply (a fall, a collapse, a fast reveal) | **board2video** — a still of the midpoint teaches the model the wrong thing |
 
 ## Comparison ledger
 
@@ -77,10 +77,10 @@ Fill it in as shots come back. Attempts = iterations to an approved clip.
 **Rules for the ledger**
 
 - Log the failures. A route that failed on a shot type is the most useful row here.
-- One variable at a time. Comparing WF-A with an approved still against WF-B with a half-finished
+- One variable at a time. Comparing shot2video with an approved still against board2video with a half-finished
   character sheet measures the sheet, not the route.
-- Name what decided it, not just which won. *"WF-B lost — hands drifted on the close-up"* is a
-  finding. *"WF-A was better"* is not.
+- Name what decided it, not just which won. *"board2video lost — hands drifted on the close-up"* is a
+  finding. *"shot2video was better"* is not.
 - **Ten-to-fifteen rule.** If a shot has not come together in that many iterations, the problem is
   not the wording. Simplify the shot: split it in two, remove an action, change the angle.
 

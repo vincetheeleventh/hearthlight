@@ -4,7 +4,7 @@ description: >
   Hearthlight performance writing — how to get a living performance out of a video model.
   Behaviour instead of emotion, muscle instead of adjectives, a locked master profile per character
   adapted per scene, and the eye-life rules that separate a living face from a dead one. Cross-cutting:
-  used by both WF-A and WF-B, at Stage 5 (storyboard motion intent) and Stage 6 (video prompts).
+  used by both shot2video and board2video, at Stage 5 (storyboard motion intent) and Stage 6 (video prompts).
   Use when writing any prompt in which a character acts, or when a generation comes back stiff,
   blank-faced, or emotionally flat.
 ---

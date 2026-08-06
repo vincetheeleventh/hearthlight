@@ -20,10 +20,29 @@ Hearthlight is a genre-agnostic, client-agnostic engine. It does not know whethe
 short film, a social clip, or a commissioned remembrance piece — and it must not guess. Three keys:
 
 ```
+medium:           illustrated | live-action
 format:           short-film | social-content | remembrance | commercial | <other>
 client:           none | talefeather | <name>
 charged_register: <one line: what is emotionally load-bearing in THIS film>
 ```
+
+- **`medium:`** — **illustrated or live-action. Always set. This one is wired, hard.** It decides
+  which craft vocabulary is legal in a prompt, and getting it wrong is expensive.
+
+  | | `illustrated` | `live-action` |
+  |---|---|---|
+  | Look comes from | a locked style block + the drawn/painted source | photographic capture |
+  | Optics language | **framing only** — how much world is in frame | full photographic vocabulary |
+  | Banned in prompts | bokeh · chromatic aberration · shutter/motion-blur · pore-level skin · vellus hair · film grain as lens artifact · the tag `Photoreal.` | nothing on this list |
+  | Failure to watch | **photoreal creep** — the medium dissolving into rendered realism | plastic, over-graded faces |
+
+  **`illustrated` is the current default for every Hearthlight project.** An ink-and-wash frame has
+  no lens: it has no bokeh, no focus plane, and no sensor. Photographic vocabulary in an illustrated
+  prompt is a direct instruction to abandon the medium.
+
+  Live-action craft is **parked, not deleted** — it lives at
+  `skills/hearthlight-video-prompts/references/live-action/`, unreferenced by the illustrated path,
+  ready if a project ever declares `medium: live-action`.
 
 - **`format:`** — what kind of thing this is. Always set. Its only wired effect is **suggesting the
   distribution defaults below**; everything else it does is inform judgment. Don't build behavior on
@@ -39,8 +58,8 @@ charged_register: <one line: what is emotionally load-bearing in THIS film>
   brand piece: *"the founder's own words about why she started."* Every film has one. Naming it is
   what keeps the machine's brevity from flattening the thing that matters.
 
-Current projects: `yugioh` → `short-film` / `none` (4:3 Academy master).
-`mcconaughey-call` → `social-content` / `talefeather` (9:16, 2s hook).
+Current projects: `yugioh` → `illustrated` / `short-film` / `none` (4:3 Academy master).
+`mcconaughey-call` → `illustrated` / `social-content` / `talefeather` (9:16, 2s hook).
 
 ### Format → distribution defaults (starting points, not laws)
 Propose these when a project declares its format; Vince overrides any of them freely.

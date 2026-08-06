@@ -1,5 +1,5 @@
 ---
-doc: WF-A
+doc: shot2video
 role: workflow
 authority: canon
 owner: vince
@@ -9,16 +9,16 @@ answers:
   - how a shot goes from storyboard to clip via an approved still
   - when to spend two review loops on a shot
 not_here:
-  the alternative route: workflows/WF-B-storyboard-to-video.md
+  the alternative route: workflows/board2video.md
   prompt craft: skills/hearthlight-video-prompts/
 ---
 
-# WF-A — Shot-Image → Video
+# shot2video — Shot-Image → Video
 
 **Status: ACTIVE — the v1 path.** Currently carrying the Yu-Gi-Oh! film.
 
 Every shot gets its own conditioning still. Vince approves the still, then the still conditions the
-video. The alternative is [WF-B](WF-B-storyboard-to-video.md), which skips the still entirely.
+video. The alternative is [board2video](board2video.md), which skips the still entirely.
 
 **What this buys:** framing, likeness and composition are settled in a cheap medium, before any
 video spend. You see the shot before it moves.
@@ -62,13 +62,13 @@ ledger so a crashed session never re-renders a paid generation, two-strike parki
 needs three still attempts and two clip attempts costs five generations and five reviews.
 
 This is the expensive route. It is worth it where the frame carries meaning and cheap where it does
-not — which is the question the trial against WF-B is meant to settle.
+not — which is the question the trial against board2video is meant to settle.
 
 ## Known failure modes
 
 - **The still teaches the wrong thing on a motion shot.** A still of the midpoint of a fall implies
   a pose, not a movement. The model holds the pose. Shots whose meaning *is* motion are the clearest
-  WF-B candidates.
+  board2video candidates.
 - **Still drift compounds.** An approved still that has quietly drifted from the style block passes
   its drift into every clip conditioned on it. This is why Stage A checks the style block verbatim.
 - **Likeness looks right in a still and wrong in motion.** A face that is beautiful-but-slightly-fake

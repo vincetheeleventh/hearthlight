@@ -1,17 +1,87 @@
 ---
 name: hearthlight-comfyui-graph
-description: Hearthlight Stage 6 plumbing — assemble/queue the RunningHub Seedance 2.0 ComfyUI graph that turns an approved still + character sheet into a video clip. Owns the wiring; gets its prompt text from hearthlight-video-prompts. Grounded in Vince's working workflow.
-version: 0.1.0
+description: Hearthlight Stage 6 plumbing — queue the local ComfyUI MiniMax H3 i2v graph that turns an approved still (plus an optional end frame) into a video clip. Owns the wiring; gets its prompt text from hearthlight-video-prompts. The RunningHub Seedance graph is parked.
+version: 0.2.0
 metadata:
   hermes:
-    tags: [hearthlight, comfyui, runninghub, seedance, video, gate-5]
+    tags: [hearthlight, comfyui, minimax, video, gate-5]
     category: hearthlight
 ---
 
-# Hearthlight — ComfyUI / RunningHub Graph (Stage 6 plumbing)
+# Hearthlight — ComfyUI Graph (Stage 6 plumbing)
 
 ## When to Use
-After Gate 4 (storyboard approved), to actually generate clips. This skill owns the **wire**: building/queuing the RunningHub Seedance graph. It does NOT write the prompt — that comes from `hearthlight-video-prompts`. Three layers, each in its lane: graph (here) ← prompt words (`hearthlight-video-prompts`) ← vocabulary (`references/seedance-os-bridge.md`).
+After Gate 4 (storyboard approved), to actually generate clips. This skill owns the **wire**. It does
+NOT write the prompt — that comes from `hearthlight-video-prompts`.
+
+---
+
+# ACTIVE GENERATOR — local ComfyUI, MiniMax H3 i2v
+
+```
+C:\Users\vxi\Documents\ComfyUI\user\default\workflows\minimax_h3_i2v_int8.json
+```
+
+**Local, not RunningHub.** Confirmed working by Vince on `yugioh` Shot 1, 2026-08-05. This is what
+runs today; everything below the RunningHub heading is parked.
+
+## What it takes
+
+| Input | Meaning |
+|---|---|
+| **Start frame** | The approved conditioning still — `04-images/shot-{nn}-v{nn}.png`, exact filename from the storyboard. Required. |
+| **End frame** *(optional)* | Where the shot finishes. **New capability the Seedance graph did not have.** |
+| **Text prompt** | From `hearthlight-video-prompts`, shot2video register: motion only, short. |
+
+**One shot per generation.** This is the [shot2video](../../workflows/shot2video.md) route by
+construction — it conditions on a frame, so there is no board2video path through this graph.
+
+## The end frame changes how a shot is designed
+
+With a start *and* an end frame, motion is **bracketed** rather than described. This is a
+meaningfully better instrument than a prompt alone, and it changes the craft:
+
+- **Use it when the destination matters** — a head that must finish turned, a hand that must arrive
+  on the receiver, a figure that must end small in frame. Specify the arrival instead of hoping.
+- **Use it to kill drift on long holds.** If start and end are near-identical, the model has nowhere
+  to wander. This is the cheapest fix for a shot that keeps inventing movement.
+- **Leave it empty when the motion is the point** and you want the model to find it — steam rising,
+  a curtain moving, anything ambient.
+- **Both frames must come from the same approved lineage.** An end frame generated from a different
+  style pass reintroduces the drift the conditioning frame exists to prevent.
+- **The pair must be physically reachable in the duration.** Two frames that imply more movement than
+  the clip length allows produce a speed-ramp or a snap.
+
+## Per-shot procedure
+
+1. **Start frame** = the approved still for this shot. Never an unapproved candidate.
+2. **End frame** = the approved destination still, or empty. Record which, per shot.
+3. **Prompt** = `hearthlight-video-prompts`, carrying the medium preservation clause verbatim.
+4. **Duration** = the board's timed duration (`hearthlight-timing-intake`), snapped up to an allowed
+   value and trimmed in the edit. The board is the timing authority.
+5. Queue locally. Save as `06-video/clip-{nn}-v{n}.mp4`.
+6. Log prompt, both frame filenames, duration and seed in `06-video/prompts.md`. **A clip whose
+   inputs were not logged cannot be reproduced** — and with a local graph there is no platform
+   history to fall back on.
+
+## Open items
+
+- **The graph JSON is not in the repo.** Convention (D-001, and the parked Seedance template) is that
+  a working graph lives at `references/`. Copy it to
+  `references/minimax-h3-i2v-template.json` — sanitized, no keys — so the wiring is versioned rather
+  than living only on one machine.
+- **Node names and exact parameters are undocumented here** because the file is outside the mounted
+  folders. Fill in the node map on the next pass, the way the Seedance one was.
+- **Local generation has no spend meter.** The shot-runner ledger exists to stop re-paying for
+  finished shots; with local compute the cost is time and GPU rather than credits. The ledger still
+  earns its keep — a crashed session should not re-render an approved clip.
+
+---
+
+# PARKED — RunningHub Seedance 2.0
+
+**Not in use.** Kept because it works and may return for shots needing multi-reference conditioning
+or generated audio. Do not queue against it without saying so.
 
 ## The proven graph (from Vince's `wfu_whyacarrot.json`)
 A working RunningHub workflow Vince has already run. Template lives at `references/seedance-i2v-template.json` (sanitized — API key replaced with a placeholder).

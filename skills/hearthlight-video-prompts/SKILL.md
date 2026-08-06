@@ -16,16 +16,16 @@ After Gate 4 (storyboard approved). One prompt per storyboard entry, derived mec
 ## Which workflow are you on?
 Two routes reach a clip, and they need different prompts. Read `workflows/README.md` first.
 
-- **WF-A — Shot-Image → Video.** An approved still conditions the clip. **The image carries the look;
+- **shot2video — Shot-Image → Video.** An approved still conditions the clip. **The image carries the look;
   the prompt carries only the motion.** This is what the rest of this SKILL.md describes.
-- **WF-B — Storyboard → Video Direct.** No still. Identity is held by asset sheets, so the prompt
-  must carry blocking, optics, geography and constraints as well as motion. Use the full skeleton in
-  `references/prompt-architecture.md`. Variant B1 (board image + plain instruction) skips prompt
-  architecture altogether by design.
+- **board2video — Board Sheet → Video.** No still. A rendered storyboard sheet carries framing, order
+  and intent for a 10–15s sequence (`hearthlight-board-sheet`), and **the prompt is one sentence**:
+  *"Create a video according to the storyboard."* Long structured prompts belong here only when
+  chaining several shots in one generation — never on a single shot.
 
-Getting this backwards is the common error: writing a WF-A prompt for a WF-B shot leaves the model
-free to invent framing, and writing a WF-B prompt for a WF-A shot re-describes what the still already
-settled and invites a repaint.
+Getting this backwards is the common error. **A long prompt on a single shot2video clip re-describes
+what the still already settled and invites the model to repaint the frame.** The source practice's
+3,000–4,000-word prompts were written for multiple chained shots; they do not belong on one i2v job.
 
 **Performance in either route comes from `hearthlight-acting`.** Motion is not performance.
 
@@ -87,7 +87,7 @@ assemble their intents into a single coherent i2v prompt, resolving phrasing (no
 
 ## The prompt-director references
 Three companion files under `references/`. Adapted from an outside production practice, proprietary
-and platform-specific naming removed. **Required for WF-B/B2**; for WF-A, reach for them when a clip
+and platform-specific naming removed. **For board2video sequences and for diagnosing a stuck shot**; on a routine shot2video clip, reach for them when it
 keeps missing.
 
 | File | Holds |
