@@ -3,7 +3,7 @@ doc: PRODUCT_SPEC
 role: current-state
 authority: canon
 owner: agents
-updated: 2026-08-04
+updated: 2026-08-05
 answers:
   - what is actually built and working today
   - which stage each skill owns
@@ -51,8 +51,8 @@ helper scripts, executed by an LLM agent that reads them.
 - **Agent-authored, visibility-aware Krea style/composition execution.** Versioned Shot Vision and
   source-grounded visual context feed a focused, tool-restricted Hermes Shot Prompt Author. The LLM
   writes the intelligent shot-specific prompt body; Python enforces identity, visibility, ownership,
-  one-instant, provider-language, source-hash, and request-control invariants, then adds fixed text
-  verbatim. An independent Hermes semantic reviewer may block incoherent or unsupported prompts and
+  one-instant, provider-language, source-hash, and request-control invariants, then passes the prose
+  through without appending aspect, style, or acceptance checklists. An independent Hermes semantic reviewer may block incoherent or unsupported prompts and
   allows one source-preserving author repair before the Prompt Board. Exact approval and request
   fingerprints make spend and resume safe.
 - **A deliberating shot crew.** Eight illustration roles negotiate contested shots as subagents.
@@ -95,9 +95,24 @@ helper scripts, executed by an LLM agent that reads them.
 | 6 | Seedance i2v clips | **Gate 5** | `hearthlight-video-prompts` + `hearthlight-comfyui-graph` |
 | — | Batch execution at stages 4 and 6 | — | `hearthlight-shot-runner` |
 
-Cross-cutting: `hearthlight-terse` (voice register), `hearthlight-research` +
-`hearthlight-reference-report` (world research), `hearthlight-notion-log` (surfacing),
-`hearthlight-dashboard` (status), `hearthlight-selfcheck` (health).
+Cross-cutting: `hearthlight-terse` (voice register), `hearthlight-acting` (performance writing,
+both routes), `hearthlight-research` + `hearthlight-reference-report` (world research),
+`hearthlight-notion-log` (surfacing), `hearthlight-dashboard` (status), `hearthlight-selfcheck`
+(health).
+
+### Two routes from storyboard to clip
+
+Stages 4–6 are not a single path. Two workflows run in parallel, catalogued in `workflows/`:
+
+| Route | How a clip is made | Status |
+|---|---|---|
+| **WF-A** Shot-Image → Video | One approved conditioning still per shot (Gate 3), then i2v from that still | Active — carrying the v1 film |
+| **WF-B** Storyboard → Video Direct | No still. Asset sheets + style reference condition the clip. **B1** = board image + plain instruction; **B2** = per-shot structured prompt | Active — parallel trial |
+
+They fail differently, which is why both run. WF-A settles framing in a cheap medium and costs two
+review loops; WF-B costs one loop but gives the model control of framing and puts the entire load on
+the asset sheets. A comparison ledger in `workflows/README.md` records attempts-to-approval per shot
+type; the trial concludes on that evidence, not on preference.
 
 Full per-skill responsibilities, usage evidence, and classification: **`SKILL-INVENTORY.md`**.
 
@@ -106,7 +121,7 @@ Full per-skill responsibilities, usage evidence, and classification: **`SKILL-IN
 **Engine laws** (from `AGENTS.md`, true of every project):
 
 - Gates are sacred — nothing advances without Vince's explicit ✅ in Telegram.
-- No drift — style and signature blocks are copied verbatim into prompts, never paraphrased.
+- No drift — provider conditioning carries the locked aesthetic: Krea Stage A uses its approved moodboard and strength outside prose; stages requiring textual style or signature blocks copy them verbatim.
 - Nothing exists only in chat — every artifact lands in `projects/{slug}/`.
 - The distribution spec is read before framing; aspect ratio is a composition law, not an export setting.
 - The spec declares, the engine obeys — `format`, `client`, `charged_register` are never assumed.

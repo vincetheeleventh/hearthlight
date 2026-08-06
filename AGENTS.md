@@ -60,6 +60,7 @@ enforces it and blocks the checkpoint commit on a violation.
 | **`DECISIONS.md`** | **WHICH RULES ARE IN FORCE** — one line each, and where each binds | Any agent may add a row. Never rewrite one; supersede it. The argument behind a rule lives in `archive/decisions/D-0XX.md`. |
 | **`SKILL-INVENTORY.md`** | What every component is, what justifies it, what deserves review | Any agent. **Surfaces components; never deletes them.** |
 | **`PROPOSALS.md`** | **WHAT THE SYSTEM WANTS TO CHANGE ABOUT ITSELF** — the open backlog | Any agent may add. Only Vince decides. Capped at 7 open. Decided rows go to `archive/proposals.md`. |
+| **`workflows/`** | **WHICH ROUTE A SHOT TAKES** from storyboard to clip, and which route won on what evidence | Any agent may log a trial in the ledger. Promoting or parking a route is Vince's. |
 
 **PRDs** describe substantial FUTURE changes (Notion: "PRD — Hearthlight").
 **`checkpoints/`** is the dated evidence of how the product evolved — read the last few when you
@@ -169,7 +170,7 @@ capped at **7 open**; a new idea must displace a worse one. Open 30 days with no
 8. **Gate 5 — Video** (`hearthlight-video-prompts` + `hearthlight-comfyui-graph`): Seedance i2v via RunningHub.
 - **Batch execution (Stages 4 & 6):** `hearthlight-shot-runner` — after a gate ✅, runs the approved
   batch: written plan (exact paths, no placeholders), fresh subagent per shot, Stage A spec review
-  (machine: verbatim style block, AR, refs) + Stage B quality review (VINCE ONLY, Telegram batches),
+  (machine: provider-correct style conditioning, AR, refs) + Stage B quality review (VINCE ONLY, Telegram batches),
   durable ledger (never re-render paid shots), two-strike parking. Autonomy BETWEEN gates, never through them.
 - **Logging:** `hearthlight-notion-log` — Notion is Vince's preferred point of contact.
 - **Distribution:** `hearthlight-distribution-spec` — the project brief, decided FIRST.
@@ -189,8 +190,9 @@ capped at **7 open**; a new idea must displace a worse one. Open 30 days with no
 
 ## Laws that override convenience (ENGINE laws — true of every project)
 - **Gates are sacred.** Nothing advances past a gate without Vince's explicit ✅ in Telegram.
-- **No drift.** The mise-en-scène is the single aesthetic truth; style block + signature blocks
-  are copied verbatim into prompts, never paraphrased.
+- **No drift.** The mise-en-scène is the single aesthetic truth. Apply it through the stage's declared
+  conditioning: Krea Stage A uses the approved moodboard and strength with no style prose; stages that
+  require textual style or signature blocks copy them verbatim, never paraphrased.
 - **Image provider priority.** For direct image generation: OpenAI Codex OAuth first; on eligible provider failure use Krea MCP; if Krea fails or is unavailable, use the OpenAI API key. Stage-specific execution-surface laws still win (for example, a Stage 4 Krea batch stays on Krea MCP).
 - **Nothing exists only in chat.** Every artifact lands in `projects/{slug}/`.
 - **Read the distribution spec before framing.** 9:16 vs 16:9 changes composition, not just export.

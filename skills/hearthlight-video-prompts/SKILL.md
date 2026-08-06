@@ -13,6 +13,22 @@ metadata:
 ## When to Use
 After Gate 4 (storyboard approved). One prompt per storyboard entry, derived mechanically — nothing improvised at this stage.
 
+## Which workflow are you on?
+Two routes reach a clip, and they need different prompts. Read `workflows/README.md` first.
+
+- **WF-A — Shot-Image → Video.** An approved still conditions the clip. **The image carries the look;
+  the prompt carries only the motion.** This is what the rest of this SKILL.md describes.
+- **WF-B — Storyboard → Video Direct.** No still. Identity is held by asset sheets, so the prompt
+  must carry blocking, optics, geography and constraints as well as motion. Use the full skeleton in
+  `references/prompt-architecture.md`. Variant B1 (board image + plain instruction) skips prompt
+  architecture altogether by design.
+
+Getting this backwards is the common error: writing a WF-A prompt for a WF-B shot leaves the model
+free to invent framing, and writing a WF-B prompt for a WF-A shot re-describes what the still already
+settled and invites a repaint.
+
+**Performance in either route comes from `hearthlight-acting`.** Motion is not performance.
+
 ## The i2v difference (critical adaptation of the seedance practice)
 Vince's seedance format was built for text-to-video shot lists. Here every generation is **image-to-video, conditioned on the approved still**. That changes what the prompt is for:
 - **The image carries the look.** Composition, character, palette, style live in the conditioning frame. Do NOT re-describe what the still already establishes — re-description invites the model to repaint it.
@@ -68,6 +84,16 @@ assemble their intents into a single coherent i2v prompt, resolving phrasing (no
 - Preserve the Tier-1 style block verbatim and the watercolour preservation clause (below).
 - If a shot has no crew entries (routine, Mode A), compile from the shot row directly as before.
 - The crew entries are the score; you are the player. Don't override their dimension calls — translate them.
+
+## Companion reference — the structured skeleton
+`references/prompt-architecture.md` holds the full prompt skeleton and the craft behind it: the
+character-count header, reference role-naming, the `GEO SPATIAL LAYOUT` block that stops characters
+teleporting between shots, the one-second opening wide, optics by diagonal field of view rather than
+millimetres, positive-form constraints, scale anchors, and the iteration discipline (one line per
+change; ten-to-fifteen attempts then simplify the shot, not the words).
+
+**Required for WF-B/B2.** For WF-A, reach for it when a clip keeps missing — the usual culprits are
+an unstated first frame, an unnamed reference role, or a constraint written in negative form.
 
 ## Companion reference (vocabulary only)
 For Seedance-specific phrasing, camera/lighting vocabulary, and i2v technique, you may consult `references/seedance-os-bridge.md` (a curated bridge to the Seedance 2.0 Skill OS repo). Borrow wording, never process — this skill's gate logic, conservative motion register, lip-sync policy, file conventions, and preservation clause always win. For the pilot, read that repo's `seedance-copyright` notes: McConaughey is a public figure, stylized resemblance only (PRD §3).

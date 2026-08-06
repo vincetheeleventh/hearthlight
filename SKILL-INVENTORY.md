@@ -38,14 +38,14 @@ changes. Usage evidence is necessarily weak — see the caveat in §4.
 
 | Class | Count |
 |---|---|
-| CORE | 12 |
+| CORE | 13 |
 | SUPPORTING | 6 |
 | EXPERIMENTAL | 3 |
 | UNCLEAR | 0 |
 | ORPHANED (non-skill components) | 4 |
 | DEPRECATED (non-skill components) | 2 |
 
-**21 skills** in `skills/`, plus **1 router** that exists only in the Claude skill store.
+**22 skills** in `skills/`, plus **1 router** that exists only in the Claude skill store.
 No `hearthlight-*` skill is orphaned — every one is referenced by `AGENTS.md`. The genuine
 complexity problems are **outside** `skills/`.
 
@@ -69,6 +69,7 @@ Columns: **AG** = mentions in `AGENTS.md` · **UG** = `USER-GUIDE.md` · **RM** 
 | `hearthlight-video-prompts` | 1 | 0 | 1 | 6 | 0 | **CORE** | Gate 5 | Highest peer-reference count. |
 | `hearthlight-comfyui-graph` | 1 | 0 | 1 | 3 | 0 | **CORE** | Gate 5 plumbing | Grounded in a real working RunningHub graph. |
 | `hearthlight-shot-runner` | 2 | 0 | 1 | 2 | 0 | **CORE** | D-007 | Owns the ledger that prevents re-paying for renders. |
+| `hearthlight-acting` | 1 | 0 | 1 | 1 | 0 | **CORE** | Core problem 3 | Performance writing — behaviour instead of emotion, the locked master profile, eye life. **Cross-cutting: both WF-A and WF-B depend on it.** Adapted 2026-08-05 from an outside production practice, proprietary references removed. Untested against a real generation batch. |
 | `hearthlight-character` | 1 | 0 | 0 | 0 | 0 | **SUPPORTING** | Principle 2 | **Zero peer refs and absent from README** despite owning the turnaround law wired to `image2` on every video job. Under-integrated for its blast radius. |
 | `hearthlight-critique` | 2 | 1 | 0 | 2 | 0 | **SUPPORTING** | Principle 3 | The "partner not intern" behaviour made concrete. |
 | `hearthlight-research` | 1 | 1 | 1 | 2 | 0 | **SUPPORTING** | Feeds Gate 2 | "Research populates the world, never the story." |
@@ -111,7 +112,7 @@ summaries ever contradict the skill, the deferral has stopped working.
 
 **Pipeline described three times** — `AGENTS.md` (stages + laws), `README.md` (layout tree),
 `USER-GUIDE.md` (Vince's walkthrough). Legitimately different audiences, but `README.md` has already
-drifted: it omits 7 of 21 skills and still describes a deleted `hearthlight-asset-bible/` tombstone.
+drifted: it omits several of the 22 skills and still describes a deleted `hearthlight-asset-bible/` tombstone.
 
 **`krea-*` vs `hearthlight-*`** — genuine functional duplication, described above.
 
