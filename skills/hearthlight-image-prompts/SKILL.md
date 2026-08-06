@@ -94,8 +94,9 @@ author and reviewer call; the broad Gate 3 workflow in this file is not the work
 3. Python validates facts and invariants: source identity, one instant, canonical visible traits,
    subject/prop ownership, counts, model-control separation, provider vocabulary, and prompt length.
    A failed object gets one source-preserving author repair attempt.
-4. Python adds the fixed deliverable header and locked style sentence verbatim. An independent,
-   tool-restricted Hermes Shot Prompt Reviewer then checks source grounding, visual coherence,
+4. Python passes through the author's coherent visible-frame prose without appending aspect ratio,
+   locked style, or repeated acceptance sections. Those remain request parameters and structured
+   validation data. An independent, tool-restricted Hermes Shot Prompt Reviewer then checks source grounding, visual coherence,
    continuity, attribute binding, illustration language, and likely Krea readability. It may block
    but never invent direction. One repair attempt is allowed; a second failure stays blocked.
 5. Show the Prompt Board. Vince may correct Vision and recompile. Only approval of the exact batch
@@ -173,15 +174,36 @@ Review the likeness versions using the same confirmed-rant protocol. Likeness re
 
 Approved final still paths are the sole conditioning inputs for later video generation.
 
+## THE NO-DOUBLE-PASS LAW (amend by mask, never by regeneration)
+**An image never runs through a model twice in full.**
+
+Every full pass destroys texture and drifts colour. After two passes a face turns symmetrical,
+plastic and lifeless — and **dead texture ruins the acting downstream**, because a plastic face
+cannot carry a performance however good the video prompt is.
+
+To add a jacket, a scar, blood, or any point change to an approved image:
+
+1. Generate the point change on a **copy**.
+2. Composite **only the changed region** back onto the original, by hand, with a mask.
+3. Everything outside the mask stays untouched original. The original skin texture survives.
+
+This applies to conditioning stills and to character and location sheets alike. "Just running it
+through once more to clean it up" is the fastest route to a plastic face. A change that alters
+identity rather than surface is a **new state asset**, not a cleaned-up old one — see
+`hearthlight-conventions` § EVERY STATE IS A SEPARATE ASSET.
+
 ## Prompt construction
 
 Stage A prompt order:
-1. illustrated deliverable and declared master composition;
-2. one visible tableau and subject-specific clauses;
-3. framing and spatial relationships;
+1. framing, viewpoint, and crop;
+2. one visible tableau with atomic subject-specific clauses;
+3. spatial relationships and object ownership;
 4. visible environment and light;
-5. locked illustration language;
-6. required shot-specific constraints only.
+5. only non-redundant shot-specific constraints, folded into natural prose.
+
+Aspect ratio, locked style, moodboard, model, resolution, and acceptance checklists stay outside the
+prompt. `required_elements` and `forbidden_elements` remain structured compiler/reviewer data; Python
+never renders a separate `Must show` section.
 
 No workflow labels, motion, timecodes, camera movement, continuity bookkeeping, abstract emotion,
 unowned props, invisible identity detail, full signature strings, photographic medium collisions, or

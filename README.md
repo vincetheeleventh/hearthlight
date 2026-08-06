@@ -36,7 +36,7 @@ Story Studio/
   checkpoints/                     ← dated daily alignment reports (the evolution record)
   governance/checkpoint.py         ← the daily checkpoint engine
   workflows/                       ← the routes from storyboard to clip (WF-A, WF-B) + comparison ledger
-  skills/                          ← Hermes skills = the instruction layer (PRD §6). 23 skills:
+  skills/                          ← Hermes skills = the instruction layer (PRD §6). 22 skills:
     hearthlight-distribution-spec/ Platform/aspect/length/captions + format/client/charged_register — decided first
     hearthlight-conventions/       Folders, naming, versioning, gates
     hearthlight-consolidate/       Stage 1.5 / Gate 0 — bounded ideation → Vision Brief
@@ -59,7 +59,6 @@ Story Studio/
     hearthlight-dashboard/         Read-only pipeline view + gate ledger + Shot ID protocol
     hearthlight-selfcheck/         Plumbing health — mechanical failure vs. quality judgment
     hearthlight-notion-log/        Notion surfacing — working notes, journal, Threads DB
-    hearthlight-asset-sheets/      The asset factory — sheet composition, masking law, 10/10 stress test
     hearthlight-acting/            Performance writing — behaviour not emotion, master profile, eye life
     hearthlight-terse/             Voice register — mechanics terse, art full
   projects/                        ← NOT in git (media + rights-constrained work)

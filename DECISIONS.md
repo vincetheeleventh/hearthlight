@@ -50,3 +50,4 @@ file, and replace the row.
 | D-020 | Krea Stage-A prompt craft belongs to a focused LLM author; Python validates but appends no aspect, style, or acceptance prose, and an independent LLM reviewer must pass relational coherence before approval. | hearthlight-image-prompts, Krea packets, Studio Prompt Board |
 | D-021 | Code moves by git; creative work moves by Syncthing. Source media (`00-source/**`) syncs nowhere — it is immutable and rights-constrained. | `projects/.stignore`, `PORTING.md` |
 | D-022 | Workflows are first-class and catalogued. More than one route runs from storyboard to clip; they are compared on a ledger, and the loser is parked with its evidence, never deleted. | `workflows/`, `hearthlight-video-prompts` |
+| D-023 | A skill that restates another skill's law is worse than no skill. Per-asset-type craft belongs to the skill owning that type; only universal laws are cross-cutting. | every new skill |

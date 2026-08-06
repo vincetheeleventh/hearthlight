@@ -38,14 +38,14 @@ changes. Usage evidence is necessarily weak — see the caveat in §4.
 
 | Class | Count |
 |---|---|
-| CORE | 13 |
+| CORE | 12 |
 | SUPPORTING | 6 |
 | EXPERIMENTAL | 3 |
 | UNCLEAR | 0 |
 | ORPHANED (non-skill components) | 4 |
 | DEPRECATED (non-skill components) | 2 |
 
-**23 skills** in `skills/`, plus **1 router** that exists only in the Claude skill store.
+**22 skills** in `skills/`, plus **1 router** that exists only in the Claude skill store.
 No `hearthlight-*` skill is orphaned — every one is referenced by `AGENTS.md`. The genuine
 complexity problems are **outside** `skills/`.
 
@@ -70,8 +70,7 @@ Columns: **AG** = mentions in `AGENTS.md` · **UG** = `USER-GUIDE.md` · **RM** 
 | `hearthlight-comfyui-graph` | 1 | 0 | 1 | 3 | 0 | **CORE** | Gate 5 plumbing | Grounded in a real working RunningHub graph. |
 | `hearthlight-shot-runner` | 2 | 0 | 1 | 2 | 0 | **CORE** | D-007 | Owns the ledger that prevents re-paying for renders. |
 | `hearthlight-acting` | 1 | 0 | 1 | 1 | 0 | **CORE** | Core problem 3 | Performance writing — behaviour instead of emotion, the locked master profile, eye life. **Cross-cutting: both WF-A and WF-B depend on it.** Adapted 2026-08-05 from an outside production practice, proprietary references removed. Untested against a real generation batch. |
-| `hearthlight-asset-sheets` | 1 | 0 | 1 | 1 | 0 | **CORE** | Core problems 1 & 3 | The asset factory — sheet composition, the no-double-pass masking law, state splitting, the tag dictionary, and the 10/10 stress test that gates every sheet. **Blocking prerequisite for WF-B**, where the sheets carry the entire load. Owns the *how*; `hearthlight-character` owns the *who* and `-mise-en-scene` the *what*. Adapted 2026-08-05 from an outside production practice. Untested against a real batch. |
-| `hearthlight-character` | 1 | 0 | 1 | 1 | 0 | **SUPPORTING** | Principle 2 | Owns identity and meaning; sheet manufacture now belongs to `hearthlight-asset-sheets`. Its § Contents (three full-body views) conflicts with the headless-front finding — P-011 open. |
+| `hearthlight-character` | 1 | 0 | 1 | 1 | 0 | **SUPPORTING** | Principle 2 | Owns identity, meaning, and the character sheet. Holds the believable-over-beautiful and catch-light selection criteria. Its § Contents (three full-body views) conflicts with the headless-front finding — P-011 open. |
 | `hearthlight-critique` | 2 | 1 | 0 | 2 | 0 | **SUPPORTING** | Principle 3 | The "partner not intern" behaviour made concrete. |
 | `hearthlight-research` | 1 | 1 | 1 | 2 | 0 | **SUPPORTING** | Feeds Gate 2 | "Research populates the world, never the story." |
 | `hearthlight-clip-extractor` | 2 | 0 | 1 | 4 | 1 | **SUPPORTING** | Storyboard prep | Thin ffmpeg wrapper, well referenced. |

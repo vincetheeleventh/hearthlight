@@ -21,6 +21,8 @@ CHECKS = {
     "continuity_grounded": True,
     "illustration_native": True,
     "controls_outside_prose": True,
+    "relationally_coherent": True,
+    "non_redundant": True,
     "concise": True,
 }
 
@@ -75,6 +77,26 @@ class VisibilityAwarePromptTests(unittest.TestCase):
             self.assertNotIn(forbidden, prompt.casefold())
         self.assertIn("adult male hands", prompt)
         self.assertIn("high-laced tan desert boot", prompt)
+        self.assertEqual(prompt, spec["prompt_body"])
+        self.assertNotIn("16:9", prompt)
+        self.assertNotIn(STYLE, prompt)
+        self.assertNotIn("Must show:", prompt)
+
+    def test_renderer_keeps_controls_and_acceptance_checks_out_of_prompt(self) -> None:
+        body = (
+            "A low close insert at shin height, depicting a man and a woman sitting next to each "
+            "other on a bed, a slight space between them, in a direct frontal orthogonal view. "
+            "Frame center-right: a man's legs in desert camouflage tucked into tan military boots; "
+            "his hands tie the laces. Frame left: a woman's lower legs and slippered feet rest beside "
+            "him. Soft morning window light falls from frame left across the boot and bed edge. "
+            "The stiff military boot and soft slippers share the frame without touching."
+        )
+        spec = {
+            "prompt_body": body,
+            "required_elements": ["one boot", "wife frame left", "father frame right"],
+            "forbidden_elements": ["faces", "dog tags"],
+        }
+        self.assertEqual(authoring.render_prompt(spec, STYLE, "16:9"), body)
 
     def test_invisible_or_paraphrased_character_traits_block(self) -> None:
         characters = self.character("father", [("buzzed hair", ["head"]), ("adult male hands", ["hands"])])
@@ -134,6 +156,8 @@ class VisibilityAwarePromptTests(unittest.TestCase):
         self.assertTrue(any("controls leaked" in value.casefold() for value in blockers))
         incomplete = {**spec, "prompt_body": "One still figure.", "quality_checks": {}}
         self.assertTrue(any("self-audit failed" in value.casefold() for value in self.validate(incomplete, {})))
+        scaffolded = {**spec, "prompt_body": "One 16:9 illustrated narrative frame rendered in ink linework and colour washes."}
+        self.assertTrue(any("scaffolding leaked" in value.casefold() for value in self.validate(scaffolded, {})))
 
     def test_rant_event_is_loaded_as_current_confirmed_vision(self) -> None:
         event = {

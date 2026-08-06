@@ -135,6 +135,20 @@ per-scene lighting design unenforceable. **The sheet supplies identity. The shot
 - **No text, labels or annotations** — models hallucinate type onto model sheets and it poisons `image2`.
 - No scene props, location, dramatic action, or story lighting.
 
+### Choosing from the batch — believable over beautiful
+A generation returns several faces. **Pick the most believable, not the most beautiful.** A
+beautiful-but-slightly-fake face passes a still review and shows its fakeness later in video, when it
+is far more expensive to fix — and a plastic face cannot carry a performance no matter how good the
+video prompt is (`hearthlight-acting`).
+
+**Check the eyes before approving.** Even dark eyes need a small light reflection in the pupil — a
+catch-light. Without it the face reads dead, and no video model can act with a dead face. This is a
+**hard rejection criterion**, not a preference: the sheet is `image2` on every video job, so a dead
+eye here is inherited by every clip in the film.
+
+No character locks until it passes the stress test in `hearthlight-conventions`, run **alongside the
+other characters it shares frames with** — a character stable alone often breaks in a two-shot.
+
 ### Prompt register — keyword-stacked, not prose
 Krea prompts are dense comma-delimited phrases, not instructions. Do not write "Create a clean model
 sheet showing…". Stack descriptors. Target **60–80 words**.

@@ -41,7 +41,7 @@ EXPECTED_SKILLS = [
     "conventions","distribution-spec","consolidate","outline","critique","research","character",
     "reference-report","mise-en-scene","shot-crew","clip-extractor","timing-intake",
     "image-prompts","storyboard","video-prompts","comfyui-graph","notion-log","selfcheck",
-    "dashboard","shot-runner","terse","acting","asset-sheets",
+    "dashboard","shot-runner","terse","acting",
 ]
 skills_dir = os.path.join(STUDIO, "skills")
 present = set()

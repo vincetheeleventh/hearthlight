@@ -69,10 +69,14 @@ circle of angles. Leave a physical **anchor** in every location — a column, a 
 staging to it. *"The hero at the lamp, facing the door"* works. *"The hero in the room"* is a
 lottery. One light logic per sheet: one source, one shadow direction, never two suns.
 
-> ⚠️ **Hearthlight's current sheets do not yet meet this standard.** `hearthlight-character` produces
-> a lighting-neutral turnaround, which is close, and `hearthlight-mise-en-scene` holds the world
-> per-location. The state-splitting, the 3/4 rule, the anchor rule and the ten-out-of-ten stress test
-> are **not yet in those skills.** Filed as proposals — see `PROPOSALS.md`.
+**Where each rule lives:** state splitting, the tag dictionary and the **ten-out-of-ten stress test**
+are in `hearthlight-conventions`. Location sheet craft — 3/4, the anchor, one light logic, reverse
+angles — is in `hearthlight-mise-en-scene`. Character sheet composition and the
+believable-over-beautiful and catch-light selection criteria are in `hearthlight-character`. The
+no-double-pass masking law is in `hearthlight-image-prompts`.
+
+> ⚠️ One open conflict: `hearthlight-character` § Contents specifies three full-body views, which
+> competes with the headless-front finding. **P-011 open** — until Vince rules, that skill governs.
 
 ---
 

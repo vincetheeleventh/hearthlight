@@ -46,10 +46,10 @@ Before generating anything, write `projects/{slug}/0X-*/batch-plan.md`. One row 
 - conditioning image: 04-images/shot-12_v2.png          (Stage 6; Stage 4: "none — generating")
 - character sheet:    03-bible/characters/dad-sheet.png
 - prompt source:      05-storyboard/shotlist.md row 12 + crew entries (compiled verbatim)
-- style block:        03-bible/mise-en-scene.md §Tier-1 [LOCKED] — copied VERBATIM
+- style conditioning: Krea Stage A moodboard ID + strength; textual stages use locked block verbatim
 - output:             06-video/shot-12_v1.mp4
 - duration target:    4.0s board → generate 5s (COMBO), trim in edit
-- verify:             file exists · 9:16 · style block was in prompt · char sheet attached ·
+- verify:             file exists · target AR · provider-correct style conditioning · required refs attached ·
                       duration ≥ target · audio setting as confirmed for this project
 ```
 
@@ -97,8 +97,8 @@ Worker reports one of four statuses (superpowers vocabulary, kept exactly):
 ## Step 3 — Two-stage review (the heart of the adaptation)
 **Stage A — SPEC compliance. Machine judges.** Mechanical, checkable, per shot:
 - output file exists, non-trivial size, correct aspect ratio (distribution spec is law)
-- Tier 1 style block present **verbatim** in the prompt that ran (diff it — paraphrase = FAIL)
-- character signature block present verbatim; character sheet attached as ref
+- style conditioning matches the stage: Krea Stage A uses approved moodboard ID/strength and contains no style/aspect scaffold in prompt prose; textual stages carry the Tier 1 block verbatim
+- character conditioning matches the stage: Krea Stage A omits character sheets; likeness/textual stages use approved identity references and required signature rules
 - duration ≥ board target (Stage 6); `generateAudio` matches what Vince confirmed for this project
 - nothing extra: no shots generated that aren't in the plan (over-building is a spec fail)
 

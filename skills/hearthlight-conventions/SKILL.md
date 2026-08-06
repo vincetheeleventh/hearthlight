@@ -147,6 +147,44 @@ _Ratified by Vince 2026-07-31, promoted from the yugioh project where it was fir
 - Approved files are immutable. A revision is a new version (`-v2`), never an overwrite.
 - For versioned image passes, `04-images/generations.jsonl` is append-only truth for generation, review, and final-selection events. `prompts.md` and `status.md` are derived human views. Older projects without JSONL keep `status.md` as their per-beat source of truth.
 
+## EVERY STATE IS A SEPARATE ASSET (global — applies to characters, locations and props)
+Wet, wounded, changed clothes — **separate assets, separate tags, separate descriptors**:
+`@roco`, `@roco_wet`, `@roco_blood`. Locations too: **day, night and rain are three assets**, not one
+with modifiers. Props split by how they are shot: a full version for close-ups, a partial or altered
+one for a brief reveal, and a "hidden" version whose prompt forbids showing the object and allows only
+its effect (*"the crystal is not visible; only blue light between the clenched fingers"*).
+
+Mix states inside one descriptor and the model mixes them between shots. **Splitting states is
+cheaper than fighting the model.** A state that changes identity is a new asset with a new tag — not a
+new version of the old one (versions are for corrections; see the immutability rule above).
+
+**One tag dictionary for the whole project.** The same `@name` in documents, prompts, shot lists and
+the UI. A second name for the same asset is a drift vector. Tags are registered in the reference
+manifest above.
+
+## THE ASSET STRESS TEST (the gate before any asset locks)
+An asset is a pair: **a descriptor (text) + a reference (image)**. The descriptor goes into every
+prompt **word for word** — the model has no memory, and there is no "as established earlier".
+
+**No asset locks, and no shot generates from it, until it passes:**
+
+1. **Ten generations**, varied poses and varied light.
+2. **Recognizable in ten out of ten.** Not eight. Not "mostly".
+3. **Not alone** — beside the other assets it will share frames with. An asset that is stable alone
+   often breaks when sharing a frame.
+4. **In the light of the scenes actually coming.** A sheet that holds under flat light and collapses
+   under the film's key light has not been tested.
+
+**If the test fails, the problem is the description, not the model.** Rewrite the words and test
+again — re-rolling the same descriptor is how a bad asset gets locked in.
+
+Record the result beside the asset (`10/10`, or `7/10 — jaw drifts in profile`). A failed test is
+evidence about the descriptor and is worth keeping. **An amended asset is an untested asset** — re-run
+the test.
+
+This matters most where there is no conditioning still to hide a weak asset behind — see
+`workflows/WF-B-storyboard-to-video.md`.
+
 ## Gate protocol
 - Gates 0–5 map to stages 1.5–6 (see PRD §5). A gate passes only on Vince's explicit ✅ in Telegram.
 - Record each gate pass at the top of the stage's main doc: `GATE n PASSED {date}`.

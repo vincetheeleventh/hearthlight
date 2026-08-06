@@ -217,9 +217,8 @@ A guardian that reads as a large man = failed shot.
   be repeated. This is the shot-runner's ledger.
 - **Ten-to-fifteen rule.** If a shot has not come together in that many iterations, the problem is
   not the wording. **Simplify the shot** — split it in two, remove an action, change the angle.
-- **Never run an image through a model twice in full.** Every extra pass destroys texture and drifts
-  colour; after two passes a face turns symmetrical, plastic and lifeless, and dead texture ruins the
-  acting downstream. Make point changes on a masked copy and composite them back onto the original.
+- **Never re-run an approved image through a model to "clean it up."** That law lives in
+  `hearthlight-image-prompts` § THE NO-DOUBLE-PASS LAW — amend by mask, never by regeneration.
 
 ## Pre-send self-check
 

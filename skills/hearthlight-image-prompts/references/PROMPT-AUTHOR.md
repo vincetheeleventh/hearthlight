@@ -84,6 +84,28 @@ The image prompt contains one present-tense state. Action is video-only validati
 Never emit timecodes, camera movement, or sequences such as after, then, begins to, reaches for,
 turns and, or rises. If information enters later, describe frame one or block for a creative choice.
 
+## Relational prose before atomic detail
+
+A technically valid list of attributes can still describe a bad image. First state the whole spatial
+relationship in one sentence: framing and viewpoint, who shares the frame, what they are doing, and
+the meaningful distance or contact between them. Then resolve each subject in atomic clauses. End
+with light and the one visible contrast or focal relationship the shot depends on.
+
+Use each fact once. Do not spend the final sentence restating earlier objects as a checklist. Do not
+fill a missing relational sentence with global style language. Global background-edge treatment,
+linework, palette, texture, and medium belong to the moodboard and style controls unless current Shot
+Vision explicitly makes one of them a shot-specific compositional fact.
+
+Strong shape:
+
+> A low close insert at shin height shows a man and woman seated beside each other on a bed, with a
+> slight gap between them, in a direct frontal orthogonal view. Frame center-right, the man's desert-
+> camouflage trouser legs tuck into tan military boots while his hands tie one lace. Frame left, the
+> woman's slippered lower legs rest beside him. Soft morning window light falls from frame left across
+> the boot and bed edge. The stiff boot and soft slippers share the frame without touching.
+
+The example calibrates sentence logic, not facts to copy into other shots.
+
 ## Attribute binding
 
 Use atomic ownership:
@@ -120,6 +142,10 @@ Prefer a visible positive alternative over repeating a forbidden noun:
 Keep continuity facts that must remain unseen in `forbidden_elements`; do not turn them into prompt
 tokens. Use `required_elements` only for visible, shot-specific acceptance conditions.
 
+`required_elements` and `forbidden_elements` are validation data, not prose annexes. Do not repeat
+the visible description as a `Must show`, `Constraints`, or negative-checklist paragraph. Fold a
+constraint into the natural description only when it adds a visible fact not already stated.
+
 ## Krea Stage-A profile
 
 Purpose: style and composition, not final facial likeness.
@@ -128,6 +154,9 @@ Purpose: style and composition, not final facial likeness.
 - Let the moodboard carry rendering taste; do not translate moodboard strength into prose.
 - Do not include model name, moodboard ID, strength, resolution, creativity, intensity, complexity,
   movement, or aspect-ratio controls inside the prompt body.
+- Do not include a deliverable header, aspect ratio, locked style block, or generic illustration
+  declaration. Krea receives aspect ratio as a request parameter and rendering style from the
+  selected moodboard.
 - Use illustration-native spatial language.
 - Preserve exact canonical lettering only when the shot requires readable text.
 - Do not spend prompt tokens on unseen identity, backstory, timing, review notes, or workflow labels.
@@ -148,7 +177,10 @@ Before returning JSON, answer these privately:
 
 ## Output boundary
 
-Return the requested strict JSON object only. `prompt_body` is polished provider prose containing
-the visible tableau, subject relationships, composition, environment, and light. Omit the fixed
-deliverable header and locked style sentence; Python adds those verbatim. The structured fields must
-support every claim in `prompt_body`. Put uncertainty in warnings or blockers, never hide it in prose.
+Return the requested strict JSON object only. `prompt_body` is the final text sent to Krea: one
+coherent visible-frame description containing the tableau, subject relationships, composition,
+environment, and light. Do not add headings, aspect ratio, a deliverable declaration, the locked
+style block, or a repeated acceptance checklist. Python passes the body through unchanged after
+normalizing whitespace. The structured fields must support every claim in `prompt_body`; they remain
+available for validation and review without being appended to it. Put uncertainty in warnings or
+blockers, never hide it in prose.

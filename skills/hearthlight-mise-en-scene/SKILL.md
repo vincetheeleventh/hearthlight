@@ -56,6 +56,34 @@ Lives at `03-bible/mise-en-scene.md` (+ `refs/`, `characters/`). Also mirrored t
 ### {Location B — e.g. Dad's family home}
   ...
 
+## LOCATION SHEETS — generate for the angles you will actually need
+The establishing ref image above is not decoration; it is the asset every shot in that location is
+built from. How it is shot decides whether the location holds.
+
+- **3/4, never frontal.** A frontal sheet becomes flat wallpaper on wides, and past its edges the
+  model invents new surroundings every time. A 3/4 view gives depth to read and covers nearly a full
+  circle of angles.
+- **Leave a physical anchor** — a column, a lamp, a sofa — and tie all staging to it.
+  *"The hero at the lamp, facing the door"* works. *"The hero in the room"* is a lottery.
+- **One light logic per sheet.** One source, one shadow direction. **Never two suns**, or every new
+  angle re-invents the lighting.
+- **Keep the film look out of the sheet in the same way Tier 1 keeps it out of a character
+  turnaround** — the sheet supplies space and texture; the shot prompt supplies light.
+
+### Reverse angles
+**A — generate the corner.** Generate a corner of the same room in an image model, matching the soft
+focus and grade of the original sheet.
+
+**B — walk the empty room.** Generate a *video* of the empty location with the camera slowly walking
+through the space; the video model draws the other sides consistently with your sheet. Screenshot the
+angle you need, take it to an image model, and prompt it to improve texture and lighting. **A full
+location sheet out of a single image** — the stronger of the two, and what makes a single-image
+location viable when there is no conditioning still (`workflows/WF-B-storyboard-to-video.md`).
+
+Day, night and rain are **separate assets**, not one sheet with modifiers — see
+`hearthlight-conventions` § EVERY STATE IS A SEPARATE ASSET. No location locks until it passes the
+stress test in that same skill.
+
 ## SOURCES & DECISIONS
   - links to research-deck + reference-report; [stylized — Vince decides] calls; rights note
 ```

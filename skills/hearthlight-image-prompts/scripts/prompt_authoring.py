@@ -39,6 +39,7 @@ MOTION_PATTERN = re.compile(
 OPTICAL_COLLISIONS = re.compile(r"\b(?:bokeh|shallow depth of field|rack focus|motion blur|glossy 3d)\b", re.I)
 GENERIC_QUALITY = re.compile(r"\b(?:masterpiece|award[- ]winning|stunning|gorgeous|beautiful|best quality|highly detailed)\b", re.I)
 CONTROL_LEAK = re.compile(r"\b(?:krea(?:\s*2)?|moodboard|style strength|creativity|intensity|complexity|movement|\d+k resolution)\b", re.I)
+PROMPT_SCAFFOLD_LEAK = re.compile(r"\b(?:aspect ratio|illustrated narrative frame|rendered in|illustration style|ink(?:ed)? linework|colou?r washes?|watercolou?r|gouache|paper texture|clean white at the edges?|background (?:dissolves|thins|fades) to (?:clean )?white)\b|\b\d+(?:\.\d+)?:\d+(?:\.\d+)?\b", re.I)
 VISIBILITY_VALUES = {"clear", "partial", "silhouette", "out-of-focus", "distant"}
 AUTHOR_GUIDE = HERE.parent / "references" / "PROMPT-AUTHOR.md"
 
@@ -414,8 +415,9 @@ def worker_instructions(bundle: dict, repair: dict | None = None) -> str:
             "environment": "", "lighting": "", "observable_intent": "",
             "required_elements": [], "forbidden_elements": [], "supersedes": [],
             "continuity_choices": [{"fact": "", "source": ""}],
-            "prompt_body": "polished Krea prose; omit deliverable header and locked style sentence",
-            "quality_checks": {"single_instant": True, "visibility_grounded": True, "ownership_clear": True, "continuity_grounded": True, "illustration_native": True, "controls_outside_prose": True, "concise": True},
+            "prompt_body": "final coherent Krea prompt; visible shot description only; no aspect ratio, style block, headings, or repeated acceptance checklist",
+            "prose_plan": {"whole_tableau": "one relational opening sentence", "subject_clauses": [], "light_and_visual_relationship": "one closing relationship; no repetition"},
+            "quality_checks": {"single_instant": True, "visibility_grounded": True, "ownership_clear": True, "continuity_grounded": True, "illustration_native": True, "controls_outside_prose": True, "relationally_coherent": True, "non_redundant": True, "concise": True},
             "warnings": [], "blockers": [],
         }]
     }
@@ -427,7 +429,7 @@ def worker_instructions(bundle: dict, repair: dict | None = None) -> str:
         "Use the focused contract below as active reasoning guidance, not decorative documentation. "
         "LATEST SHOT VISION IS CREATIVE AUTHORITY. Storyboard fields are supersedable baseline evidence. Before writing, compare them, follow Vision in every conflict, and record each displaced baseline fact in supersedes. "
         "For character visible_traits, copy visual_traits[].text exactly; a shot-specific trait is allowed only when copied verbatim from current Vision. Leave gaze and expression blank when the face or eyes are not visible. "
-        "Do not copy a stale storyboard composition merely because it is concrete. Deliberate privately. Return JSON only; never call tools.\n\n"
+        "Do not copy a stale storyboard composition merely because it is concrete. Build a relational prose plan before the prompt: whole tableau first, atomic subject clauses second, light and the shot-specific visual relationship last. State each fact once. Never substitute global style language for missing staging. Return JSON only; never call tools.\n\n"
         "FOCUSED AUTHOR CONTRACT:\n" + author_guide()
         + "\n\nOUTPUT SCHEMA — match exactly:\n" + json.dumps(schema, ensure_ascii=False)
         + repair_text + "\n\nSOURCE BUNDLE:\n" + json.dumps(bundle, ensure_ascii=False)
@@ -449,7 +451,8 @@ def reviewer_instructions(source: dict, spec: dict, prompt: str, bundle: dict) -
         "You are Hearthlight's independent Shot Prompt Reviewer. Do not rewrite the prompt and do not add creative direction. "
         "Judge whether the prompt is coherent, source-grounded, visually intelligent, visibility-aware, continuity-safe, illustration-native, concise, and likely to produce the intended Krea Stage-A frame. "
         "LATEST SHOT VISION IS CREATIVE AUTHORITY; storyboard is supersedable baseline only. First compare prompt and production object directly against every Vision Composition, Screen geography, Visible tableau, Must hold, and Never clause. Block any stale storyboard framing, subject, setup, or geography that the Vision replaced. "
-        "Block material ambiguity, invented facts, conflicting geography/light/counts, invisible identity overload, abstract emotion without visible evidence, attribute-binding risk, medium collision, or needless semantic density. "
+        "Block material ambiguity, invented facts, conflicting geography/light/counts, invisible identity overload, abstract emotion without visible evidence, attribute-binding risk, medium collision, needless semantic density, checklist-like fragments, repeated acceptance conditions, or prose that lists parts without first establishing their shared spatial relationship. "
+        "The rendered prompt must read as one coherent visible-frame description. Aspect ratio, locked style, moodboard, model controls, and structured Must show checks stay outside prompt prose. "
         "Do not block harmless wording preference. Return strict JSON only.\n\nREVIEW GUIDELINE:\n"
         + author_guide() + "\n\nOUTPUT SCHEMA:\n" + json.dumps(schema, ensure_ascii=False)
         + "\n\nREVIEW PAYLOAD:\n" + json.dumps(payload, ensure_ascii=False)
@@ -561,6 +564,8 @@ def validate_spec(spec: dict, source: dict, characters: dict[str, dict], aspect_
         blockers.append("Prompt contains generic quality adjectives instead of visible construction")
     if CONTROL_LEAK.search(body):
         blockers.append("Krea request controls leaked into prompt prose")
+    if PROMPT_SCAFFOLD_LEAK.search(body):
+        blockers.append("Aspect ratio, deliverable, or rendering-style scaffolding leaked into Krea prompt prose")
     if len(body.split()) > 350:
         blockers.append("Prompt body exceeds 350 words and risks semantic overload")
     style = clean(source.get("locked_style"))
@@ -624,20 +629,16 @@ def validate_spec(spec: dict, source: dict, characters: dict[str, dict], aspect_
         if len(phrase) >= 4 and phrase.casefold() in body.casefold():
             blockers.append(f"Forbidden element leaked into positive prompt: {phrase}")
     checks = spec.get("quality_checks") if isinstance(spec.get("quality_checks"), dict) else {}
-    expected_checks = {"single_instant", "visibility_grounded", "ownership_clear", "continuity_grounded", "illustration_native", "controls_outside_prose", "concise"}
+    expected_checks = {"single_instant", "visibility_grounded", "ownership_clear", "continuity_grounded", "illustration_native", "controls_outside_prose", "relationally_coherent", "non_redundant", "concise"}
     failed_checks = [key for key in expected_checks if checks.get(key) is not True]
     if failed_checks:
         blockers.append("Author self-audit failed: " + ", ".join(sorted(failed_checks)))
     return list(dict.fromkeys(blockers))
 
 
-def render_prompt(spec: dict, style: str, aspect_ratio: str) -> str:
-    body = clean_paragraphs(spec.get("prompt_body"))
-    lines = [f"One {aspect_ratio} illustrated narrative frame.", body, style.rstrip(".") + "."]
-    required = [clean(value) for value in spec.get("required_elements", []) if clean(value)] if isinstance(spec.get("required_elements"), list) else []
-    if required:
-        lines.append("Must show: " + "; ".join(required) + ".")
-    return "\n\n".join(line for line in lines if line).strip()
+def render_prompt(spec: dict, style: str = "", aspect_ratio: str = "") -> str:
+    """Return only author prose; style, aspect, and acceptance checks are request metadata."""
+    return clean_paragraphs(spec.get("prompt_body"))
 def compile_batch(
     root: Path,
     batch_id: str,

@@ -126,8 +126,8 @@ acknowledgement is honest; three is groveling, and it costs tokens to be less tr
 Accountability is stating the error plainly and fixing it. It is not emotional performance.
 
 ## NEVER compress (verbatim law — these are artifacts, not chatter)
-- **Tier 1 style block + character signature blocks** — copied verbatim into prompts, never
-  paraphrased, never shortened. This law outranks this skill.
+- **Tier 1 style block + character signature blocks** — when a stage includes them in prompt prose,
+  copy verbatim, never paraphrase or shorten. Krea Stage A carries style by moodboard, outside prose.
 - Image/video **prompt bodies** (Seedance, gpt-image) — every word is load-bearing
 - **VO transcripts, interview quotes, source-recording words** — whoever spoke, their words are the
   material. Never paraphrased into summary.
