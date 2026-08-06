@@ -42,8 +42,15 @@ language. Never bury placement rules inside style prose — the model weights wh
 
 - **Present tense. Short sentences.**
 - **The camera is written inside the action**, not as a separate wish.
-- **Up to three sentences per beat.** Overload a beat and the model smears it. The *prompt* may be
-  long — 3,000–4,000 words is fine. Length is not the enemy; an overloaded beat is.
+- **Up to three sentences per beat.** Overload a beat and the model smears it.
+- **Length depends on the route, and the two are opposite.**
+  - **WF-B (no conditioning still):** the prompt is the only source of framing, blocking and world.
+    Long is correct — the source practice ran 3,000–4,000 words. Length is not the enemy here; an
+    overloaded beat is.
+  - **WF-A (i2v from an approved still):** **short.** The still already carries composition,
+    character, palette and style. Re-describing them invites the model to repaint the frame — see
+    the parent skill's i2v section. A 3,000-word prompt on an i2v job is that invitation.
+    Describe **only what changes**: the motion, its quality and pace, and what stays still.
 - **Positive form only.** The model ignores "does NOT fall on his back", or does the opposite. Write
   "falls on his stomach". This applies to every constraint — hence *positive* constraints.
 - **The character is in frame from frame one**, and never looks into the camera unless asked.
@@ -173,7 +180,16 @@ never re-rendered as intact, never multiplied. Two trays, never more. The camera
 side of the room for all twelve seconds.
 ```
 
-Close with the technical tags: `Photoreal. NON-IP. [aspect]. [duration]s. SFX only. NO CGI. Cinematic.`
+Close with the technical tags — **matched to the film's medium**:
+
+```text
+NON-IP. [aspect]. [duration]s. SFX only. NO CGI. Cinematic.
+```
+
+> ⚠️ The source practice ends this line with `Photoreal.` **Do not use that tag on a painted film.**
+> It contradicts the locked style block and the preservation clause in the parent skill, and it is
+> the single fastest route to photoreal creep. Add `Photoreal.` only when the project's locked style
+> is actually photographic.
 
 **Aspect comes from the distribution spec.** It is a composition law, not an export setting.
 

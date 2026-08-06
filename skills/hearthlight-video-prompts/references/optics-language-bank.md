@@ -1,5 +1,32 @@
 # Optics language bank
 
+> ## ⚠️ MEDIUM WARNING — READ BEFORE PASTING ANYTHING FROM THIS FILE
+>
+> **This practice was built for photoreal 8K live-action. Hearthlight films are painted.**
+>
+> `yugioh`'s locked style is *"confident dark ink linework, soft flat colour washes, minimal detail,
+> cozy warm palette, background dissolving to clean white."* An ink-and-wash illustration has **no
+> bokeh, no chromatic aberration, no razor-thin focus plane, and no lens.** Pasting these blocks
+> verbatim into a painted shot is a direct invitation to photoreal creep — the exact failure
+> `hearthlight-video-prompts` carries a preservation clause to prevent, and the one thing Vince
+> watches for at Gate 5.
+>
+> **Use the lens blocks only where the film's locked style is photographic.** Otherwise take the
+> *framing logic* — how close, how much environment, how isolated the subject — and express it in
+> the film's own vocabulary:
+>
+> | Photoreal phrasing | Painted equivalent |
+> |---|---|
+> | creamy bokeh, background dissolved | background washes out to clean white at the edges |
+> | razor-thin focus isolates the eyes | linework tightens on the face, everything else loses line |
+> | background compressed flat behind subject | flatter colour field behind the figure, fewer layers |
+> | chromatic aberration near frame edges | *(drop it — this is a lens artifact)* |
+> | 180° shutter motion blur, atmospheric haze | *(drop both)* |
+> | pore-level skin, vellus hair, capillary flush | *(drop — fights "minimal detail")* |
+>
+> **The FOV numbers and camera distances still work** — they control how much world is in frame,
+> which is medium-independent. The optical *texture* language does not.
+
 Ready-to-paste lens blocks and the decision tree behind them. Adapted for Hearthlight from an
 outside production practice, platform-specific references removed.
 
