@@ -68,9 +68,33 @@ def find_shot(shots: list[dict], ref: str) -> dict:
 
 
 def resolve_panels(project: Path, shot: dict) -> tuple[list[dict], list[str]]:
-    """board_panels ['1','2'] -> the files on disk, plus notes about what is missing."""
+    """Find this shot's drawing.
+
+    Vince photographed the physical boards, chopped them up, and pasted each
+    panel into the Storyboard column of the shot-list workbook. So the drawings
+    live INSIDE the .xlsx, anchored to their shot's row — not as loose files.
+    `extract` pulls them out to `shot-{nn}-board.png`; those are preferred here.
+    The `board-panel-{nn}` convention is still honoured as a fallback.
+    """
     root = project.joinpath(*PANEL_DIR)
     found, notes = [], []
+
+    # 1. extracted-from-workbook, named by shot — the normal case
+    display = str(shot.get("display_number") or "").strip()
+    if display and root.is_dir():
+        stem = f"shot-{int(display):02d}-board" if display.isdigit() else f"shot-{display}-board"
+        for p in sorted(root.glob(f"{stem}.*")):
+            if p.suffix.lower() in IMAGE_SUFFIXES:
+                found.append({
+                    "panel": display, "source": "workbook",
+                    "path": str(p.relative_to(project)).replace("\\", "/"),
+                    "needs_conversion": p.suffix.lower() in NEEDS_CONVERSION,
+                    "bytes": p.stat().st_size,
+                })
+    if found:
+        return found, notes
+
+    # 2. fallback: loose board-panel-NN files
     numbers = [str(x).strip() for x in (shot.get("board_panels") or []) if str(x).strip()]
     if not numbers:
         notes.append(str(shot.get("storyboard_reference") or "") or "no board_panels recorded")
@@ -136,6 +160,103 @@ def neighbours(shots: list[dict], shot: dict) -> dict:
 
 def readings_path(project: Path) -> Path:
     return project / "04-images" / "panel-readings.jsonl"
+
+
+
+# ── extract the drawings out of the workbook ─────────────────────────────────
+
+XDR = "{http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing}"
+AMAIN = "{http://schemas.openxmlformats.org/drawingml/2006/main}"
+REL = "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}"
+
+
+def newest_workbook(project: Path) -> Path | None:
+    books = sorted((project / "05-storyboard").glob("*shotlist*.xlsx"),
+                   key=lambda p: p.stat().st_mtime, reverse=True)
+    return books[0] if books else None
+
+
+def extract_panels(project: Path, workbook: Path, dry_run: bool = False) -> list[tuple[str, str]]:
+    """Pull each anchored image out of the workbook and name it by its shot.
+
+    Images are anchored to a row; that row's `Shot` cell names the shot. This is
+    how a photographed board becomes a per-shot drawing the vision pass can read.
+    """
+    import xml.etree.ElementTree as ET
+    import zipfile
+
+    sys.path.insert(0, str(STUDIO / "skills" / "hearthlight-dashboard" / "scripts"))
+    import shot_record as sr  # the workbook reader already in the repo
+
+    rows = sr.xlsx_rows(workbook)
+    if not rows:
+        fail("workbook has no rows")
+    headers = [h.strip() for h in rows[0]]
+    if "Shot" not in headers:
+        fail("workbook has no 'Shot' column")
+    shot_col = headers.index("Shot")
+
+    out_dir = project.joinpath(*PANEL_DIR)
+    written: list[tuple[str, str]] = []
+    with zipfile.ZipFile(workbook) as book:
+        drawings = [n for n in book.namelist() if n.startswith("xl/drawings/drawing")
+                    and n.endswith(".xml")]
+        for drawing in drawings:
+            rel_name = drawing.replace("drawings/", "drawings/_rels/") + ".rels"
+            if rel_name not in book.namelist():
+                continue
+            rels = {r.get("Id"): r.get("Target")
+                    for r in ET.fromstring(book.read(rel_name))}
+            tree = ET.fromstring(book.read(drawing))
+            for anchor in list(tree):
+                frm = anchor.find(f"{XDR}from")
+                blip = anchor.find(f".//{AMAIN}blip")
+                if frm is None or blip is None:
+                    continue
+                excel_row = int(frm.find(f"{XDR}row").text) + 1
+                target = rels.get(blip.get(f"{REL}embed"))
+                if not target:
+                    continue
+                if excel_row - 1 >= len(rows):
+                    continue
+                row = rows[excel_row - 1]
+                shot = (row[shot_col].strip()
+                        if shot_col < len(row) else "")
+                if not shot:
+                    continue
+                member = "xl/" + target.lstrip("./").replace("../", "")
+                if member not in book.namelist():
+                    continue
+                suffix = Path(member).suffix or ".png"
+                stem = f"shot-{int(shot):02d}-board" if shot.isdigit() else f"shot-{shot}-board"
+                dest = out_dir / f"{stem}{suffix}"
+                written.append((shot, str(dest.relative_to(project)).replace("\\", "/")))
+                if dry_run:
+                    continue
+                out_dir.mkdir(parents=True, exist_ok=True)
+                dest.write_bytes(book.read(member))
+    return written
+
+
+def cmd_extract(a) -> int:
+    project = STUDIO / "projects" / a.project
+    if not project.is_dir():
+        fail(f"no project at {project}")
+    wb = Path(a.workbook) if a.workbook else newest_workbook(project)
+    if wb and not wb.is_absolute():
+        wb = project / a.workbook
+    if not wb or not wb.is_file():
+        fail("no shot-list workbook found")
+    written = extract_panels(project, wb, dry_run=a.dry_run)
+    print(f"{len(written)} drawing(s) anchored in {wb.name}")
+    for shot, path in written:
+        print(f"   shot {shot:>4}  ->  {path}")
+    if a.dry_run:
+        print("\n[dry-run] nothing written")
+    else:
+        print(f"\nwritten to {'/'.join(PANEL_DIR)}/")
+        print("These are DERIVED from the workbook. Re-run after re-pasting panels.")
+    return 0
 
 
 def cmd_packet(a) -> int:
@@ -283,6 +404,10 @@ def main() -> int:
     r = sub.add_parser("record", help="store a returned reading")
     r.add_argument("--project", required=True); r.add_argument("--shot", required=True)
     r.add_argument("--reading", required=True); r.set_defaults(func=cmd_record)
+
+    e = sub.add_parser("extract", help="pull the drawings out of the shot-list workbook")
+    e.add_argument("--project", required=True); e.add_argument("--workbook")
+    e.add_argument("--dry-run", action="store_true"); e.set_defaults(func=cmd_extract)
 
     s = sub.add_parser("status", help="which shots have a drawing, and which are read")
     s.add_argument("--project", required=True); s.set_defaults(func=cmd_status)

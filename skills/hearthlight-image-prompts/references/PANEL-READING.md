@@ -67,6 +67,28 @@ most likely way a rough board corrupts a prompt.
 
 ---
 
+## Where the drawings actually live
+
+**Inside the shot-list workbook.** Vince photographed the physical boards, chopped the photo into
+panels, and pasted each one into the **Storyboard column**, anchored to its shot's row. They are not
+loose files.
+
+```bash
+panel_reader.py extract --project yugioh          # workbook → shot-{nn}-board.png
+panel_reader.py status  --project yugioh          # who has a drawing, who is read
+```
+
+Extraction reads the drawing's anchor row and takes the shot number from that row's `Shot` cell, so
+a panel is named for the shot it belongs to rather than a panel index. The results are **derived** —
+re-run after re-pasting panels. `board-panel-{nn}.*` still resolves as a fallback for hand-placed
+files.
+
+> This is why the drawings looked missing. Before extraction, 2 of 28 `yugioh` shots appeared to
+> have a panel; afterwards, 20 did. **A drawing the system cannot open is a drawing that does not
+> exist to it** — and this one carried the answer to a live problem: shot 8's panel reads *"Single on
+> Boy → 2-shot · Dad kneels"*, confirming frame one is the boy alone, while the approved still shows
+> the father already there.
+
 ## Shared and missing panels
 
 - **A panel may serve several shots.** `yugioh` shots 2 and 3 share panels 1–2. **Read per shot, not
