@@ -233,28 +233,68 @@ def character_records(root: Path) -> dict[str, dict]:
     return result
 
 
+def binding_entries(manifest: dict, key: str = "assets") -> list[dict]:
+    """Asset/prop entries, refusing any that still binds by shot NUMBER.
+
+    Numbers are labels and labels get renumbered; `shot_id` is permanent (D-009). A
+    registry left on numbers does not fail loudly — it silently hands the author the
+    wrong reference sheets, which is exactly how shot 5 received the father, the mother
+    and the parents' bedroom. Refuse instead.
+    """
+    entries = manifest.get(key)
+    entries = [item for item in entries if isinstance(item, dict)] if isinstance(entries, list) else []
+    stale = [str(item.get("id") or "?") for item in entries if isinstance(item.get("shots"), list)]
+    if stale:
+        raise ValueError(
+            f"{key}: {', '.join(stale)} still bind by shot number. "
+            "Run hearthlight-dashboard/scripts/rekey_assets.py apply --project <slug>"
+        )
+    return entries
+
+
+def bound_to(entry: dict, shot: dict) -> bool:
+    bound = entry.get("shot_ids")
+    if not isinstance(bound, list):
+        return False
+    return str(shot.get("shot_id") or "") in {str(value) for value in bound}
+
+
 def relevant_characters(manifest: dict, shot: dict) -> list[str]:
-    labels = {normalize_shot(shot.get("display_number")), *(normalize_shot(value) for value in shot.get("legacy_numbers", []))}
-    result: list[str] = []
-    for asset in manifest.get("assets", []) if isinstance(manifest.get("assets"), list) else []:
-        if not isinstance(asset, dict) or asset.get("kind") != "character-sheet":
-            continue
-        if any(normalize_shot(value) in labels for value in asset.get("shots", [])):
-            result.append(str(asset.get("id") or "").removeprefix("character-"))
-    return result
+    return [
+        str(asset.get("id") or "").removeprefix("character-")
+        for asset in binding_entries(manifest)
+        if asset.get("kind") == "character-sheet" and bound_to(asset, shot)
+    ]
 
 
 def relevant_assets(manifest: dict, shot: dict) -> list[dict]:
-    labels = {normalize_shot(shot.get("display_number")), *(normalize_shot(value) for value in shot.get("legacy_numbers", []))}
-    selected: list[dict] = []
-    for asset in manifest.get("assets", []) if isinstance(manifest.get("assets"), list) else []:
-        if not isinstance(asset, dict) or not any(normalize_shot(value) in labels for value in asset.get("shots", [])):
-            continue
-        selected.append({
+    return [
+        {
             "id": asset.get("id"), "kind": asset.get("kind"), "status": asset.get("status"),
             "local_path": asset.get("local_path"), "krea_url": asset.get("krea_url"),
-        })
-    return selected
+        }
+        for asset in binding_entries(manifest)
+        if bound_to(asset, shot)
+    ]
+
+
+def relevant_props(props: dict, shot: dict) -> list[dict]:
+    """Canon props bound to this shot.
+
+    A prop registry exists because prop identity used to survive only as a phrase in
+    storyboard prose. Shot 1 said "Yu-Gi-Oh trading cards"; shot 5 — the declared echo of
+    shot 1 — said "trading cards", and the render came back generic. Nothing was wrong
+    with the author. Nothing in the system carried the noun.
+    """
+    return [
+        {
+            "id": prop.get("id"), "name": prop.get("name"),
+            "canon": prop.get("canon"), "forbidden": prop.get("forbidden") or [],
+            "reference": prop.get("local_path"),
+        }
+        for prop in binding_entries(props, "props")
+        if bound_to(prop, shot)
+    ]
 
 
 def narrative_records(root: Path) -> dict[str, dict]:
@@ -296,6 +336,8 @@ def source_bundle(root: Path, shot_ids: list[str]) -> tuple[dict, dict[str, dict
     narratives = narrative_records(root)
     manifest = read_json(root / "03-bible" / "assets.json", {})
     manifest = manifest if isinstance(manifest, dict) else {}
+    props = read_json(root / "03-bible" / "props.json", {})
+    props = props if isinstance(props, dict) else {}
     aspect = authoritative_aspect_ratio(root)
     declared = str(manifest.get("master_aspect_ratio") or "")
     stage = (manifest.get("image_workflow") or {}).get("style_composition", {}) if isinstance(manifest.get("image_workflow"), dict) else {}
@@ -367,6 +409,7 @@ def source_bundle(root: Path, shot_ids: list[str]) -> tuple[dict, dict[str, dict
             "adjacent_continuity": neighbor_context(shot_id),
             "characters": {name: characters[name] for name in related if name in characters},
             "assets": relevant_assets(manifest, shot),
+            "props_canon": relevant_props(props, shot),
             "special_visual_laws": special_laws,
             "shared_setup_owner_shot_id": shot.get("shared_setup_owner_shot_id"),
             "render_mode": (shot.get("image_direction") or {}).get("render_mode"),
@@ -398,6 +441,7 @@ def source_bundle(root: Path, shot_ids: list[str]) -> tuple[dict, dict[str, dict
         "film_brief": sha256_file(root / "02-outline" / "FILM-BRIEF.md"),
         "mise_en_scene": sha256_file(root / "03-bible" / "mise-en-scene.md"),
         "assets": sha256_text(json.dumps(semantic_assets, sort_keys=True, ensure_ascii=False, separators=(",", ":"))),
+        "props": sha256_file(root / "03-bible" / "props.json") if (root / "03-bible" / "props.json").is_file() else None,
         "author_guide": sha256_file(AUTHOR_GUIDE),
         "vision_ledger": sha256_file(root / "04-images" / "shot-vision.jsonl") if (root / "04-images" / "shot-vision.jsonl").is_file() else None,
     }
@@ -429,6 +473,7 @@ def worker_instructions(bundle: dict, repair: dict | None = None) -> str:
         "Use the focused contract below as active reasoning guidance, not decorative documentation. "
         "LATEST SHOT VISION IS CREATIVE AUTHORITY. Storyboard fields are supersedable baseline evidence. Before writing, compare them, follow Vision in every conflict, and record each displaced baseline fact in supersedes. "
         "For character visible_traits, copy visual_traits[].text exactly; a shot-specific trait is allowed only when copied verbatim from current Vision. Leave gaze and expression blank when the face or eyes are not visible. "
+        "props_canon is BINDING. Every prop listed there that is visible in this shot must be named in prompt_body using its canon wording — never a generic substitute, and never omitted because a neighbouring shot's prose omitted it. Its forbidden entries are hard constraints. "
         "Do not copy a stale storyboard composition merely because it is concrete. Build a relational prose plan before the prompt: whole tableau first, atomic subject clauses second, light and the shot-specific visual relationship last. State each fact once. Never substitute global style language for missing staging. Return JSON only; never call tools.\n\n"
         "FOCUSED AUTHOR CONTRACT:\n" + author_guide()
         + "\n\nOUTPUT SCHEMA — match exactly:\n" + json.dumps(schema, ensure_ascii=False)

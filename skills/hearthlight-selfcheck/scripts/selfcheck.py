@@ -104,6 +104,7 @@ for rel, why in [
     ("skills/hearthlight-image-prompts/references/PROMPT-AUTHOR.md", "the author's contract"),
     ("skills/hearthlight-image-prompts/references/PANEL-READING.md", "the vision pass over the board"),
     ("skills/hearthlight-image-prompts/references/versioned-review.md", "the independent reviewer"),
+    ("skills/hearthlight-image-prompts/references/CONTINUITY-PASS.md", "the film-level continuity agent"),
     ("skills/hearthlight-image-prompts/references/README.md", "the references index"),
     ("skills/hearthlight-video-prompts/references/prompt-architecture.md", "the video prompt skeleton"),
 ]:
@@ -142,6 +143,30 @@ for _pdir in sorted(glob.glob(os.path.join(STUDIO, "projects", "*"))):
     check(f"{_slug}: panels saved as files",
           GREEN if not _nopanel else WARN,
           "" if not _nopanel else f"{len(_nopanel)} shot(s) list panels with no file — run panel_reader.py extract")
+
+    # ── REGISTRIES BIND BY shot_id, NEVER BY NUMBER ──────────────
+    # A number-bound registry does not fail loudly. It hands the prompt author the
+    # WRONG character sheets — shot 5, an overhead of a boy's hands, was being given
+    # the father, the mother and the parents' bedroom. RED, not WARN.
+    _stale = []
+    for _name in ("assets.json", "props.json"):
+        _path = os.path.join(_pdir, "03-bible", _name)
+        if not os.path.isfile(_path):
+            continue
+        try:
+            _reg_doc = _json.load(open(_path, encoding="utf-8"))
+        except Exception:
+            continue
+        for _key in ("assets", "props"):
+            for _entry in _reg_doc.get(_key, []) if isinstance(_reg_doc.get(_key), list) else []:
+                if isinstance(_entry, dict) and isinstance(_entry.get("shots"), list):
+                    _stale.append(f"{_name}:{_entry.get('id')}")
+    check(f"{_slug}: registries bind by shot_id",
+          GREEN if not _stale else RED,
+          "" if not _stale else
+          f"{len(_stale)} entry(s) still bind by shot NUMBER ({', '.join(_stale[:3])}"
+          f"{'…' if len(_stale) > 3 else ''}) — wrong sheets reach the author. "
+          f"Run rekey_assets.py plan --project {_slug}")
 
 # ── 2. Scripts execute ───────────────────────────────────────────
 def runnable(path, args):

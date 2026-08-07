@@ -9,6 +9,21 @@ generations.
 | **`PROMPT-AUTHOR.md`** | Before writing any still prompt. The author's contract |
 | **`PANEL-READING.md`** | Before interpreting a hand-drawn board panel. The vision pass |
 | **`versioned-review.md`** | Before approving anything. The independent reviewer |
+| **`CONTINUITY-PASS.md`** | Before a batch. The one agent that sees every shot at once |
+
+## Four agents, three narrow and one wide
+
+Three of these contracts govern an agent that sees **one shot**: the author, the panel reader,
+the reviewer. That narrowness is deliberate — it keeps each one honest and cheap.
+
+It also makes one class of defect invisible. Shot 1's prompt said *"Yu-Gi-Oh trading cards"*;
+shot 5, which declares itself a re-use of shot 1's setup, said *"trading cards"*. Both are
+individually fine. The reviewer passed both, because shot 1 was never in the room when shot 5
+was judged, and the render came back generic.
+
+`CONTINUITY-PASS.md` governs the fourth agent, whose packet is **the whole film and nothing
+else** — no bible, no style, no Visions. Wide and shallow. It reports that two shots disagree
+and never decides which is right.
 
 ## The authority order — memorise this
 

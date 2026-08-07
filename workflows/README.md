@@ -36,6 +36,10 @@ leaves a lesson. Neither should depend on Vince remembering.
 **board-intake runs before either.** It is idempotent — re-run it whenever boards are redrawn or the
 workbook is re-pasted. `hearthlight-selfcheck` WARNs per project when it has not been run.
 
+> **Plain-language versions of both routes live in [`guides/`](../guides/README.md)** — written for
+> Vince at the bench rather than for an agent settling an argument. Start with
+> [`guides/assets.md`](../guides/assets.md); both routes stand on the sheets.
+
 Both clip routes are live. shot2video is carrying the Yu-Gi-Oh! film; board2video is being trialled alongside it on the same
 shots to find where each one wins.
 

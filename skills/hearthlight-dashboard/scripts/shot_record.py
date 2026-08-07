@@ -377,6 +377,48 @@ def cmd_set(a) -> int:
     return 0
 
 
+def cmd_setup_link(a) -> int:
+    """Declare that a shot reuses another shot's setup.
+
+    `shared_setup_owner_shot_id` has existed on the record all along and was never
+    populated. The relationship lived in prose instead — shot 5's notes read "Same angle
+    as Shot 1 — reuse the setup", which no compiler can act on. Shot 5 then described the
+    same pile of cards in different words and the render drifted.
+    """
+    project = project_dir(a.project)
+    doc, shots = load_registry(project)
+    shot = find_shot(shots, a.shot)
+
+    if a.clear:
+        owner_id = None
+        label = "none"
+    else:
+        if not a.owner:
+            fail("--owner is required unless --clear is given")
+        owner = find_shot(shots, a.owner)
+        owner_id = str(owner.get("shot_id"))
+        label = f"shot {owner.get('display_number')} · {owner.get('title')}"
+        if owner_id == str(shot.get("shot_id")):
+            fail("a shot cannot own its own setup")
+
+    old = shot.get("shared_setup_owner_shot_id")
+    if str(old or "") == str(owner_id or ""):
+        print("value unchanged — nothing written")
+        return 0
+    shot["shared_setup_owner_shot_id"] = owner_id
+
+    print(f"shot {shot.get('display_number')} · setup owner -> {label}")
+    if a.dry_run:
+        print("\n[dry-run] nothing written")
+        return 0
+    save_registry(project, doc)
+    append_edit(project, shot, "shared_setup_owner_shot_id", str(old or ""), str(owner_id or ""),
+                a.by, a.reason or "setup reuse declared", "setup-link",
+                revision=(shot.get("prompt") or {}).get("revision"))
+    print("written.")
+    return 0
+
+
 def cmd_history(a) -> int:
     project = project_dir(a.project)
     _, shots = load_registry(project)
@@ -429,6 +471,13 @@ def main() -> int:
     e.add_argument("--value", required=True); e.add_argument("--by", default="vince", choices=AUTHORS)
     e.add_argument("--reason", default=""); e.add_argument("--dry-run", action="store_true")
     e.set_defaults(func=cmd_set)
+
+    sl = sub.add_parser("setup-link", help="declare that a shot reuses another shot's setup")
+    sl.add_argument("--project", required=True); sl.add_argument("--shot", required=True)
+    sl.add_argument("--owner", help="the shot whose setup is reused")
+    sl.add_argument("--clear", action="store_true"); sl.add_argument("--by", default="vince", choices=AUTHORS)
+    sl.add_argument("--reason", default=""); sl.add_argument("--dry-run", action="store_true")
+    sl.set_defaults(func=cmd_setup_link)
 
     h = sub.add_parser("history"); h.add_argument("--project", required=True)
     h.add_argument("--shot", required=True); h.set_defaults(func=cmd_history)

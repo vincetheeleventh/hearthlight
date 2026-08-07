@@ -208,7 +208,25 @@ discarding it.
 - `skills/hearthlight-image-prompts/references/PANEL-READING.md` — the vision pass over Vince's
   hand-drawn board; what a drawing is and is not authoritative for
 - `skills/hearthlight-image-prompts/references/versioned-review.md` — the independent reviewer
+- `skills/hearthlight-image-prompts/references/CONTINUITY-PASS.md` — the film-level continuity agent
 - `skills/hearthlight-video-prompts/references/` — prompt architecture, optics, failure locks
+
+**Three of those agents see ONE shot. One sees the whole film.** The narrowness of the author,
+the panel reader and the reviewer is deliberate — and it makes cross-shot disagreement
+structurally invisible. Shot 1 said *"Yu-Gi-Oh trading cards"*; shot 5, its declared setup echo,
+said *"trading cards"*; the reviewer passed both because shot 1 was never in the room. The
+continuity pass exists for exactly that class, runs on the record before Gate 3, and reports
+without resolving:
+
+```bash
+python skills/hearthlight-image-prompts/scripts/continuity_pass.py run --project {slug}
+```
+
+**Registries bind by `shot_id`, never by shot number.** Numbers are labels, labels get renumbered,
+and a number-bound registry does not fail loudly — it hands the author the *wrong* character
+sheets. `prompt_authoring` now refuses number bindings; `rekey_assets.py` migrates them. Prop
+identity lives in `03-bible/props.json`, is binding on the author, and is never left to survive
+as a phrase in storyboard prose.
 
 **The shape:** panel drawing + Shot Vision + storyboard + bible → **vision pass** (reads the
 drawing, reports conflicts, never resolves them) → **author** (a focused LLM under contract, emits
