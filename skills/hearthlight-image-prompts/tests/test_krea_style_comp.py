@@ -20,14 +20,28 @@ two_pass = load_script("two_pass")
 
 
 class KreaStyleCompositionCompilerTests(unittest.TestCase):
-    def test_shot_25_prompt_is_frame_one_cell_only(self):
+    def test_shot_25_prompt_is_frame_one_field_only(self):
+        """The prompt is the frame-one text and nothing else.
+
+        Provenance moved from a spreadsheet cell to the canonical shot record
+        (`shots.json` → `prompt.still`). The invariant under test is unchanged:
+        the packet's prompt equals the frame-one source exactly, and the action
+        text is excluded. Only where that text *lives* changed.
+        """
         packet = compiler.compile_legacy_packet(PROJECT, "25")
         source, headers, record, excel_row = compiler.source_row(PROJECT, "25")
         self.assertEqual(packet["prompt"], compiler.normalize_prompt(record[compiler.STILL_COLUMN]))
-        self.assertEqual(packet["source"]["prompt_cell"], "H28")
-        self.assertEqual(packet["source"]["excluded_action_cell"], "I28")
-        self.assertEqual(excel_row, 28)
-        self.assertTrue(source.name.endswith("-v4.xlsx"))
+
+        if source.name == "shots.json":
+            self.assertEqual(packet["source"]["prompt_field"], "prompt.still")
+            self.assertEqual(packet["source"]["excluded_field"], "prompt.action")
+            self.assertIsNotNone(packet["source"]["prompt_revision"])
+            self.assertEqual(excel_row, 0)
+        else:
+            self.assertEqual(packet["source"]["prompt_cell"], "H28")
+            self.assertEqual(packet["source"]["excluded_action_cell"], "I28")
+            self.assertEqual(excel_row, 28)
+            self.assertTrue(source.name.endswith("-v4.xlsx"))
 
     def test_prompt_excludes_motion_and_workflow_material(self):
         prompt = compiler.compile_legacy_packet(PROJECT, "25")["prompt"]

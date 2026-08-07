@@ -102,7 +102,47 @@ def workbook_rows(root: Path) -> tuple[Path, list[str], list[list[object]]]:
     return source, headers, rows
 
 
+def canonical_row(root: Path, shot_id: str) -> tuple[Path, list[str], dict, int] | None:
+    """Build the record from the canonical shot record, if this shot has one.
+
+    `05-storyboard/shots.json` is the source of truth once a project is migrated
+    (`shot_record.py migrate`). The workbook then becomes a derived export and is
+    no longer read here. Projects that have not migrated fall through to the
+    workbook path unchanged.
+    """
+    path = root / "05-storyboard" / "shots.json"
+    if not path.exists():
+        return None
+    registry = read_json(path)
+    for shot in registry.get("shots", []):
+        if normalize_shot(shot.get("display_number")) != normalize_shot(shot_id):
+            continue
+        prompt = shot.get("prompt") or {}
+        still = str(prompt.get("still") or "").strip()
+        if not still:
+            return None  # not migrated — use the workbook
+        record = {
+            "Shot": shot.get("display_number"),
+            "Shot Title": shot.get("title"),
+            STILL_COLUMN: still,
+            ACTION_COLUMN: str(prompt.get("action") or ""),
+            "Camera Movement": (shot.get("text") or {}).get("camera_movement"),
+            "Notes": (shot.get("text") or {}).get("notes"),
+            "_prompt_revision": prompt.get("revision"),
+            "_updated_by": prompt.get("updated_by"),
+        }
+        headers = [
+            "Shot", "Shot Title", STILL_COLUMN, ACTION_COLUMN,
+            "Camera Movement", "Notes",
+        ]
+        return path, headers, record, 0
+    return None
+
+
 def source_row(root: Path, shot_id: str) -> tuple[Path, list[str], dict, int]:
+    canonical = canonical_row(root, shot_id)
+    if canonical is not None:
+        return canonical
     source, headers, rows = workbook_rows(root)
     for excel_row, row in enumerate(rows[1:], start=2):
         record = {headers[index]: row[index] if index < len(row) else None for index in range(len(headers))}
@@ -118,7 +158,12 @@ def load_registry(root: Path, source: Path) -> tuple[dict, dict[str, dict], dict
     registry = read_json(path)
     if registry.get("status") != "ready":
         raise SystemExit("Shot registry needs reconciliation; generation blocked")
-    if registry.get("source_revision_hash") != sha256(source):
+    # The workbook-hash gate exists to catch registry/workbook divergence. Once a
+    # project is canonical (`shot_record.py migrate`) the prompt comes from the
+    # registry itself, the workbook is a derived export, and the gate is
+    # meaningless — a stale export must not block generation.
+    canonical = source.name == "shots.json"
+    if not canonical and registry.get("source_revision_hash") != sha256(source):
         raise SystemExit("Shot registry does not match current workbook; reconcile before generation")
     by_label: dict[str, dict] = {}
     by_id: dict[str, dict] = {}
@@ -205,16 +250,29 @@ def compile_legacy_packet(root: Path, shot_id: str) -> dict:
                 "strength": moodboard.get("strength", 0.35),
             }
         ],
-        "source": {
-            "workbook": base.relpath(source, root),
-            "sheet": "Shot List",
-            "prompt_column": STILL_COLUMN,
-            "prompt_cell": f"{column_name(still_index)}{excel_row}",
-            "excluded_action_column": ACTION_COLUMN,
-            "excluded_action_cell": f"{column_name(action_index)}{excel_row}",
-            "workbook_sha256": registry["source_revision_hash"],
-            "registry_revision_id": registry.get("registry_revision_id"),
-        },
+        "source": (
+            {
+                # Canonical: the prompt came from the shot record. Provenance is the
+                # shot's stable identity and the prompt revision, not a cell address.
+                "record": base.relpath(source, root),
+                "prompt_field": "prompt.still",
+                "excluded_field": "prompt.action",
+                "prompt_revision": record.get("_prompt_revision"),
+                "updated_by": record.get("_updated_by"),
+                "registry_revision_id": registry.get("registry_revision_id"),
+            }
+            if source.name == "shots.json"
+            else {
+                "workbook": base.relpath(source, root),
+                "sheet": "Shot List",
+                "prompt_column": STILL_COLUMN,
+                "prompt_cell": f"{column_name(still_index)}{excel_row}",
+                "excluded_action_column": ACTION_COLUMN,
+                "excluded_action_cell": f"{column_name(action_index)}{excel_row}",
+                "workbook_sha256": registry["source_revision_hash"],
+                "registry_revision_id": registry.get("registry_revision_id"),
+            }
+        ),
     }
     packet["prompt_sha256"] = text_sha256(prompt)
     packet["request_sha256"] = text_sha256(json.dumps({
