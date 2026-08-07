@@ -176,13 +176,16 @@ def edits_path(project: Path) -> Path:
 
 
 def append_edit(project: Path, shot: dict, field: str, old: str, new: str,
-                by: str, reason: str, source: str) -> dict:
+                by: str, reason: str, source: str, revision: int | None = None) -> dict:
+    """Log an edit. `revision` MUST be the value already written to the record —
+    recomputing it here drifts the log out of step with the thing it describes."""
     ev = {
         "schema_version": 1, "event": "shot-edited", "event_id": str(uuid.uuid4()),
         "created_at": now(), "shot_id": shot.get("shot_id"),
         "shot": shot.get("display_number"), "field": field,
         "previous": old, "value": new,
-        "revision": int(((shot.get("prompt") or {}).get("revision") or 0)) + 1,
+        "revision": int(revision if revision is not None
+                        else ((shot.get("prompt") or {}).get("revision") or 0)),
         "updated_by": by, "reason": reason, "source": source,
     }
     with edits_path(project).open("a", encoding="utf-8") as fh:
@@ -257,7 +260,8 @@ def cmd_migrate(a) -> int:
     for s in shots:
         if str(s.get("display_number")) in changed:
             append_edit(project, s, "still", "", s["prompt"]["still"],
-                        "migration", "workbook → canonical record", wb.name)
+                        "migration", "workbook → canonical record", wb.name,
+                        revision=s["prompt"]["revision"])
     print(f"\nwrote {len(changed)} prompts into shots.json")
     print(f"logged to {edits_path(project).name}")
     print("\nVerify:  shot_record.py verify --project "
@@ -320,7 +324,8 @@ def cmd_set(a) -> int:
         print("\n[dry-run] nothing written")
         return 0
     save_registry(project, doc)
-    append_edit(project, s, a.field, old, a.value, a.by, a.reason or "", "manual")
+    append_edit(project, s, a.field, old, a.value, a.by, a.reason or "", "manual",
+                revision=prompt["revision"])
     print("\nwritten. History:  shot_record.py history --project "
           f"{a.project} --shot {a.shot}")
     return 0
