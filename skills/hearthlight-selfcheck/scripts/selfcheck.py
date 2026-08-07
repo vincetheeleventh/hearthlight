@@ -63,6 +63,39 @@ for d in glob.glob(os.path.join(skills_dir, "hearthlight-*")):
     if os.path.basename(d).replace("hearthlight-","") not in EXPECTED_SKILLS:
         check(f"unexpected skill folder: {os.path.basename(d)} (tombstone? delete it)", WARN)
 
+# ── 1b. DUPLICATE SKILL SOURCES ──────────────────────────────────
+# Story Studio/skills is the single source (D-002). A second copy inside the
+# Hermes profile makes every skill name ambiguous: the agent burns reasoning
+# disambiguating, and — worse — may load a STALE copy of the constitution.
+# The signature is profiles/hearthlight/skills/hearthlight/<name>/ , which is
+# what `skill_manage` / `hermes skills install` creates from the frontmatter's
+# metadata.hermes.category.
+_dupes, _stale = [], []
+for pattern in ("skills/hearthlight/hearthlight-*", "skills/hearthlight-*"):
+    for d in glob.glob(os.path.join(PROFILE, pattern)):
+        name = os.path.basename(d)
+        canonical = os.path.join(skills_dir, name, "SKILL.md")
+        shadow = os.path.join(d, "SKILL.md")
+        if not (os.path.isfile(shadow) and os.path.isfile(canonical)):
+            continue
+        _dupes.append(name)
+        try:
+            a = open(canonical, encoding="utf-8", errors="replace").read()
+            b = open(shadow, encoding="utf-8", errors="replace").read()
+            if a != b:
+                _stale.append(name)
+        except OSError:
+            pass
+if _dupes:
+    check(f"duplicate skill copies in the Hermes profile ({len(_dupes)})", RED,
+          "names are ambiguous; Story Studio/skills must be the only source — "
+          + ", ".join(sorted(_dupes)[:6]) + (" …" if len(_dupes) > 6 else ""))
+    if _stale:
+        check(f"profile copies DIVERGED from canon ({len(_stale)})", RED,
+              "the agent may be running an OLD constitution: " + ", ".join(sorted(_stale)[:6]))
+else:
+    check("no duplicate skill copies in the profile", GREEN)
+
 # ── 2. Scripts execute ───────────────────────────────────────────
 def runnable(path, args):
     if not os.path.isfile(path):
