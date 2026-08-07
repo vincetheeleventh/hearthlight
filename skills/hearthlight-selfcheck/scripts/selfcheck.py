@@ -119,6 +119,30 @@ if os.path.isfile(_ip):
           GREEN if "PROMPT-AUTHOR.md" in _txt else RED,
           "" if "PROMPT-AUTHOR.md" in _txt else "the contract exists but the skill never names it")
 
+# ── 1d. THE WORKBOOK IS RETIRED FROM PRODUCTION ──────────────────
+# shots.json is the canonical record and panels are files. A project whose
+# shots still lack prompt.still or panel.path is reading the spreadsheet.
+for _pdir in sorted(glob.glob(os.path.join(STUDIO, "projects", "*"))):
+    _reg = os.path.join(_pdir, "05-storyboard", "shots.json")
+    if not os.path.isfile(_reg):
+        continue
+    try:
+        import json as _json
+        _doc = _json.load(open(_reg, encoding="utf-8"))
+        _shots = _doc.get("shots", []) if isinstance(_doc, dict) else _doc
+    except Exception:
+        continue
+    _slug = os.path.basename(_pdir)
+    _noprompt = [s for s in _shots if not (s.get("prompt") or {}).get("still")]
+    _nopanel = [s for s in _shots
+                if not (s.get("panel") or {}).get("path") and s.get("board_panels")]
+    check(f"{_slug}: prompts canonical ({len(_shots) - len(_noprompt)}/{len(_shots)})",
+          GREEN if not _noprompt else WARN,
+          "" if not _noprompt else f"{len(_noprompt)} shot(s) still fall back to the workbook — run shot_record.py migrate")
+    check(f"{_slug}: panels saved as files",
+          GREEN if not _nopanel else WARN,
+          "" if not _nopanel else f"{len(_nopanel)} shot(s) list panels with no file — run panel_reader.py extract")
+
 # ── 2. Scripts execute ───────────────────────────────────────────
 def runnable(path, args):
     if not os.path.isfile(path):

@@ -21,5 +21,6 @@
     "If a block id 404s, someone deleted it by hand — recreate the panel and update this file.",
     "authoring_diagram_id is the prompt-authoring architecture diagram (Mermaid). Regenerate it when the authoring path changes — a new contract, a new pass, or a change to the authority order. Not on cosmetics."
   ],
-  "authoring_diagram_id": "3458764680191389677"
+  "authoring_diagram_id": "3458764680191389677",
+  "video_authoring_diagram_id": "3458764680192904670"
 }

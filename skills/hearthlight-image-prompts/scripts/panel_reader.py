@@ -79,7 +79,21 @@ def resolve_panels(project: Path, shot: dict) -> tuple[list[dict], list[str]]:
     root = project.joinpath(*PANEL_DIR)
     found, notes = [], []
 
-    # 1. extracted-from-workbook, named by shot — the normal case
+    # 0. the recorded path on the shot record — CANONICAL.
+    #    The workbook is retired from production; a panel is a file.
+    recorded = shot.get("panel") or {}
+    rp = str(recorded.get("path") or "").strip()
+    if rp:
+        f = project / rp
+        if f.is_file():
+            return [{
+                "panel": str(shot.get("display_number")), "source": "shot record",
+                "path": rp, "needs_conversion": f.suffix.lower() in NEEDS_CONVERSION,
+                "bytes": f.stat().st_size,
+            }], notes
+        notes.append(f"shot record points at {rp} but the file is gone")
+
+    # 1. extracted-from-workbook, named by shot
     display = str(shot.get("display_number") or "").strip()
     if display and root.is_dir():
         stem = f"shot-{int(display):02d}-board" if display.isdigit() else f"shot-{display}-board"

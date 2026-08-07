@@ -99,7 +99,16 @@ research that produced it was wasted.
 Examples: `wardrobe-dcu-blouse-front-01.jpg` · `vehicle-pickup-crewcab-side-02.jpg` ·
 `light-backlit-blue-shadow-01.jpg` · `env-driveway-suburban-summer-01.jpg`
 
-Hand-drawn boards keep their own slot: `storyboard-panels/board-panel-{nn}.{ext}`.
+**Hand-drawn boards: one file per shot.** `storyboard-panels/shot-{nn}-board.{ext}`, named for the
+SHOT it belongs to, not a panel index — a panel shared by two shots is saved under both. The path is
+recorded on the shot record as `panel.path`, so the drawing is found by lookup rather than by guess.
+
+> **The shot-list workbook is retired from production.** Panels used to live pasted into its
+> Storyboard column, which meant no agent could open them. They are extracted to files once
+> (`panel_reader.py extract`) and the files are canonical from then on. The workbook is a derived
+> export (`export_shotlist.py`) — never a source.
+
+Legacy `board-panel-{nn}.{ext}` still resolves, for boards placed by hand before this convention.
 
 **Culled images move to `refs/_rejected/` — never deleted, never shown as if chosen**
 (`hearthlight-reference-report`). A rejection is data; it stops the same wrong image being re-fetched.
