@@ -37,7 +37,7 @@ class ImagePassTests(unittest.TestCase):
         image_pass.write_json(self.root / "04-images" / "shot-specs.json", specs)
         (self.root / "04-images" / "generations.jsonl").touch()
         image_pass.write_json(self.root / "03-bible" / "assets.json", image_pass.default_assets(self.root))
-        Image.new("RGB", (400, 300), "#c8b99c").save(self.root / "source.png")
+        Image.new("RGB", (400, 225), "#c8b99c").save(self.root / "source.png")  # 16:9 — matches the declared master aspect
 
     def tearDown(self):
         self.temp.cleanup()

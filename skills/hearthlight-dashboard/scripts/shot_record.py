@@ -145,6 +145,23 @@ def xlsx_rows(path: Path, sheet: str = "Shot List") -> list[list[str]]:
         return out
 
 
+STYLE_SENTENCE = re.compile(
+    r"\s*Rendered in ink-and-colour illustration style:.*?(?:edges of frame\.|$)",
+    re.IGNORECASE | re.DOTALL)
+
+
+def strip_style_block(text: str) -> tuple[str, bool]:
+    """Remove the locked style block from prompt prose.
+
+    Style is a **moodboard parameter**, never prompt text — the Krea compiler
+    rejects a prompt containing it. The workbook conflated the two: every
+    `Still (frame one)` cell ends with the style sentence. The canonical record
+    holds clean prompt text and lets the parameter carry style.
+    """
+    cleaned = STYLE_SENTENCE.sub("", text or "").strip()
+    return cleaned, cleaned != (text or "").strip()
+
+
 def workbook_prompts(path: Path) -> dict[str, dict[str, str]]:
     """{display_number: {still, action}} straight from the sheet."""
     rows = xlsx_rows(path)
@@ -163,7 +180,7 @@ def workbook_prompts(path: Path) -> dict[str, dict[str, str]]:
         display = cell("Shot")
         if not display:
             continue
-        still = cell(FIELDS["still"]) or cell("Visual Description")
+        still, _ = strip_style_block(cell(FIELDS["still"]) or cell("Visual Description"))
         action = cell(FIELDS["action"]) or cell("Action Description")
         out[display] = {"still": still, "action": action}
     return out
@@ -269,6 +286,35 @@ def cmd_migrate(a) -> int:
     return 0
 
 
+def cmd_repair(a) -> int:
+    """Strip the locked style block out of prompts already in the record."""
+    project = project_dir(a.project)
+    doc, shots = load_registry(project)
+    fixed = []
+    for s in shots:
+        p = s.get("prompt") or {}
+        cleaned, changed = strip_style_block(p.get("still") or "")
+        if not changed:
+            continue
+        p["still"] = cleaned
+        p["revision"] = int(p.get("revision") or 0) + 1
+        p["updated_at"] = now()
+        p["updated_by"] = "repair"
+        p["source"] = "style block removed — style is a moodboard parameter, not prompt text"
+        fixed.append((s, p["revision"]))
+    print(f"repair — {len(fixed)} prompt(s) carry the style block")
+    if a.dry_run or not fixed:
+        if a.dry_run:
+            print("\n[dry-run] nothing written")
+        return 0
+    save_registry(project, doc)
+    for s, rev in fixed:
+        append_edit(project, s, "still", "", s["prompt"]["still"], "repair",
+                    "style block removed from prompt prose", "repair", revision=rev)
+    print(f"cleaned {len(fixed)} prompts and logged each edit")
+    return 0
+
+
 def cmd_verify(a) -> int:
     """Cell-for-cell equality between the record and the workbook."""
     project = project_dir(a.project)
@@ -369,6 +415,10 @@ def main() -> int:
     m = sub.add_parser("migrate"); m.add_argument("--project", required=True)
     m.add_argument("--workbook", required=True); m.add_argument("--dry-run", action="store_true")
     m.set_defaults(func=cmd_migrate)
+
+    rp = sub.add_parser("repair", help="strip the style block from stored prompts")
+    rp.add_argument("--project", required=True); rp.add_argument("--dry-run", action="store_true")
+    rp.set_defaults(func=cmd_repair)
 
     v = sub.add_parser("verify"); v.add_argument("--project", required=True)
     v.add_argument("--workbook", required=True); v.add_argument("--strict", action="store_true")
