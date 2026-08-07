@@ -29,10 +29,14 @@ leaves a lesson. Neither should depend on Vince remembering.
 
 | ID | Name | Status | Route |
 |---|---|---|---|
+| **board-intake** | [Board Intake](board-intake.md) | **ACTIVE — run first** | photographed boards → panels as files → canonical shot record. Not a route to a clip; the *state* both routes below assume |
 | **shot2video** | [Shot-Image → Video](shot2video.md) | **ACTIVE — v1 path** | storyboard → one conditioning still per shot → i2v from that still |
 | **board2video** | [Storyboard → Video Direct](board2video.md) | **ACTIVE — parallel trial** | storyboard → video, conditioned on asset sheets + style reference. No per-shot still. |
 
-Both are live. shot2video is carrying the Yu-Gi-Oh! film; board2video is being trialled alongside it on the same
+**board-intake runs before either.** It is idempotent — re-run it whenever boards are redrawn or the
+workbook is re-pasted. `hearthlight-selfcheck` WARNs per project when it has not been run.
+
+Both clip routes are live. shot2video is carrying the Yu-Gi-Oh! film; board2video is being trialled alongside it on the same
 shots to find where each one wins.
 
 ### The difference that matters

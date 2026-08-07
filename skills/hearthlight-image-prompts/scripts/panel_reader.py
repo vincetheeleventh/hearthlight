@@ -273,6 +273,60 @@ def cmd_extract(a) -> int:
     return 0
 
 
+
+def cmd_link(a) -> int:
+    """Record each shot's drawing on the shot record as panel.path.
+
+    Extraction puts files on disk; this makes them FINDABLE — the resolver then
+    looks the drawing up instead of guessing at a filename. Run it after every
+    extract, and after adding a board by hand.
+    """
+    project = STUDIO / "projects" / a.project
+    if not project.is_dir():
+        fail(f"no project at {project}")
+    reg = project / "05-storyboard" / "shots.json"
+    doc = json.loads(reg.read_text(encoding="utf-8"))
+    shots = doc["shots"] if isinstance(doc, dict) and "shots" in doc else doc
+    root = project.joinpath(*PANEL_DIR)
+
+    linked, cleared, missing = [], [], []
+    for s in shots:
+        d = str(s.get("display_number") or "").strip()
+        if not d:
+            continue
+        stem = f"shot-{int(d):02d}-board" if d.isdigit() else f"shot-{d}-board"
+        hit = next((f for f in sorted(root.glob(f"{stem}.*"))
+                    if f.suffix.lower() in IMAGE_SUFFIXES), None) if root.is_dir() else None
+        current = str((s.get("panel") or {}).get("path") or "")
+        if hit:
+            rel = str(hit.relative_to(project)).replace("\\", "/")
+            if current != rel:
+                s["panel"] = {"path": rel, "source": a.source, "linked_at": now()}
+                linked.append((d, rel))
+        else:
+            if current and not (project / current).is_file():
+                s.pop("panel", None)
+                cleared.append((d, current))
+            elif s.get("board_panels"):
+                missing.append(d)
+
+    print(f"link — {len(linked)} newly linked · {len(cleared)} stale cleared · "
+          f"{len(missing)} listing panels with no drawing")
+    for d, rel in linked[:8]:
+        print(f"   shot {d:>4}  ->  {rel}")
+    if missing:
+        print(f"   no drawing: shots {', '.join(missing)}")
+    if a.dry_run:
+        print("\n[dry-run] nothing written")
+        return 0
+    if linked or cleared:
+        reg.write_text(json.dumps(doc, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+        print("\nshots.json updated")
+    else:
+        print("\nnothing to change")
+    return 0
+
+
 def cmd_packet(a) -> int:
     project = STUDIO / "projects" / a.project
     if not project.is_dir():
@@ -422,6 +476,11 @@ def main() -> int:
     e = sub.add_parser("extract", help="pull the drawings out of the shot-list workbook")
     e.add_argument("--project", required=True); e.add_argument("--workbook")
     e.add_argument("--dry-run", action="store_true"); e.set_defaults(func=cmd_extract)
+
+    l = sub.add_parser("link", help="record each drawing on the shot record as panel.path")
+    l.add_argument("--project", required=True)
+    l.add_argument("--source", default="extracted from shot-list workbook")
+    l.add_argument("--dry-run", action="store_true"); l.set_defaults(func=cmd_link)
 
     s = sub.add_parser("status", help="which shots have a drawing, and which are read")
     s.add_argument("--project", required=True); s.set_defaults(func=cmd_status)
