@@ -553,7 +553,7 @@ def record_generation(root: Path, args) -> dict:
     dimensions = _dimensions(destination)
     if dimensions and args.source != "playground-import" and spec["render_mode"] == "generated":
         ratio = dimensions[0] / dimensions[1]
-        if abs(ratio - 4 / 3) > 0.03:
+        if abs(ratio - 16 / 9) > 0.03:
             destination.unlink()
             raise SystemExit(f"Expected 16:9 image, got {dimensions[0]}x{dimensions[1]}")
     prompt = None

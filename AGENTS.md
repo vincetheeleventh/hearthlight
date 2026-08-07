@@ -167,7 +167,15 @@ capped at **7 open**; a new idea must displace a worse one. Open 30 days with no
    Routine shots = internal checklist; contested shots = delegate the conflicting roles to subagents, then
    the orchestrator reconciles + shows tradeoffs. Vince directs. (Crew handbook in its references/.)
 7b. **Gate 4 — Storyboard** (`hearthlight-storyboard`): motion, durations, lip-sync policy.
-8. **Gate 5 — Video** (`hearthlight-video-prompts` + `hearthlight-comfyui-graph`): Seedance i2v via RunningHub.
+8. **Gate 5 — Video** (`hearthlight-video-prompts` + `hearthlight-comfyui-graph`): i2v via **local
+   ComfyUI MiniMax H3** (`minimax_h3_i2v_int8`). RunningHub Seedance is **parked**.
+   - **Two routes, not one** (`workflows/`, D-022): **shot2video** (approved still → i2v; the active
+     v1 path) and **board2video** (board sheet + asset sheets → video, no still; parallel trial).
+     Route choice and the comparison ledger live in `workflows/README.md`.
+   - **Performance:** `hearthlight-acting` — behaviour not emotion, the locked master profile, eye
+     life. Cross-cutting: both routes, Stage 5 and Stage 6.
+   - **Board sheet:** `hearthlight-board-sheet` — clusters the shot list into 10–15s sequences and
+     renders the single image board2video hands the model. **EXPERIMENTAL.**
 - **Batch execution (Stages 4 & 6):** `hearthlight-shot-runner` — after a gate ✅, runs the approved
   batch: written plan (exact paths, no placeholders), fresh subagent per shot, Stage A spec review
   (machine: provider-correct style conditioning, AR, refs) + Stage B quality review (VINCE ONLY, Telegram batches),
@@ -187,6 +195,32 @@ capped at **7 open**; a new idea must displace a worse one. Open 30 days with no
   the project's declared charged register: whole human sentences). Say each fact once — no closing
   recaps, no repeated apologies, no raw log/diff dumps. Never compresses locked style blocks, prompt
   bodies, VO quotes, or Vince's words. Its contract must be pasted into every subagent dispatch.
+
+## ⛔ Prompt authoring is a built system — never improvise it
+The most valuable thing in Hearthlight is **how a prompt gets written**, and it is already a
+contracted multi-pass system. An agent that starts composing prompts from its own judgement is
+discarding it.
+
+**Before writing any image or video prompt, read the contract that governs it:**
+
+- `skills/hearthlight-image-prompts/references/PROMPT-AUTHOR.md` — the author's contract: authority
+  order, control layers, visibility law, one-instant law, self-audit
+- `skills/hearthlight-image-prompts/references/PANEL-READING.md` — the vision pass over Vince's
+  hand-drawn board; what a drawing is and is not authoritative for
+- `skills/hearthlight-image-prompts/references/versioned-review.md` — the independent reviewer
+- `skills/hearthlight-video-prompts/references/` — prompt architecture, optics, failure locks
+
+**The shape:** panel drawing + Shot Vision + storyboard + bible → **vision pass** (reads the
+drawing, reports conflicts, never resolves them) → **author** (a focused LLM under contract, emits
+prompt body + warnings + **blockers**) → **independent reviewer** → `shots.json` → `prompt.still`.
+
+**Blockers are the product.** The author is a continuity supervisor as much as a prompt engineer —
+flagging missing information, incoherent direction and panel/Vision contradictions is the job, not a
+failure to complete it. A flagged contradiction beats a fluent prompt every time.
+
+This warning exists because an agent with the skill already loaded missed the contract and began
+building a prompt author from scratch. **If you cannot see these files, stop and look for them
+before you write anything.**
 
 ## Laws that override convenience (ENGINE laws — true of every project)
 - **Gates are sacred.** Nothing advances past a gate without Vince's explicit ✅ in Telegram.

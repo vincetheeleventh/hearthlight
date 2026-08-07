@@ -96,6 +96,29 @@ if _dupes:
 else:
     check("no duplicate skill copies in the profile", GREEN)
 
+# ── 1c. THE AUTHORING CONTRACTS ──────────────────────────────────
+# Prompt authoring is a contracted multi-pass system. An agent that cannot find
+# these improvises a prompt author instead — which has already happened once.
+# A missing contract is a RED: the skill's own instructions point at it.
+for rel, why in [
+    ("skills/hearthlight-image-prompts/references/PROMPT-AUTHOR.md", "the author's contract"),
+    ("skills/hearthlight-image-prompts/references/PANEL-READING.md", "the vision pass over the board"),
+    ("skills/hearthlight-image-prompts/references/versioned-review.md", "the independent reviewer"),
+    ("skills/hearthlight-image-prompts/references/README.md", "the references index"),
+    ("skills/hearthlight-video-prompts/references/prompt-architecture.md", "the video prompt skeleton"),
+]:
+    ok = os.path.isfile(os.path.join(STUDIO, rel))
+    check(f"authoring contract present: {os.path.basename(rel)}", GREEN if ok else RED,
+          "" if ok else f"MISSING — {why}. Agents will improvise without it.")
+
+# The skill must POINT at the contracts, or they stay invisible.
+_ip = os.path.join(STUDIO, "skills", "hearthlight-image-prompts", "SKILL.md")
+if os.path.isfile(_ip):
+    _txt = open(_ip, encoding="utf-8", errors="replace").read()
+    check("image-prompts SKILL.md points at PROMPT-AUTHOR.md",
+          GREEN if "PROMPT-AUTHOR.md" in _txt else RED,
+          "" if "PROMPT-AUTHOR.md" in _txt else "the contract exists but the skill never names it")
+
 # ── 2. Scripts execute ───────────────────────────────────────────
 def runnable(path, args):
     if not os.path.isfile(path):

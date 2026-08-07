@@ -28,8 +28,14 @@ FORBIDDEN_PROMPT_FRAGMENTS = (
     "Character construction:",
     "Hold silhouette/proportion:",
     "Moodboard and style settings are supplied",
+    "One 16:9 illustrated narrative frame",
+    "illustrated narrative frame",
+    "Must show:",
 )
 TIMECODE = re.compile(r"\b\d+(?:\.\d+)?\s*[–-]\s*\d+(?:\.\d+)?s\s*:", re.IGNORECASE)
+RENDER_STYLE = re.compile(r"\bRendered in ink-and-colour illustration style\b", re.IGNORECASE)
+ASPECT_RATIO_IN_PROSE = re.compile(r"\b\d+(?:\s*:\s*\d+)\b")
+
 
 
 def read_json(path: Path) -> dict:
@@ -185,6 +191,10 @@ def validate_prompt(prompt: str) -> None:
     bad = [fragment for fragment in FORBIDDEN_PROMPT_FRAGMENTS if fragment.lower() in prompt.lower()]
     if TIMECODE.search(prompt):
         bad.append("motion timecode")
+    if RENDER_STYLE.search(prompt):
+        bad.append("locked style block leaked into prose (style is a Krea moodboard parameter, never prompt text)")
+    if ASPECT_RATIO_IN_PROSE.search(prompt):
+        bad.append("aspect ratio leaked into prose (set via the Krea aspect_ratio request parameter, never prompt text)")
     if bad:
         raise SystemExit("Still prompt contains forbidden non-image material: " + ", ".join(bad))
 

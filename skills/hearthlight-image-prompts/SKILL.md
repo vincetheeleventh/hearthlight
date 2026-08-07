@@ -9,6 +9,52 @@ metadata:
 
 # Hearthlight — Images (Gate 3)
 
+## ⛔ STOP — THE AUTHORING SYSTEM ALREADY EXISTS. DO NOT WRITE PROMPTS BY HAND.
+
+**Prompt authoring in Hearthlight is a contracted, multi-pass system with a reviewer.** If you are
+about to compose a still prompt from your own judgement, you are duplicating work that is already
+built and better specified than anything you will improvise.
+
+**Read these before writing a single word of prompt text:**
+
+| File | What it governs | You must not |
+|---|---|---|
+| **`references/PROMPT-AUTHOR.md`** | **The author contract.** Authority order, five control layers, visibility law, one-instant law, relational prose, attribute binding, illustration translation, self-audit, output boundary | write a prompt without it |
+| **`references/PANEL-READING.md`** | **The vision pass** over Vince's hand-drawn board. What a drawing is and is not authoritative for | read a panel without it |
+| **`references/versioned-review.md`** | **The independent reviewer.** Two-stage review, recovery, rant handling | approve your own prompt |
+| `scripts/prompt_authoring.py` | Builds the author's context packet; hashes the contract so a prompt is traceable to the version that governed it; validates the returned JSON | hand-assemble a packet |
+| `scripts/panel_reader.py` | Resolves `board_panels` → image files, adds adjacent shots, records readings | guess at the drawing |
+
+**The shape of it:**
+
+```
+Shot Vision + storyboard + panel drawing + bible
+        │
+        ├─► panel_reader.py  ──► VISION PASS   (an LLM reads the drawing)
+        │                          reports framing, blocking, eyeline,
+        │                          conflicts — never resolves them
+        ▼
+   prompt_authoring.py ──► THE AUTHOR   (a focused LLM, under contract)
+        │                    writes prompt_body + structured fields
+        │                    + warnings + BLOCKERS
+        ▼
+   independent REVIEWER ──► relational coherence must pass
+        │
+        ▼
+   shots.json → prompt.still     ← the one writer
+```
+
+**Blockers are the product, not an obstruction.** The author is a continuity supervisor as much as a
+prompt engineer: it is *supposed* to flag missing information, incoherent direction, and panel/Vision
+contradictions rather than smoothing them into fluent prose. A flagged contradiction is worth more
+than a fluent prompt — the prompt costs pennies to regenerate; a continuity error found after twenty
+clips have rendered does not.
+
+**Why this warning is here:** an agent with this skill loaded still missed the contract entirely and
+started designing a prompt author from scratch. The references were real, built, and invisible.
+
+---
+
 ## THE FRAME-ONE LAW (read before writing any still prompt)
 
 **A still is ONE INSTANT — frame one of the shot, and nothing else.**
@@ -223,9 +269,16 @@ Stage A prompt order:
 4. visible environment and light;
 5. only non-redundant shot-specific constraints, folded into natural prose.
 
-Aspect ratio, locked style, moodboard, model, resolution, and acceptance checklists stay outside the
-prompt. `required_elements` and `forbidden_elements` remain structured compiler/reviewer data; Python
+Aspect ratio, locked style, moodboard, model, resolution, and acceptance checklists stay outside
+the prompt. `required_elements` and `forbidden_elements` remain structured compiler/reviewer data; Python
 never renders a separate `Must show` section.
+
+### Stage A prompt plumbing rules — hard, not judgement
+Krea Stage A carries AR and style as **request parameters**, never in the prompt string:
+- **Never write the aspect ratio into prose** (`One 16:9 illustrated narrative frame`, `16:9`, any `\d+:\d+`). It is set once in the Krea `aspect_ratio` parameter.
+- **Never write the locked style block into the Krea prompt.** The moodboard carries style/colour/texture; repeating `Rendered in ink-and-colour…` invites the model to re-declare the medium and leaks the contract.
+- **Never render a `Must show:` / acceptance-checklist paragraph in the prompt.** Keep those as structured `required_elements` validation data.
+- A correct Stage A prompt is **body-only**: one coherent visible-frame description. The `shot2-coherent-krea` exemplar shows it. `krea_style_comp.py validate_prompt` now **blocks** any packet carrying aspect-ratio-in-prose, the style block, `Must show:`, or `illustrated narrative frame` — treat that rejection as the source of truth, not a preference to argue around.
 
 No workflow labels, motion, timecodes, camera movement, continuity bookkeeping, abstract emotion,
 unowned props, invisible identity detail, full signature strings, photographic medium collisions, or
