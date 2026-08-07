@@ -59,11 +59,42 @@ zero session context. Self-review the plan against the shot list before starting
 approved shot has a row; every row's paths exist (except outputs); no row contradicts the
 distribution spec.
 
-## Step 2 — Execute: fresh subagent per shot
-Dispatch one worker subagent per shot. Hand it artifacts as **files/paths, not pasted text**
-— the row from batch-plan.md, the style block location, the graph template. It should never
-inherit session history. One shot at a time (parallel dispatch invites drift and rate-limit
-chaos).
+## Step 2 — Execute: fresh subagents, dispatched in PARALLEL
+Dispatch worker subagents. Hand each artifacts as **files/paths, not pasted text** — the row from
+batch-plan.md, the style block location, the graph template. A worker never inherits session history.
+
+**Independent shot units run in parallel, not one at a time.** *(Vince's explicit correction:
+"they could've been done in parallel via subagents… remember this for future runs." This supersedes
+the earlier one-at-a-time caution.)*
+
+- Dispatch via `delegate_task` batch, capped by `delegation.max_concurrent_children` (default 3),
+  or the durable `hermes kanban` board.
+- **Keep each worker's set small and contiguous — 3–5 shots.** An iterative subagent hits its
+  tool-iteration cap (~50 calls) mid-batch and simply stops.
+- Each worker reads its prompt **verbatim from a packet file** and returns artifacts as paths —
+  never pasted text, never session history.
+- Subagents must load deferred Krea MCP tools (`tool_describe(mcp__krea_ai__generate_image)`,
+  `…get_job`) before calling them; they are not in the top-level tool list.
+
+### Ledger integrity — non-negotiable under parallelism
+**Parallel workers must NOT append to `generations.jsonl`** — or any append-only ledger —
+concurrently. Interleaved writes corrupt it and lose events.
+
+- **Orchestrator-serializes (preferred).** Workers write only their output file and RETURN
+  `(asset path, job id, url)`. The orchestrator runs the `record` step afterward, one at a time,
+  then reconciles the ledger against disk.
+- If a worker must record itself, file-lock the append.
+
+### Recovery — a cut-off worker with an in-flight job
+A worker that hits its iteration cap can leave a job submitted but not recorded. **Never re-spend a
+completed job.**
+
+1. Read the worker's live transcript for the in-flight `job id`.
+2. Poll it (`get_job`) — it has usually completed since the worker died.
+3. Download the result and record it yourself.
+4. Resume the remaining shots with a fresh worker.
+
+Full reproduction recipe: `references/parallel-and-moderation.md`.
 
 **Voice contract — paste verbatim into every worker prompt.** A fresh subagent does not inherit
 `hearthlight-terse` and will return prose that lands straight in Vince's context. Both directions

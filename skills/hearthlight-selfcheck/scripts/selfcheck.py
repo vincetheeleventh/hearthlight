@@ -132,11 +132,15 @@ check("tool available: python", GREEN)  # we're running under it
 env = os.path.join(PROFILE, ".env")
 if os.path.isfile(env):
     txt = open(env, errors="replace").read()
-    for key, why in [("TELEGRAM","Telegram bot"), ("NOTION","Notion logging"),
-                     ("OPENAI","image gen"), ("RUNNINGHUB","video gen")]:
+    for key, why in [("TELEGRAM", "Telegram bot"), ("NOTION", "Notion logging"),
+                     ("OPENAI", "image gen")]:
         has = bool(re.search(key, txt, re.I))
         check(f"key present: {key} ({why})", GREEN if has else WARN,
               "" if has else "absent — that feature won't work")
+    # Video generation is LOCAL (ComfyUI MiniMax H3). RunningHub/Seedance is parked,
+    # so a missing key there is correct — only worth noting if you go back to it.
+    if re.search("RUNNINGHUB", txt, re.I):
+        check("key present: RUNNINGHUB (parked Seedance path)", GREEN)
 else:
     check(".env present in hearthlight profile", RED, "no .env — gateway/keys unconfigured")
 

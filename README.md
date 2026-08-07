@@ -83,6 +83,12 @@ Once running, every skill here is a slash command in the Hearthlight bot:
 `/hearthlight-consolidate <paste or voice-note your rant>`
 
 ## Working agreement
-- Skills are the constitution. When a chat correction is *general*, the fix gets written back into the relevant SKILL.md (Hermes proposes via skill_manage, Vince approves).
+- Skills are the constitution. When a chat correction is *general*, the fix gets written back into
+  the relevant SKILL.md — **edited in place under `Story Studio/skills/`**, which `external_dirs`
+  already points at. Vince approves.
+  > ⚠️ **Do not use `skill_manage` / `hermes skills install` for hearthlight skills.** They write a
+  > *copy* into `profiles/hearthlight/skills/hearthlight/`, giving the skill two homes. The name then
+  > resolves ambiguously and the agent can silently load the older copy. Three shadows accumulated
+  > this way and were removed 2026-08-06; `hearthlight-selfcheck` now fails RED if any come back.
 - Gates are sacred. No stage starts before the previous gate's explicit ✅ in Telegram.
 - Nothing exists only in chat history — every artifact lands in `projects/{slug}/`.
