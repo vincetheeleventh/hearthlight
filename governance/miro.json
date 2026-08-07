@@ -18,6 +18,8 @@
     "pipeline_diagram_id is a GENERATED diagram object, not hand-placed shapes. The WEEKLY workshop may regenerate it from DSL when the pipeline genuinely changes — a stage added, a skill renamed or retired. The DAILY checkpoint never touches it.",
     "Only regenerate for substance, never cosmetics: the trigger is PRODUCT_SPEC.md § pipeline no longer matching what the diagram shows.",
     "Known gaps as of 2026-08-03: hearthlight-character, hearthlight-dashboard, hearthlight-shot-runner are absent from the diagram.",
-    "If a block id 404s, someone deleted it by hand — recreate the panel and update this file."
-  ]
+    "If a block id 404s, someone deleted it by hand — recreate the panel and update this file.",
+    "authoring_diagram_id is the prompt-authoring architecture diagram (Mermaid). Regenerate it when the authoring path changes — a new contract, a new pass, or a change to the authority order. Not on cosmetics."
+  ],
+  "authoring_diagram_id": "3458764680191389677"
 }
