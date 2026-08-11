@@ -64,28 +64,28 @@ Columns: **AG** = mentions in `AGENTS.md` · **UG** = `USER-GUIDE.md` · **RM** 
 | `hearthlight-consolidate` | 1 | 0 | 2 | 2 | 0 | **CORE** | Gate 0 | Bounded ideation + no-smuggling law. |
 | `hearthlight-outline` | 1 | 0 | 1 | 0 | 0 | **CORE** | Gate 1 | Zero peer refs — normal for a linear stage. Modified 2026-08-03, reason unrecorded. |
 | `hearthlight-mise-en-scene` | 1 | 0 | 1 | 1 | 0 | **CORE** | Principle 2 | The anti-drift keystone. Largest SKILL.md (14 KB). |
-| `hearthlight-image-prompts` | 1 | 0 | 1 | 4 | 6 | **CORE** | Gate 3 | 4 test files. Stage A = focused LLM Shot Prompt Author + independent semantic reviewer, Python source/visibility lint, approved Krea packet plan, durable runner; `two_pass.py` Stage A remains disabled. |
+| `hearthlight-image-prompts` | 1 | 0 | 1 | 4 | 6 | **CORE** | Gate 3 | 4 test files. Stage A = focused LLM Shot Prompt Author + independent semantic reviewer, Python source/visibility lint, approved Krea packet plan, durable runner; `two_pass.py` Stage A remains disabled. Now also owns board reading: `panel_reader.py` plus the two contracts `references/PROMPT-AUTHOR.md` and `references/PANEL-READING.md`, indexed by `references/README.md` and RED-checked by selfcheck. Gained the film-level continuity agent 2026-08-07 (`f8f3d23`) — `continuity_pass.py` + `references/CONTINUITY-PASS.md`, the one agent whose packet is the whole film; it reports cross-shot disagreement and never resolves it. **Untested.** `prompt_authoring` now refuses a number-bound registry outright. **The largest component in the system** — 8 scripts, 5 references, 4 test files, ~20 KB SKILL.md; it is doing a subsystem's work inside a skill. *(The 11 scripts / 6 references stated on 2026-08-07 was an overcount; nothing was deleted.)* |
 | `hearthlight-storyboard` | 1 | 0 | 1 | 0 | 0 | **CORE** | Gate 4 | Modified 2026-08-03, reason unrecorded. |
 | `hearthlight-video-prompts` | 1 | 0 | 1 | 6 | 0 | **CORE** | Gate 5 | Highest peer-reference count. |
 | `hearthlight-comfyui-graph` | 1 | 0 | 1 | 3 | 0 | **CORE** | Gate 5 plumbing | Grounded in a real working RunningHub graph. |
 | `hearthlight-shot-runner` | 2 | 0 | 1 | 2 | 0 | **CORE** | D-007 | Owns the ledger that prevents re-paying for renders. |
-| `hearthlight-board-sheet` | 0 | 0 | 1 | 1 | 0 | **EXPERIMENTAL** | board2video | Composes the storyboard-spreadsheet image board2video feeds a video model: clusters shots into 10–15s sequences, crops panels, renders sheet + header. Built 2026-08-05 on Vince's proven board test. **Untried as a skill, and the active generator has no surface for it** — see the generator gap in `workflows/board2video.md`. |
+| `hearthlight-board-sheet` | 0 | 0 | 1 | 1 | 0 | **EXPERIMENTAL** | board2video | Composes the storyboard-spreadsheet image board2video feeds a video model: clusters shots into 10–15s sequences, crops panels, renders sheet + header. Built 2026-08-05 on Vince's proven board test. **Untried as a skill.** The generator surface exists — `MiniMaxH3ReferenceToVideo`, mapped 2026-08-05 (`1a1f505`) — but has not been run. |
 | `hearthlight-acting` | 1 | 0 | 1 | 1 | 0 | **CORE** | Core problem 3 | Performance writing — behaviour instead of emotion, the locked master profile, eye life. **Cross-cutting: both shot2video and board2video depend on it.** Adapted 2026-08-05 from an outside production practice, proprietary references removed. Untested against a real generation batch. |
 | `hearthlight-character` | 1 | 0 | 1 | 1 | 0 | **SUPPORTING** | Principle 2 | Owns identity, meaning, and the character sheet. Holds the believable-over-beautiful and catch-light selection criteria. Its § Contents (three full-body views) conflicts with the headless-front finding — P-011 open. |
 | `hearthlight-critique` | 2 | 1 | 0 | 2 | 0 | **SUPPORTING** | Principle 3 | The "partner not intern" behaviour made concrete. |
 | `hearthlight-research` | 1 | 1 | 1 | 2 | 0 | **SUPPORTING** | Feeds Gate 2 | "Research populates the world, never the story." |
 | `hearthlight-clip-extractor` | 2 | 0 | 1 | 4 | 1 | **SUPPORTING** | Storyboard prep | Thin ffmpeg wrapper, well referenced. |
 | `hearthlight-notion-log` | 2 | 1 | 0 | 4 | 0 | **SUPPORTING** | Vince's point of contact | Absent from README. |
-| `hearthlight-selfcheck` | 2 | 0 | 0 | 1 | 1 | **SUPPORTING** | Limitation triage | Absent from README and USER-GUIDE. Enforces the DRAFT→LOCKED block — one of only three machine-enforced laws. |
+| `hearthlight-selfcheck` | 2 | 0 | 0 | 1 | 1 | **SUPPORTING** | Limitation triage | Absent from README and USER-GUIDE. Enforces the DRAFT→LOCKED block — one of only three machine-enforced laws. Gained duplicate-skill-copy detection and the contract-present RED on 2026-08-06; **load-bearing and still untested.** |
 | `hearthlight-timing-intake` | 3 | 1 | 0 | 5 | 4 | **SUPPORTING** | Editor round-trip | Most `AGENTS.md` mentions and 4 scripts. **Partly blocked** — `transcribe.py` needs the dead `.venv-stt`. |
 | `hearthlight-reference-report` | 2 | 1 | 1 | 2 | 0 | **EXPERIMENTAL** | Review ergonomics | Convenience layer over research output. No evidence it has been used on a real project. |
-| `hearthlight-shot-crew` | 2 | 1 | 0 | 2 | 0 | **EXPERIMENTAL** | Principle 3 | 8 subagent roles. `HANDOFF.md` §6 names *verifying the roles give distinct opinions* as still-pending. Highest cost-per-shot in the system, least evidence it pays. Absent from README. |
-| `hearthlight-dashboard` | 1 | 1 | 1 | 1 | 5 | **CORE** | **Primary outcome 4** | The surface the iterate-and-correct loop runs on, not a status utility. Largest sub-app: `index.html`, `serve.py`, `pipeline.json`, shot registry, backfill script, a test. Owns D-009. |
+| `hearthlight-shot-crew` | 2 | 1 | 0 | 2 | 0 | **EXPERIMENTAL** | Principle 3 | 8 subagent roles. Whether they produce genuinely distinct opinions has never been verified. Highest cost-per-shot in the system, least evidence it pays. Absent from README. |
+| `hearthlight-dashboard` | 1 | 1 | 1 | 1 | 5 | **CORE** | **Primary outcome 4** | The surface the iterate-and-correct loop runs on, not a status utility. Largest sub-app: `index.html`, `serve.py`, `pipeline.json`, shot registry, backfill script, a test — 8 scripts, 1 test. Owns D-009, and owns its migration: `rekey_assets.py` rebinds `assets.json` / `props.json` from shot number to `shot_id` under an explicit `--epoch`, refusing to guess on a collision. **268 lines, no test, and it rewrites the registry the whole author stage reads.** |
 
 ### The router
 | Component | Class | Notes |
 |---|---|---|
-| `hearthlight` (session entry point) | **CORE** | Exists **only in the Claude skill store**, with no canonical source in `skills/`. This is the one place D-002 is not followed — it *is* a copy, so it can drift with nothing to reconcile against. It also cites `AUDIENCE-CONTEXT.md` as "the emotional register", which is now only a signpost. **Recommend: create `skills/hearthlight/SKILL.md` and reduce the store copy to a stub.** |
+| `hearthlight` (session entry point) | **CORE** | Exists **only in the Claude skill store**, with no canonical source in `skills/`. This is the one place D-002 is not followed — it *is* a copy, so it can drift with nothing to reconcile against. It also cites `AUDIENCE-CONTEXT.md` as "the emotional register" — a root path that does not resolve. **Recommend: create `skills/hearthlight/SKILL.md` and reduce the store copy to a stub.** |
 
 ---
 
@@ -98,8 +98,7 @@ Columns: **AG** = mentions in `AGENTS.md` · **UG** = `USER-GUIDE.md` · **RM** 
 | `.agents/skills/krea-marketing/` | — | **ORPHANED** | **Zero references.** No apparent relationship to any Hearthlight goal. |
 | `.artifact-work/` | 944 KB | **ORPHANED** | `inspect.mjs`, `inspect-shot-25.mjs`, two PNGs, and a `node_modules` tree — the only Node dependency in the repository. Scratch from a one-off investigation. Now gitignored. |
 | `git-init-commit.sh` | 1.3 KB | **DEPRECATED** | Superseded by `governance/checkpoint.py` (D-010). Never ran successfully. Still contains the raw leaked key and assumes WSL paths. **Recommend deleting** — it is the only file in the tree containing the key literal. |
-| `start-gemma-model.bat` | 2.5 KB | **DEPRECATED** | The `gemma → LocalHermes` rename (`HANDOFF.md` §5 item 3) was started and abandoned. |
-| `HANDOFF.md` | 19.6 KB | **DEPRECATED (contested)** | Dated 2026-07-06. Largest doc; the richest record of *why*, and the single biggest source of stale claims — says "all 17 skills" (there are 21), and states Talefeather's grief reasoning as engine law, the exact leak D-003 fixed. Its §1 and §6 have been mined into `GOALS.md` and `ROADMAP.md`. **Recommend: retire, or add a header marking it a historical snapshot superseded by the four canonical docs.** |
+| `start-gemma-model.bat` | 2.5 KB | **DEPRECATED** | The `gemma → LocalHermes` rename was started and abandoned. |
 | `.venv-stt/` | — | **DEPRECATED** | Dead Linux venv from the WSL→Windows migration. Blocks `timing-intake/scripts/transcribe.py`. Rebuild or remove. |
 | `_git/GITHUB-SETUP.md` | 2.6 KB | **SUPPORTING** | Setup notes in a folder named to avoid colliding with `.git`. Verify still accurate now that a real repository exists. |
 
@@ -113,7 +112,7 @@ summaries ever contradict the skill, the deferral has stopped working.
 
 **Pipeline described three times** — `AGENTS.md` (stages + laws), `README.md` (layout tree),
 `USER-GUIDE.md` (Vince's walkthrough). Legitimately different audiences, but `README.md` has already
-drifted: it omits several of the 22 skills and still describes a deleted `hearthlight-asset-bible/` tombstone.
+drifted: it omits several of the 23 skills and still describes a deleted `hearthlight-asset-bible/` tombstone.
 
 **`krea-*` vs `hearthlight-*`** — genuine functional duplication, described above.
 
@@ -145,9 +144,10 @@ this list as the adaptation backlog, not a tidy-up.
    EXPERIMENTAL until a contested shot has actually run through it.
 3. **`hearthlight-reference-report`.** A presentation layer on research output. Plausible, but no
    evidence of real use. *Question: have you ever read one?*
-4. **The engine/client abstraction itself.** Built to support many clients; exactly one exists.
-   `GOALS.md` is framed around **AI-filmmaking problems** rather than client service, so the
-   abstraction's justification is thin. *Not a recommendation to remove — a flag.*
+4. **The client abstraction itself.** Built to support many clients; exactly one exists. The product
+   is defined as a single-operator filmmaking tool (D-025), not a service platform, so the
+   abstraction's justification is thin. What it *does* buy is the guard against a client's emotional
+   register leaking into a project that never asked for it. *Not a recommendation to remove — a flag.*
 5. **`hearthlight-character`.** Owns the turnaround law inherited by every generated clip, yet has
    zero peer references and no README entry. The risk here is the opposite of the others: not too
    much complexity, but too little integration for how much it affects.

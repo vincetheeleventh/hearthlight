@@ -69,15 +69,18 @@ Full version, authoritative: `skills/hearthlight-terse/SKILL.md`.
 
 ## What this project is
 
-**Hearthlight is the ENGINE** — a format-agnostic, client-agnostic pipeline turning a spoken story
-into illustrated narrative media. **Talefeather is one CLIENT running on it** (grief / living-legacy),
-with its own profile at `profile/clients/talefeather/`. Never import Talefeather's audience or
-emotional register into a project that didn't declare it. `client: none` is normal.
+**Hearthlight is a single-operator AI filmmaking tool.** It turns a director's input — storyboards,
+spoken vision, narrative beats — into what image and video generation need: prompts, references,
+settings. The Film Study Tool UI is the other half of it: a visual shot tracker and production
+dashboard showing the current state of the film.
 
-Every project declares `format`, `client`, and `charged_register` in
-`projects/{slug}/distribution-spec.md`. Read the live file — never trust a cached list in a skill.
+**Nothing about a project is assumed.** Every project declares `format`, `client` and
+`charged_register` in `projects/{slug}/distribution-spec.md`, and the tool obeys what it finds. Read
+the live file — never trust a cached list in a skill. **Talefeather** (grief / living-legacy) is one
+*client*, at `profile/clients/talefeather/`; never import its audience or emotional register into a
+project that didn't ask for it. `client: none` is normal.
 
-**Read `AGENTS.md` for the operating index** — pipeline stages, engine laws, gate protocol, the
+**Read `AGENTS.md` for the operating index** — pipeline stages, laws, gate protocol, the
 collaboration dynamic. It is the fuller orientation; this file is the always-on part.
 
 Audio (real recorded VO vs. generated) is a per-project production decision following available

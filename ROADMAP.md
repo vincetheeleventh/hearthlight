@@ -32,8 +32,9 @@ halves. Full definition in `GOALS.md`. `yugioh` is the active film.
 | Phase | State |
 |---|---|
 | Storyboard | **Done** — `yugioh/status.yml`, `gate4_storyboard: approved 2026-07-30` |
-| **Image pipeline** | **ACTIVE.** Studio Shot Vision and the visibility-aware Krea compiler are built. The Film Brief's 16:9 widescreen master governs Stage A. Prompt Board approval precedes the remaining composition batch; likeness and final selection follow. |
-| Video | **Next.** Turn the project documents into a working video-generation prompt, then refine the process against real output. |
+| **Board intake** | **BUILT 2026-08-06, STARVED.** `shots.json` is canonical, the workbook is a one-way export, and `panel_reader.py` reads the drawings. But **2 of 28 `yugioh` shots have a panel on disk** — 18 name missing files, 8 have none. The route is `workflows/board-intake.md` and it is idempotent; it needs boards, not code. |
+| **Image pipeline** | **ACTIVE.** Studio Shot Vision and the visibility-aware Krea compiler are built. The Film Brief's 16:9 widescreen master governs Stage A. Prompt Board approval precedes the remaining composition batch; likeness and final selection follow. `set_shot_image.py` overrides a shot's chosen still and writes the ledger row. |
+| **Video** | **STARTED 2026-08-05.** Generator is **local ComfyUI MiniMax H3** (`minimax_h3_i2v_int8`), confirmed on Shot 1; RunningHub Seedance parked. Two routes run in parallel — `workflows/`. Prompt packets written for shots 2 and 8. Refining the process against real output is the work. |
 | Score | **Later.** ElevenLabs pass. |
 
 **The prioritization rule:** work that does not move this film toward completion, or harden the
@@ -59,6 +60,27 @@ The production cockpit. Shot-first project view, editable/versioned Shot Vision,
 source, Prompt Board approval, review controls, and durable generation queueing. Lives in
 `staging/overview-ui/`; where it should finally live is undecided.
 
+**The shot2video / board2video trial** *(CONFIRMED — Vince, 2026-08-05, D-022)*
+Two routes from storyboard to clip run in parallel. **shot2video** approves a conditioning still per
+shot then does i2v; **board2video** skips the still and conditions on asset sheets plus a board
+sheet. The selection guide in `workflows/README.md` states where each *should* win, written before
+the trial so the trial can falsify it. **The comparison ledger is empty** — until it has rows, the
+question is settled by memory, which is what D-022 exists to prevent. Two skills support it:
+`hearthlight-acting` (performance, cross-cutting) and `hearthlight-board-sheet` (EXPERIMENTAL, and
+its generator surface — `MiniMaxH3ReferenceToVideo` — is mapped but untried).
+
+**Medium as a spec-level law** *(CONFIRMED — Vince, 2026-08-05)*
+`medium: illustrated | live-action` in the distribution spec. Illustrated bans photographic
+vocabulary from prompts — bokeh, focus plane, shutter blur, pore-level skin, the `Photoreal` tag.
+Every current project is illustrated; the photoreal material is parked in
+`hearthlight-video-prompts/references/live-action/` behind a README explaining why not to open it.
+
+**Portability** *(CONFIRMED — D-021)*
+Code moves by git, creative work by Syncthing (`governance/syncthing/`). Story Studio's root resolves
+per-OS. **Open risk:** `hermes` on macOS is unverified — without it, Telegram gate approvals and
+`production_generation_worker.py` fail. Also live: the Film Study Tool sits inside OneDrive on
+Windows, and OneDrive plus Syncthing over the same files will produce conflict storms.
+
 **Governance layer** *(CONFIRMED)*
 Canon docs, checkpoint, weekly workshop, Miro sync, multi-agent attribution.
 
@@ -67,7 +89,7 @@ Canon docs, checkpoint, weekly workshop, Miro sync, multi-agent attribution.
 | Gap | Stated in | Where it stands |
 |---|---|---|
 | **Voice-rant review parsing** — turn whole-board spoken critique into confirmed shot revisions | Core problem 1 | Shot Vision, compilation, prompt approval, generation history, and revert are built. Automatic parsing/confirmation of a whole-sequence rant remains. |
-| **Cross-platform prompt shaping** | Core problem 2 | Four bespoke translators (`image-prompts`, `video-prompts`, `seedance-prompt-maker`, `zit-prompt-writer`) with no shared abstraction between them. |
+| **Cross-platform prompt shaping** | Core problem 2 | Four bespoke translators (`image-prompts`, `video-prompts`, `seedance-prompt-maker`, `zit-prompt-writer`) with no shared abstraction between them. The **medium law** (2026-08-05) closes one axis of it — the vocabulary a whole medium may not use — at the spec layer rather than per prompt. |
 | **Narrative-drift tracking** | Core problem 6 | `hearthlight-critique` does this on demand at one stage. Nothing holds the narrative goals continuously across the film. |
 | **Audio generation** | Primary outcome 3 | Nothing produces audio. |
 
@@ -92,24 +114,27 @@ proposals, the crew arguing rather than complying.
    references anywhere in the repository. (P-001)
 2. **The `hearthlight` router has no canonical source** in `skills/` — it exists only in the Claude
    skill store, the one place D-002 is not followed. (P-002)
-3. **`HANDOFF.md` contradicts the North Star.** Its §1 frames the problem commercially, which
-   `GOALS.md` replaced with AI-filmmaking problems, and it states Talefeather's grief reasoning as
-   engine law — the leak D-003 exists to prevent. (P-006)
-4. **Four pointer stubs cite `AUDIENCE-CONTEXT.md` as "the emotional register"** — that file is a
-   signpost, so the stubs route agents to a redirect instead of the client profile.
-5. **`.venv-stt` is dead**, blocking the hand-drawn-board intake path.
-6. **`.gitignore`'s `*.png` matches every PNG at any depth**, not just the root as its comment
+3. **Four pointer stubs cite `AUDIENCE-CONTEXT.md` as "the emotional register"** — a root path that
+   does not resolve. Point them at `profile/clients/talefeather/AUDIENCE-CONTEXT.md`, and only for
+   projects declaring `client: talefeather`.
+4. **`.venv-stt` is dead**, blocking the hand-drawn-board intake path.
+5. **`.gitignore`'s `*.png` matches every PNG at any depth**, not just the root as its comment
    claims. Reference images cannot be tracked without `-f`.
-7. **The image-prompt tests read live `projects/yugioh` data** — exact counts and cell addresses —
+6. **The image-prompt tests read live `projects/yugioh` data** — exact counts and cell addresses —
    so editing the shot list fails the suite and can block a checkpoint commit.
-8. **`yugioh/status.yml` shows gates 0–3 `pending` while gate 4 is approved.** The film outran its
+7. **`yugioh/status.yml` shows gates 0–3 `pending` while gate 4 is approved.** The film outran its
    ledger; it needs a ratification pass. (P-004)
-9. **A project's central document has no home the code reads.** `yugioh/02-outline/FILM-BRIEF.md`
+8. **A project's central document has no home the code reads.** `yugioh/02-outline/FILM-BRIEF.md`
    declares itself authoritative and supersedes `distribution-spec.md`, but eight code paths read
    `distribution-spec.md` and none read the brief. The conventions name no slot for a brief.
-10. **The image ledger is write-only.** `yugioh/04-images/` holds 68 PNGs; `generations.jsonl` knows
+9. **The image ledger is write-only.** `yugioh/04-images/` holds 68 PNGs; `generations.jsonl` knows
     30, and all 30 read `selected_final: false`. Which still is the approved base for a shot is
     answerable only by folder name — the row-number failure D-009 exists to prevent, one level up.
+    *Partly addressed 2026-08-05:* `set_shot_image.py` now writes a paired `generation` +
+    `selection` row when a still is chosen, so shots overridden through it are answerable. Shots
+    selected before it are not.
+11. **`hermes` on macOS is unverified** (D-021). Without it the UIs run but Telegram gate approvals
+    and `production_generation_worker.py` fail — the one open risk in the port.
 
 *Both found by the structure audit: `governance/audits/2026-08-04-yugioh-structure.md`. The
 directory restructure that would fix the first is parked until `yugioh` ships (P-007).*
@@ -127,8 +152,8 @@ directory restructure that would fix the first is parked until `yugioh` ships (P
 > ⚠️ **NEEDS VINCE** — these block honest alignment judgments.
 
 1. Do the three vendored `krea-*` packs stay or go?
-2. Is Talefeather the only client, or the first of several? The engine/client split is built for
-   many and serves exactly one.
+2. Is Talefeather the only client, or the first of several? The client layer is built for many and
+   serves exactly one.
 3. Does Hearthlight have a commercial shape?
 4. `GOALS.md` dropped its non-goals list. Deliberate? *"Not an app that spits out a video"* was
    doing real work and now sits awkwardly against primary outcome 2, which asks for exactly that ease.

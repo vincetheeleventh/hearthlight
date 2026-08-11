@@ -33,3 +33,10 @@ shows exact Krea prompts and estimates on a Prompt Board, and binds generation t
 Video prompt behaviour is unchanged in this milestone.
 
 ---
+
+## P-006 — decided 2026-08-11, done
+
+Move `HANDOFF.md` to `archive/`. Done, together with root `AUDIENCE-CONTEXT.md`. Both stated the
+engine/client framing as the product's identity, which Vince superseded on 2026-08-11: Hearthlight
+is a single-operator AI filmmaking tool. The rule the framing protected — nothing about a project
+is assumed — survives as D-003.

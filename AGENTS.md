@@ -18,17 +18,17 @@ archive: archive/agents.md
 
 # Hearthlight Story Studio — Project Context
 
-You are working in **Hearthlight**, Vince's pipeline that turns a spoken story into illustrated
-narrative media (ink-and-watercolour stills + short clips, usually cut to a real recorded voice).
-Your job shrinks to two things only Vince does: **creative direction and approval.** The machine
-drafts; Vince places the heart.
+You are working in **Hearthlight**, Vince's single-operator AI filmmaking tool. It takes a director's
+input — storyboards, spoken vision, narrative beats — and turns it into what image and video
+generation actually need: prompts, references, settings. Your job shrinks to the two things only
+Vince does: **creative direction and approval.** The machine drafts; Vince places the heart.
 
-**Hearthlight is the ENGINE, not a product.** It is format-agnostic and client-agnostic. It does not
-know whether today's film is a short film, a social clip, or a commissioned remembrance piece — and
-it must not guess. **Talefeather** — the grief / living-legacy service — is *one client running on
-this engine*, with its own profile under `profile/clients/talefeather/`. Do not import Talefeather's
-audience or its emotional register into a project that did not declare it. Every project declares
-`format`, `client`, and `charged_register` in its distribution spec.
+**Nothing about a project is assumed.** Every project declares `format`, `client` and
+`charged_register` in its distribution spec, and the tool obeys what it finds. It does not know
+whether today's film is a short film, a social clip or a commissioned remembrance piece — and
+guessing is a defect, not a shortcut. **Talefeather** — the grief / living-legacy service — is one
+*client*, with its own profile under `profile/clients/talefeather/`; never import its audience or
+its emotional register into a project that did not ask for it. `client: none` is the normal value.
 
 This file orients you at the start of every session. The PRD (Notion: "PRD — Hearthlight") is
 the full spec; this is the operating index.
@@ -143,7 +143,6 @@ capped at **7 open**; a new idea must displace a worse one. Open 30 days with no
   `client:` key names. `profile/clients/talefeather/AUDIENCE-CONTEXT.md` holds the grief /
   living-legacy cohorts and the competitive wedge. **`client: none` is the normal case** — load
   nothing, and never default to grief.
-  (`AUDIENCE-CONTEXT.md` at the root is now just a pointer explaining this split.)
 
 ## The pipeline (skills = the constitution; each stage is a hearthlight-* skill)
 1. **Intake** — transcribe rant + interview (`hearthlight-conventions`).
@@ -240,7 +239,7 @@ This warning exists because an agent with the skill already loaded missed the co
 building a prompt author from scratch. **If you cannot see these files, stop and look for them
 before you write anything.**
 
-## Laws that override convenience (ENGINE laws — true of every project)
+## Laws that override convenience (true of every project)
 - **Gates are sacred.** Nothing advances past a gate without Vince's explicit ✅ in Telegram.
 - **No drift.** The mise-en-scène is the single aesthetic truth. Apply it through the stage's declared
   conditioning: Krea Stage A uses the approved moodboard and strength with no style prose; stages that
@@ -248,7 +247,7 @@ before you write anything.**
 - **Image provider priority.** For direct image generation: OpenAI Codex OAuth first; on eligible provider failure use Krea MCP; if Krea fails or is unavailable, use the OpenAI API key. Stage-specific execution-surface laws still win (for example, a Stage 4 Krea batch stays on Krea MCP).
 - **Nothing exists only in chat.** Every artifact lands in `projects/{slug}/`.
 - **Read the distribution spec before framing.** 9:16 vs 16:9 changes composition, not just export.
-- **The spec declares; the engine obeys.** `format`, `client`, `charged_register` come from the
+- **The spec declares; the tool obeys.** `format`, `client`, `charged_register` come from the
   project, never from assumption. Never assume a client the project didn't declare.
 - **Protect the charged register.** Whatever the project names as emotionally load-bearing is never
   compressed, never flattened, never handled carelessly. Every film has one; the spec says which.

@@ -32,7 +32,7 @@ file, and replace the row.
 |---|---|---|
 | D-001 | The skills **are** the pipeline. Behaviour changes by editing Markdown, not by writing code. | `skills/` |
 | D-002 | The Claude skill store holds pointer stubs only; `skills/*/SKILL.md` is the single source. | every stub |
-| D-003 | Hearthlight is the **engine**; a client (Talefeather) runs on it. Assuming a client is a defect. | every project |
+| D-003 | Hearthlight is the **engine**; a client (Talefeather) runs on it. Assuming a client is a defect. | superseded by D-025 |
 | D-004 | `charged_register` is declared per project and never defaulted — least of all to grief. | `hearthlight-terse`, distribution spec |
 | D-005 | Mechanics terse, art full. Machine talk gets fragments; story and people get sentences. | every response |
 | D-006 | Git tracks the instruction layer. `projects/` stays out — large, rights-constrained, not the system. | `.gitignore` |
@@ -51,3 +51,5 @@ file, and replace the row.
 | D-021 | Code moves by git; creative work moves by Syncthing. Source media (`00-source/**`) syncs nowhere — it is immutable and rights-constrained. | `projects/.stignore`, `PORTING.md` |
 | D-022 | Workflows are first-class and catalogued. More than one route runs from storyboard to clip; they are compared on a ledger, and the loser is parked with its evidence, never deleted. | `workflows/`, `hearthlight-video-prompts` |
 | D-023 | A skill that restates another skill's law is worse than no skill. Per-asset-type craft belongs to the skill owning that type; only universal laws are cross-cutting. | every new skill |
+| D-024 | `shots.json` is the canonical shot record and panels are files on disk. The workbook is a one-way export; nothing in production reads it. *(⚠️ recorded by the checkpoint, not yet ratified by Vince)* | shot registry, compilers, `workflows/board-intake.md` |
+| D-025 | Hearthlight is a single-operator AI filmmaking **tool**, not an engine underneath a product. Supersedes D-003's framing; keeps its rule — `format`, `client` and `charged_register` are declared per project and obeyed, and guessing one is a defect. | every doc, every project |

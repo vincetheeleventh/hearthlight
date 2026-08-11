@@ -15,27 +15,36 @@ archive: archive/readme.md
 
 # Hearthlight Story Studio — Hermes workspace
 
-This folder is the working home of the Hearthlight pipeline (PRD lives in Notion: "PRD — Hearthlight").
+This folder is the working home of **Hearthlight**, a single-operator AI filmmaking tool: it turns a
+director's input — storyboards, spoken vision, narrative beats — into what image and video generation
+need, and pairs with the Film Study Tool UI as a visual shot tracker and production dashboard.
+
+`PRODUCT_SPEC.md` is the definition of record. (An older PRD lives in Notion: "PRD — Hearthlight".)
 
 ## Layout
 
 ```
 Story Studio/
   USER-GUIDE.md                    ← how Vince runs a story through the pipeline
-  AUDIENCE-CONTEXT.md              ← pointer only; explains the engine/client split (content moved)
+  guides/                          ← plain-language guides: assets, shot2video, board2video
   profile/                         ← SETUP, SOUL, NOTION-SETUP, SESSIONS-AND-THREADS for the hearthlight profile
     clients/talefeather/           ← CLIENT layer. Grief/living-legacy cohorts, voice-as-treasure,
                                      the competitive wedge. Loaded ONLY when a project's spec says
-                                     `client: talefeather`. Hearthlight is the engine; this is one
-                                     product on it — never assume it. Most projects: `client: none`.
+                                     `client: talefeather` — never assumed. Most projects: `client: none`.
   GOALS.md                         ← WHY the product exists (North Star — Vince owns it)
   PRODUCT_SPEC.md                  ← WHAT currently exists (descriptive)
   ROADMAP.md                       ← WHAT we're trying to change
   DECISIONS.md                     ← WHY important choices were made (append-only)
   SKILL-INVENTORY.md               ← every component, classified, with what justifies it
-  checkpoints/                     ← dated daily alignment reports (the evolution record)
-  governance/checkpoint.py         ← the daily checkpoint engine
-  workflows/                       ← the routes from storyboard to clip (shot2video, board2video) + comparison ledger
+  PROPOSALS.md                     ← the improvement backlog: what is awaiting Vince's decision
+  checkpoints/                     ← dated daily alignment reports + the weekly workshop (the evolution record)
+  governance/                      ← checkpoint.py + canon.py, the runbooks, audits, Syncthing rules, miro.json
+  archive/                         ← superseded history: decisions, retired skills, prior versions of canon docs
+  workflows/                       ← the routes as SPECIFICATIONS, for agents — shot2video, board2video,
+                                     board-intake + the comparison ledger
+  guides/                          ← the same routes in PLAIN LANGUAGE, for Vince at the bench.
+                                     Start at guides/assets.md; both routes stand on the sheets
+  staging/overview-ui/             ← Hearthlight Studio, the production cockpit. Final home undecided
   skills/                          ← Hermes skills = the instruction layer (PRD §6). 23 skills:
     hearthlight-distribution-spec/ Platform/aspect/length/captions + format/client/charged_register — decided first
     hearthlight-conventions/       Folders, naming, versioning, gates
@@ -53,7 +62,7 @@ Story Studio/
     hearthlight-storyboard/        Stage 5  / Gate 4 — motion intent, durations, transitions
     hearthlight-video-prompts/     Stage 6  / Gate 5 (the prompt WORDS)
       references/seedance-os-bridge.md  ← companion notes on the Seedance 2.0 Skill OS repo (vocab only)
-    hearthlight-comfyui-graph/     Stage 6 plumbing (the WIRE — RunningHub Seedance graph)
+    hearthlight-comfyui-graph/     Stage 6 plumbing (the WIRE — local ComfyUI MiniMax H3; RunningHub Seedance parked)
       references/seedance-i2v-template.json  ← sanitized from Vince's working workflow
     hearthlight-shot-runner/       Stages 4+6 batch execution — subagent per shot, two-stage review, ledger
     hearthlight-dashboard/         Read-only pipeline view + gate ledger + Shot ID protocol
