@@ -31,7 +31,7 @@ halves. Full definition in `GOALS.md`. `yugioh` is the active film.
 
 | Phase | State |
 |---|---|
-| Storyboard | **Done** — `yugioh/status.yml`, `gate4_storyboard: approved 2026-07-30` |
+| Storyboard | **Done** — boards drawn, photographed and linked to the shot record |
 | **Board intake** | **BUILT 2026-08-06, STARVED.** `shots.json` is canonical, the workbook is a one-way export, and `panel_reader.py` reads the drawings. But **2 of 28 `yugioh` shots have a panel on disk** — 18 name missing files, 8 have none. The route is `workflows/board-intake.md` and it is idempotent; it needs boards, not code. |
 | **Image pipeline** | **ACTIVE.** Studio Shot Vision and the visibility-aware Krea compiler are built. The Film Brief's 16:9 widescreen master governs Stage A. Prompt Board approval precedes the remaining composition batch; likeness and final selection follow. `set_shot_image.py` overrides a shot's chosen still and writes the ledger row. |
 | **Video** | **STARTED 2026-08-05.** Generator is **local ComfyUI MiniMax H3** (`minimax_h3_i2v_int8`), confirmed on Shot 1; RunningHub Seedance parked. Two routes run in parallel — `workflows/`. Prompt packets written for shots 2 and 8. Refining the process against real output is the work. |
@@ -77,7 +77,7 @@ Every current project is illustrated; the photoreal material is parked in
 
 **Portability** *(CONFIRMED — D-021)*
 Code moves by git, creative work by Syncthing (`governance/syncthing/`). Story Studio's root resolves
-per-OS. **Open risk:** `hermes` on macOS is unverified — without it, Telegram gate approvals and
+per-OS. **Open risk:** `hermes` on macOS is unverified — without it, Telegram approvals and
 `production_generation_worker.py` fail. Also live: the Film Study Tool sits inside OneDrive on
 Windows, and OneDrive plus Syncthing over the same files will produce conflict storms.
 
@@ -122,18 +122,16 @@ proposals, the crew arguing rather than complying.
    claims. Reference images cannot be tracked without `-f`.
 6. **The image-prompt tests read live `projects/yugioh` data** — exact counts and cell addresses —
    so editing the shot list fails the suite and can block a checkpoint commit.
-7. **`yugioh/status.yml` shows gates 0–3 `pending` while gate 4 is approved.** The film outran its
-   ledger; it needs a ratification pass. (P-004)
-8. **A project's central document has no home the code reads.** `yugioh/02-outline/FILM-BRIEF.md`
+7. **A project's central document has no home the code reads.** `yugioh/02-outline/FILM-BRIEF.md`
    declares itself authoritative and supersedes `distribution-spec.md`, but eight code paths read
    `distribution-spec.md` and none read the brief. The conventions name no slot for a brief.
-9. **The image ledger is write-only.** `yugioh/04-images/` holds 68 PNGs; `generations.jsonl` knows
+8. **The image ledger is write-only.** `yugioh/04-images/` holds 68 PNGs; `generations.jsonl` knows
     30, and all 30 read `selected_final: false`. Which still is the approved base for a shot is
     answerable only by folder name — the row-number failure D-009 exists to prevent, one level up.
     *Partly addressed 2026-08-05:* `set_shot_image.py` now writes a paired `generation` +
     `selection` row when a still is chosen, so shots overridden through it are answerable. Shots
     selected before it are not.
-11. **`hermes` on macOS is unverified** (D-021). Without it the UIs run but Telegram gate approvals
+10. **`hermes` on macOS is unverified** (D-021). Without it the UIs run but Telegram approvals
     and `production_generation_worker.py` fail — the one open risk in the port.
 
 *Both found by the structure audit: `governance/audits/2026-08-04-yugioh-structure.md`. The

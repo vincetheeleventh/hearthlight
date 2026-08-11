@@ -47,25 +47,25 @@ Story Studio/
   staging/overview-ui/             ← Hearthlight Studio, the production cockpit. Final home undecided
   skills/                          ← Hermes skills = the instruction layer (PRD §6). 23 skills:
     hearthlight-distribution-spec/ Platform/aspect/length/captions + format/client/charged_register — decided first
-    hearthlight-conventions/       Folders, naming, versioning, gates
-    hearthlight-consolidate/       Stage 1.5 / Gate 0 — bounded ideation → Vision Brief
-    hearthlight-outline/           Stage 2  / Gate 1 — Story Arc → Beat Sheet → A/V Script
+    hearthlight-conventions/       Folders, naming, versioning, conventions
+    hearthlight-consolidate/       Stage 1.5 — bounded ideation → Vision Brief
+    hearthlight-outline/           Stage 2 — Story Arc → Beat Sheet → A/V Script
     hearthlight-critique/          Stage 2.5 — story pressure-test before drawing
     hearthlight-research/          Period research → sourced Research Deck
-    hearthlight-mise-en-scene/     Stage 3  / Gate 2 — Aesthetic Bible: LOCKED style + COMPOSED world
+    hearthlight-mise-en-scene/     Stage 3 — Aesthetic Bible: LOCKED style + COMPOSED world
     hearthlight-character/         Stage 3.5 — CHARACTER.md dossier + lighting-neutral turnaround sheet
     hearthlight-timing-intake/     Storyboard Pro XML in, Resolve FCP XML out — one timing source
     hearthlight-clip-extractor/    transcript→clips: audio master + per-moment audio/video cuts
     hearthlight-reference-report/  loose ref images + writeup → glanceable Notion report
-    hearthlight-image-prompts/     Stage 4  / Gate 3 — conditioning stills
+    hearthlight-image-prompts/     Stage 4 — conditioning stills
     hearthlight-shot-crew/         Stage 4.5 — 8 illustration roles negotiate contested shots
-    hearthlight-storyboard/        Stage 5  / Gate 4 — motion intent, durations, transitions
-    hearthlight-video-prompts/     Stage 6  / Gate 5 (the prompt WORDS)
+    hearthlight-storyboard/        Stage 5 — motion intent, durations, transitions
+    hearthlight-video-prompts/     Stage 6 — the prompt WORDS
       references/seedance-os-bridge.md  ← companion notes on the Seedance 2.0 Skill OS repo (vocab only)
     hearthlight-comfyui-graph/     Stage 6 plumbing (the WIRE — local ComfyUI MiniMax H3; RunningHub Seedance parked)
       references/seedance-i2v-template.json  ← sanitized from Vince's working workflow
     hearthlight-shot-runner/       Stages 4+6 batch execution — subagent per shot, two-stage review, ledger
-    hearthlight-dashboard/         Read-only pipeline view + gate ledger + Shot ID protocol
+    hearthlight-dashboard/         Read-only pipeline view + Shot ID protocol
     hearthlight-selfcheck/         Plumbing health — mechanical failure vs. quality judgment
     hearthlight-notion-log/        Notion surfacing — working notes, journal, Threads DB
     hearthlight-board-sheet/       Board sheet for board2video — cluster 10-15s, panels + text, one image
@@ -99,5 +99,6 @@ Once running, every skill here is a slash command in the Hearthlight bot:
   > *copy* into `profiles/hearthlight/skills/hearthlight/`, giving the skill two homes. The name then
   > resolves ambiguously and the agent can silently load the older copy. Three shadows accumulated
   > this way and were removed 2026-08-06; `hearthlight-selfcheck` now fails RED if any come back.
-- Gates are sacred. No stage starts before the previous gate's explicit ✅ in Telegram.
+- The machine never approves its own work. Agents draft, run and report; only Vince marks a design
+  Locked or a shot Approved. Approval is per shot — there are no gates (D-026).
 - Nothing exists only in chat history — every artifact lands in `projects/{slug}/`.

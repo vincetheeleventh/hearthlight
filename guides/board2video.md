@@ -14,7 +14,7 @@ not_here:
 
 # Guide — board2video (board straight to video)
 
-**The parallel trial.** No still, no Gate 3. You compose an image of your storyboard covering a
+**The parallel trial.** No still to approve. You compose an image of your storyboard covering a
 short sequence, hand it over with your character and location sheets, and the prompt is one line.
 
 You approve **once** per sequence, at the clip.
@@ -104,9 +104,9 @@ graph — it takes a list of reference images alongside the sheet.
 the space and the texture, not the framing or the colour."* Left unlabelled, the model guesses,
 and its favourite wrong guess is to copy the location reference's composition.
 
-### 7. Gate 5 — you approve the clip
+### 7. You approve the clip
 
-This is the **only** quality gate on this route. Weight it accordingly. Nothing upstream caught
+This is the **only** place quality is judged on this route. Weight it accordingly. Nothing upstream caught
 anything for you.
 
 ---

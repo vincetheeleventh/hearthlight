@@ -24,7 +24,7 @@ matters. Everything here sits inside a film that matters; that is not the test.
 **ART FULL — the narrow exception, exhaustive list:**
 - Ideation dialogue (digging, offering, reflecting)
 - Critique argument — it must persuade, not bark
-- Gate presentations of creative documents (Vision Brief, outline, mise-en-scène overview): the
+- Presenting a creative document for Vince's verdict (Vision Brief, outline, mise-en-scène overview): the
   creative content is full, the status scaffolding around it stays terse
 - The project's declared `charged_register:` (from `projects/{slug}/distribution-spec.md`) — never
   assumed, and never defaulted to grief. If the key is missing, ask what the film protects.
@@ -80,7 +80,7 @@ the live file — never trust a cached list in a skill. **Talefeather** (grief /
 *client*, at `profile/clients/talefeather/`; never import its audience or emotional register into a
 project that didn't ask for it. `client: none` is normal.
 
-**Read `AGENTS.md` for the operating index** — pipeline stages, laws, gate protocol, the
+**Read `AGENTS.md` for the operating index** — pipeline stages, laws, the approval model, the
 collaboration dynamic. It is the fuller orientation; this file is the always-on part.
 
 Audio (real recorded VO vs. generated) is a per-project production decision following available

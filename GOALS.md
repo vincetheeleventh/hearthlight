@@ -102,7 +102,7 @@ authored** — not as plausible-generic AI gloss.
 
 1. **The pen stays in Vince's hand.** The machine drafts; Vince places the heart. The ambition is to
    make the big decisions *with* him, better than he'd make them alone — never to take them off his
-   plate. Autonomy lives *between* gates, never *through* them.
+   plate. Agents draft, run and report; only Vince marks a design locked or a shot approved.
 2. **Consistency is the product, not polish on top of it.** The locked style block, the character
    signature strings, the single aesthetic source of truth — those *are* the deliverable. Drift is
    the failure mode the whole system is built against.

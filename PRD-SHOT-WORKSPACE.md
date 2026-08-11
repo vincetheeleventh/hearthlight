@@ -60,7 +60,7 @@ Not a lack of information, and — correcting the draft — **not primarily cogn
 either.** The overload is the symptom.
 
 The disease is that **the record and the view have different shapes.** The record is a
-gate-governed, append-only, contract-hashed specification. The view is a flat page that shows
+versioned, append-only, contract-hashed specification. The view is a flat page that shows
 fields. So the filmmaker cannot see, in the UI:
 
 1. Which facts are authoritative and which are superseded baseline.
@@ -193,14 +193,15 @@ not settle them, the continuity agent reports and does not resolve. A UI that si
 reconciled a shot against its sequence would be the first component in Hearthlight allowed to
 overrule a creative decision by inference.
 
-### 4g. Design Lock is a gate — decided
+### 4g. Design Lock is the approval — decided
 
-It behaves like one, so it is one. It enters the gate ledger with the others (`status.yml`,
-`hearthlight-dashboard`), and `confirmed_by_user: true` on the current Vision is its record.
+Originally decided as "Design Lock is a gate." **D-026 removed gates entirely**, which does not
+weaken this — it promotes it. Design Lock is now one of the two approvals that exist, and
+`confirmed_by_user: true` on the current Vision is its record. There is no ledger to enter; the
+shot record carries it.
 
-Consequence worth stating: **a gate is crossed once and reopened deliberately.** That is exactly
-the escape-hatch semantics in §12, so the two are now the same mechanism rather than two similar
-ones.
+Consequence worth stating: **an approval is given once and withdrawn deliberately.** That is exactly
+the escape-hatch semantics in §12, so the two are the same mechanism rather than two similar ones.
 
 ## 5. Modes are lenses, not places
 
@@ -245,7 +246,7 @@ refused.
 | **The board** | `panel.path` |
 | **The hero** | latest `selection` event, `purpose: hero` |
 | **Intent, one sentence** | `narrative.one_liner` |
-| **Design · Production · Inputs** | `confirmed_by_user` · gate ledger · computed (§8) |
+| **Design · Production · Inputs** | `confirmed_by_user` · shot record · computed (§8) |
 | **Blocking problems, count and worst** | `shot-problems.jsonl`, open entries |
 | **What I asked for last** | latest director input, verbatim |
 
@@ -296,7 +297,7 @@ A per-shot, checkable definition of done. **Required** and **Flexible**.
 This is the antidote to a failure the system has already named: the ten-to-fifteen rule in
 `workflows/README.md` — *"if a shot has not come together in that many iterations, the problem is
 not the wording."* Today nothing states what "come together" means, so iteration has no
-terminating condition and Gate 3 fatigue does the terminating instead.
+terminating condition and review fatigue does the terminating instead.
 
 **Derive, do not ask.** The first draft of the criteria is generated from what already exists:
 `never[]` becomes Required-negative, character `must_hold[]` becomes Required, `staging.surfaced`
@@ -518,7 +519,7 @@ review cycle to discover.
 The distinction the draft collapses:
 
 - **The AI must never block a creative decision.** Vince wants the shot redesigned, it gets
-  redesigned. No warning gates that.
+  redesigned. No warning blocks that.
 - **The AI must always block a generation on an unresolved contradiction, a broken input, or an
   unmet Required criterion.** Not advise — block.
 
@@ -548,7 +549,7 @@ Keep all eight from the draft. Add three:
   same script layer Hermes and Cowork use. A design state editable only in a browser makes the
   pipeline un-runnable headless and un-runnable by an agent.
 - **No field exists that no downstream consumer reads.** If a new field does not reach a prompt
-  packet, a continuity packet, a gate check or a criterion, it is documentation. Delete it.
+  packet, a continuity packet, a state computation or a criterion, it is documentation. Delete it.
 - **The workspace must not become the place decisions are recorded but not enforced.** A
   Must-Preserve that nothing checks is worse than no Must-Preserve — it creates the belief that it
   is being honoured.
@@ -600,14 +601,14 @@ Vince ruled on 2026-08-07. Recorded here because the rest of the document depend
    the workspace in the same posture as the panel reader and the continuity agent, and keeps the
    rule that nothing in Hearthlight overrules a creative decision by inference.
 2. **Sequence and `beat` are the same concept.** One grouping. Wired into §4f.
-3. **Design Lock is a gate.** It enters the gate ledger; `confirmed_by_user: true` is its record.
-   Wired into §4g — and it collapses the escape hatch and gate reopening into one mechanism.
+3. **Design Lock is the approval.** `confirmed_by_user: true` is its record. Wired into §4g. Vince
+   later removed gates outright (D-026), which makes this one of only two approvals in the system.
 4. **Acceptance criteria: derivation authors, Vince edits, the reviewer consumes.
    `hearthlight-critique` does not own them.** — my call, with the reasoning below.
 
 ### Why not the critique pass
 
-`hearthlight-critique` sits between Gate 1 and Gate 2, arguing about *story* grammar: buried
+`hearthlight-critique` sits between the outline and the mise-en-scène, arguing about *story* grammar: buried
 detonation beats, echo shots, close-up inflation, sentimentality. It runs before the production
 object exists, so criteria it wrote would be predictions rather than tests.
 
@@ -618,7 +619,7 @@ exactly that because it starts from those fields. Critique produces prose, and p
 a checker cannot evaluate — which is how a Must-Preserve becomes the §16 non-goal: a constraint
 nothing enforces, creating the belief that it is being honoured.
 
-So: **derive at Design Lock, Vince edits the derived list at the same gate, and
+So: **derive at Design Lock, Vince edits the derived list at the same moment, and
 `versioned-review.md` consumes it as the Stage A pass condition.** One author, one editor, one
 consumer, no handoff.
 

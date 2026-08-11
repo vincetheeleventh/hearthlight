@@ -1,0 +1,161 @@
+diff --git a/staging/productions.js b/staging/productions.js
+--- a/staging/productions.js
++++ b/staging/productions.js
+@@ -443,0 +444,157 @@
++function shotFormField(label, control, hint = "") {
++  const field = node("label", "shot-structure-field");
++  field.append(node("span", "", label), control);
++  if (hint) field.append(node("small", "", hint));
++  return field;
++}
++
++function openShotStructureDialog(production, afterShotId = "", notice = null) {
++  if (!production.structureEditable) {
++    if (notice) showProductionNotice(notice, production.structureBlocker || "Shot structure needs reconciliation first.", "error");
++    return;
++  }
++  const dialog = node("dialog", "shot-structure-dialog");
++  const form = node("form", "shot-structure-form");
++  form.method = "dialog";
++  const heading = node("header");
++  heading.append(node("span", "eyebrow", afterShotId ? "Insert shot" : "New shot"), node("h2", "", afterShotId ? "Add after this shot" : "Add at end"));
++  const title = node("input");
++  title.required = true;
++  title.maxLength = 240;
++  title.placeholder = "Shot title";
++  const display = node("input");
++  display.maxLength = 24;
++  display.placeholder = "Automatic";
++  const duration = node("input");
++  duration.type = "number";
++  duration.min = "0";
++  duration.max = "3600";
++  duration.step = "0.1";
++  duration.placeholder = "Optional";
++  const story = node("textarea");
++  story.rows = 4;
++  story.placeholder = "What happens in the story?";
++  const image = node("textarea");
++  image.rows = 5;
++  image.placeholder = "What should the still image show?";
++  const motion = node("textarea");
++  motion.rows = 4;
++  motion.placeholder = "What moves in the eventual clip?";
++  const camera = node("input");
++  camera.placeholder = "Static, push-in, handheld...";
++  const actions = node("div", "shot-structure-dialog-actions");
++  const cancel = node("button", "ghost-button", "Cancel");
++  cancel.type = "button";
++  cancel.addEventListener("click", () => dialog.close());
++  const create = node("button", "primary-button", "Create shot");
++  create.type = "submit";
++  actions.append(cancel, create);
++  form.append(
++    heading,
++    shotFormField("Title", title),
++    shotFormField("Shot number", display, "Optional display label. Permanent identity is assigned automatically."),
++    shotFormField("Duration (seconds)", duration),
++    shotFormField("Story description", story),
++    shotFormField("Image direction", image),
++    shotFormField("Video motion", motion),
++    shotFormField("Camera movement", camera),
++    actions,
++  );
++  form.addEventListener("submit", async (event) => {
++    event.preventDefault();
++    if (!form.reportValidity()) return;
++    try {
++      const result = await productionButton(create, () => postProductionJson(`/api/productions/${encodeURIComponent(production.slug)}/shots`, {
++        afterShotId,
++        title: title.value,
++        displayNumber: display.value,
++        durationSeconds: duration.value,
++        storyVisualDescription: story.value,
++        imageDirection: image.value,
++        videoMotion: motion.value,
++        cameraMovement: camera.value,
++      }), "Creating...");
++      dialog.close();
++      goStudio({ slug: production.slug, shotId: result.shotId });
++    } catch (error) {
++      const local = dialog.querySelector(".production-action-notice") || node("p", "production-action-notice");
++      if (!local.isConnected) form.insertBefore(local, actions);
++      showProductionNotice(local, error.message, "error");
++    }
++  });
++  dialog.addEventListener("close", () => dialog.remove());
++  document.body.append(dialog);
++  dialog.showModal();
++  title.focus();
++}
++
++async function retireProductionShot(production, shot, notice, returnToOverview = false) {
++  if (!production.structureEditable) {
++    showProductionNotice(notice, production.structureBlocker || "Shot structure needs reconciliation first.", "error");
++    return;
++  }
++  if (!window.confirm(`Delete Shot ${shot.displayNumber}: ${shot.title}? It will leave the active sequence, but every image, prompt, comment, and version will be preserved for restoration.`)) return;
++  const reason = window.prompt("Optional reason for removing this shot:", "");
++  if (reason === null) return;
++  try {
++    await postProductionJson(`/api/productions/${encodeURIComponent(production.slug)}/shots/${encodeURIComponent(shot.shotId)}/retire`, { reason });
++    if (returnToOverview) goStudio({ slug: production.slug });
++    else await refreshProductionRoute();
++  } catch (error) {
++    showProductionNotice(notice, error.message, "error");
++  }
++}
++
++function shotStructureControls(production, shot, notice) {
++  const controls = node("div", "shot-structure-actions");
++  const insert = node("button", "ghost-button", "Insert after");
++  insert.type = "button";
++  insert.disabled = !production.structureEditable;
++  insert.title = production.structureBlocker || "Add a new shot directly after this one.";
++  insert.addEventListener("click", () => openShotStructureDialog(production, shot.shotId, notice));
++  const remove = node("button", "danger-button", "Delete shot");
++  remove.type = "button";
++  remove.disabled = !production.structureEditable;
++  remove.title = production.structureBlocker || "Retires this shot without deleting its history.";
++  remove.addEventListener("click", () => retireProductionShot(production, shot, notice));
++  controls.append(insert, remove);
++  return controls;
++}
++
++function productionStructureToolbar(production, notice) {
++  const toolbar = node("section", "production-structure-toolbar");
++  const copy = node("div");
++  copy.append(node("strong", "", "Shot structure"), node("span", "", production.structureEditable ? "Insertions and deletions keep permanent Shot IDs and full history." : production.structureBlocker));
++  const add = node("button", "primary-button", "New shot at end");
++  add.type = "button";
++  add.disabled = !production.structureEditable;
++  add.addEventListener("click", () => openShotStructureDialog(production, "", notice));
++  toolbar.append(copy, add);
++  return toolbar;
++}
++
++function retiredShotTray(production, notice) {
++  if (!(production.retiredShots || []).length) return null;
++  const tray = node("details", "retired-shot-tray");
++  tray.append(node("summary", "", `Retired shots · ${production.retiredShots.length}`));
++  const list = node("div", "retired-shot-list");
++  for (const shot of production.retiredShots) {
++    const item = node("article");
++    const copy = node("div");
++    copy.append(node("strong", "", `Shot ${shot.displayNumber} · ${shot.title}`), node("span", "", [shot.retiredAt && formatDate(shot.retiredAt), shot.retiredReason].filter(Boolean).join(" · ") || "History preserved"));
++    const restore = node("button", "ghost-button", "Restore");
++    restore.type = "button";
++    restore.disabled = !production.structureEditable;
++    restore.addEventListener("click", async () => {
++      try {
++        await productionButton(restore, () => postProductionJson(`/api/productions/${encodeURIComponent(production.slug)}/retired-shots/${encodeURIComponent(shot.shotId)}/restore`, {}), "Restoring...");
++        await refreshProductionRoute();
++      } catch (error) { showProductionNotice(notice, error.message, "error"); }
++    });
++    item.append(copy, restore);
++    list.append(item);
++  }
++  tray.append(list);
++  return tray;
++}
++

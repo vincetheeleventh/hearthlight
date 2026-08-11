@@ -106,7 +106,7 @@ Style/composition first, then likeness, then the final input image.
 The style block is **never in the prompt text.** It's a moodboard parameter. If you see the style
 sentence inside prompt prose, that prompt is invalid and the compiler will reject it.
 
-### Step 5 — Gate 3, you approve the picture
+### Step 5 — you approve the picture
 
 Two halves:
 
@@ -144,7 +144,7 @@ The sheet on `image2` is what stops the face drifting across the clip. Don't ski
 H3 generates audio by default. Decide per project whether you want that or whether it just
 obstructs your edit — and write the decision down.
 
-### Step 8 — Gate 5, you approve the clip
+### Step 8 — you approve the clip
 
 Watch one thing above everything else: **does it still look painted?** Photoreal creep is the
 enemy. The moment a clip starts looking like footage, the film has quietly changed genre.

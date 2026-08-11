@@ -40,3 +40,12 @@ Move `HANDOFF.md` to `archive/`. Done, together with root `AUDIENCE-CONTEXT.md`.
 engine/client framing as the product's identity, which Vince superseded on 2026-08-11: Hearthlight
 is a single-operator AI filmmaking tool. The rule the framing protected — nothing about a project
 is assumed — survives as D-003.
+
+## P-004 · P-013 — decided 2026-08-11, moot
+
+Both existed to reconcile `yugioh/status.yml` with reality: gates 0-3 read `pending` while gate 4
+read `approved`, and P-013 was raised because no autonomy tier was permitted to write the fix.
+
+D-026 removes gates. There is no ledger left to ratify, and per-shot state is computed from the shot
+record rather than declared. Two proposals, open 8 and 1 days, closed by deleting the thing they
+were about.

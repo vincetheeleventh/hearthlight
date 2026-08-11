@@ -22,7 +22,7 @@ shots.
 No conditioning still. The board goes to video directly, and identity is held by **key asset
 images** — character sheets, location sheets, a style reference — instead of by an approved frame.
 
-**What this buys:** one step from board to motion. No Gate 3, no still to drift.
+**What this buys:** one step from board to motion. No still to approve, none to drift.
 **What it costs:** the model decides framing, and a weak asset sheet has nowhere to hide. **The
 assets carry the entire load.**
 
@@ -92,8 +92,8 @@ is free, and control within it is gone.**
    crosses. No characters, no action. This is the cure for characters teleporting between shots.
 5. **Generate** — sheet + asset references + the one-line prompt. **Name the role of every
    reference** or the model guesses and guesses wrong.
-6. **Gate 5 — Vince approves the clip.** There is no Gate 3 here; the clip review is the only quality
-   gate on this route. Weight it accordingly.
+6. **Vince approves the clip.** There is no still review on this route, so the clip is the only
+   place quality is judged. Weight it accordingly.
 
 > **Surface: `MiniMaxH3ReferenceToVideo`** — the same local ComfyUI graph that runs shot2video also
 > carries a reference node taking an expandable `ref_images` list plus `ref_videos` and `ref_audios`.

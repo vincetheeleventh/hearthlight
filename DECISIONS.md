@@ -36,13 +36,13 @@ file, and replace the row.
 | D-004 | `charged_register` is declared per project and never defaulted — least of all to grief. | `hearthlight-terse`, distribution spec |
 | D-005 | Mechanics terse, art full. Machine talk gets fragments; story and people get sentences. | every response |
 | D-006 | Git tracks the instruction layer. `projects/` stays out — large, rights-constrained, not the system. | `.gitignore` |
-| D-007 | Autonomy lives **between** gates, never through them. Stage A is machine-judged; Stage B is Vince only. | `hearthlight-shot-runner` |
+| D-007 | Autonomy lives **between** gates, never through them. Stage A is machine-judged; Stage B is Vince only. | superseded by D-026 |
 | D-008 | Aspect ratio is a composition law, decided before framing — not an export setting. | distribution spec, all framing |
 | D-009 | `shot_id` is immutable identity. Deletion is retirement. No asset moves by row number. | shot registry, every workbook |
 | D-010 | The leaked-key guard is hash-based inside `checkpoint.py`. `git-init-commit.sh` is dead. | `governance/` |
 | D-011 | The checkpoint splits facts from judgment: `gather` fails loudly, the agent writes the verdict. | `governance/checkpoint.py` |
 | D-012 | Every agent commit carries an `Agent:` trailer. Unattributed changes are reported, not hidden. | every commit |
-| D-013 | The system improves itself under its own gate law: GREEN executes, AMBER proposes, RED never. | `PROPOSALS.md`, weekly workshop |
+| D-013 | The system improves itself under tiers: GREEN executes, AMBER proposes, RED never. | `PROPOSALS.md`, weekly workshop |
 | D-014 | Checkpoints commit but do not push. Vince pushes. | `governance/checkpoint.py` |
 | D-015 | The enemy is AI filmmaking itself — wrong generations, drifting style, obsolete workflows — not a competitor. | `GOALS.md` |
 | D-017 | Canon documents state the current state only. History moves to `archive/`; every canon doc carries YAML front matter. | `governance/canon.py`, all canon docs |
@@ -53,3 +53,4 @@ file, and replace the row.
 | D-023 | A skill that restates another skill's law is worse than no skill. Per-asset-type craft belongs to the skill owning that type; only universal laws are cross-cutting. | every new skill |
 | D-024 | `shots.json` is the canonical shot record and panels are files on disk. The workbook is a one-way export; nothing in production reads it. *(⚠️ recorded by the checkpoint, not yet ratified by Vince)* | shot registry, compilers, `workflows/board-intake.md` |
 | D-025 | Hearthlight is a single-operator AI filmmaking **tool**, not an engine underneath a product. Supersedes D-003's framing; keeps its rule — `format`, `client` and `charged_register` are declared per project and obeyed, and guessing one is a defect. | every doc, every project |
+| D-026 | No gates. Approval is **per shot**, on two independent axes — `Design` (Exploring / Designed / Locked) and `Production` (Not started / In progress / Needs fix / Candidate ready / Approved) — plus machine-computed `Inputs`. Agents draft, run and report; only Vince marks Locked or Approved. Supersedes D-007. | every skill, `status.yml`, Studio, shot runner |

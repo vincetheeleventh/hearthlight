@@ -110,15 +110,15 @@ python governance/checkpoint.py commit [--weekly]
 
 Commits do **not** push — Vince pushes from Windows (`DECISIONS.md` D-014).
 
-## Autonomy tiers — the gate protocol, applied to the system itself
-Hearthlight's own law is *autonomy between gates, never through them*. The same rule governs agents
+## Autonomy tiers — the approval model, applied to the system itself
+Hearthlight's own law is *the machine never approves its own work*. The same rule governs agents
 changing Hearthlight. (`DECISIONS.md` D-013.)
 
 | Tier | What it covers | What you may do |
 |---|---|---|
 | **GREEN** | Mechanical, reversible, no product judgment: doc/index sync, stale counts, dead references, tests for existing code, Miro refresh, gitignore hygiene, descriptive `PRODUCT_SPEC.md` corrections | **Do it. Commit it. Report after.** |
 | **AMBER** | Changes how the system behaves: a new skill, a changed skill contract, merging or retiring a component, restructuring, a new dependency | **Propose only.** Write it into `PROPOSALS.md` and wait for Vince's ✅. |
-| **RED** | `GOALS.md` · the gate protocol · deleting any file, skill, or feature · product strategy · a project's charged register · `profile/TASTE.md` · rewriting a `DECISIONS.md` entry · resolving a `⚠️ NEEDS VINCE` marker | **Never autonomous. Ever.** Proposal only, permanently. |
+| **RED** | `GOALS.md` · the approval model · deleting any file, skill, or feature · product strategy · a project's charged register · `profile/TASTE.md` · rewriting a `DECISIONS.md` entry · resolving a `⚠️ NEEDS VINCE` marker | **Never autonomous. Ever.** Proposal only, permanently. |
 
 **If you are unsure whether something is GREEN, it is AMBER.** The cost of asking is a day. The cost
 of a wrong autonomous change to the constitution is that Vince stops trusting the system — and an
@@ -146,10 +146,10 @@ capped at **7 open**; a new idea must displace a worse one. Open 30 days with no
 
 ## The pipeline (skills = the constitution; each stage is a hearthlight-* skill)
 1. **Intake** — transcribe rant + interview (`hearthlight-conventions`).
-2. **Gate 0 — Ideation/Consolidation** (`hearthlight-consolidate`): bounded collaboration, no-smuggling law → Vision Brief.
-3. **Gate 1 — Outline** (`hearthlight-outline`): Story Arc → Beat Sheet → A/V Script.
+2. **Ideation / Consolidation** (`hearthlight-consolidate`): bounded collaboration, no-smuggling law → Vision Brief.
+3. **Outline** (`hearthlight-outline`): Story Arc → Beat Sheet → A/V Script.
 3.5 **Critique** (`hearthlight-critique`): honest story pressure-test before drawing — buried beats, echo shots, pacing, sentimentality. Argue, then let Vince decide.
-4. **Gate 2 — Mise-en-scène / Aesthetic Bible** (`hearthlight-mise-en-scene`): the ONE aesthetic
+4. **Mise-en-scène / Aesthetic Bible** (`hearthlight-mise-en-scene`): the ONE aesthetic
    source of truth (Tier 1 locked style + characters; Tier 2 world-by-location; an OVERVIEW
    visual thesis). Research feeds it (`hearthlight-research`, `hearthlight-reference-report`).
 4.5 **Characters** (`hearthlight-character`): meaning-first interrogation → `CHARACTER.md` dossier +
@@ -160,13 +160,13 @@ capped at **7 open**; a new idea must displace a worse one. Open 30 days with no
    durations feeding the shot list, audio cuts, and Seedance targets; AND export an FCP XML so generated
    panels/clips + VO assemble into a watchable timeline in DaVinci Resolve. The board's pace = the system's pace.
 5. **Clip prep** (`hearthlight-clip-extractor`): audio master + per-moment clips to draw to.
-6. **Gate 3 — Images** (`hearthlight-image-prompts`): gpt-image-2, assembled from the mise-en-scène.
+6. **Images** (`hearthlight-image-prompts`): gpt-image-2, assembled from the mise-en-scène.
 7. **Shot design** (`hearthlight-shot-crew`): an illustration/stop-motion CREW (layout, value-light,
    background, continuity/model, posing, motion, sound, editor) designs each shot, negotiating tradeoffs.
    Routine shots = internal checklist; contested shots = delegate the conflicting roles to subagents, then
    the orchestrator reconciles + shows tradeoffs. Vince directs. (Crew handbook in its references/.)
-7b. **Gate 4 — Storyboard** (`hearthlight-storyboard`): motion, durations, lip-sync policy.
-8. **Gate 5 — Video** (`hearthlight-video-prompts` + `hearthlight-comfyui-graph`): i2v via **local
+7b. **Storyboard** (`hearthlight-storyboard`): motion, durations, lip-sync policy.
+8. **Video** (`hearthlight-video-prompts` + `hearthlight-comfyui-graph`): i2v via **local
    ComfyUI MiniMax H3** (`minimax_h3_i2v_int8`). RunningHub Seedance is **parked**.
    - **Two routes, not one** (`workflows/`, D-022): **shot2video** (approved still → i2v; the active
      v1 path) and **board2video** (board sheet + asset sheets → video, no still; parallel trial).
@@ -175,14 +175,14 @@ capped at **7 open**; a new idea must displace a worse one. Open 30 days with no
      life. Cross-cutting: both routes, Stage 5 and Stage 6.
    - **Board sheet:** `hearthlight-board-sheet` — clusters the shot list into 10–15s sequences and
      renders the single image board2video hands the model. **EXPERIMENTAL.**
-- **Batch execution (Stages 4 & 6):** `hearthlight-shot-runner` — after a gate ✅, runs the approved
+- **Batch execution (Stages 4 & 6):** `hearthlight-shot-runner` — runs the approved
   batch: written plan (exact paths, no placeholders), fresh subagent per shot, Stage A spec review
   (machine: provider-correct style conditioning, AR, refs) + Stage B quality review (VINCE ONLY, Telegram batches),
-  durable ledger (never re-render paid shots), two-strike parking. Autonomy BETWEEN gates, never through them.
+  durable ledger (never re-render paid shots), two-strike parking. Stage A is machine-judged; Stage B is Vince only.
 - **Logging:** `hearthlight-notion-log` — Notion is Vince's preferred point of contact.
 - **Distribution:** `hearthlight-distribution-spec` — the project brief, decided FIRST.
-- **Status:** `hearthlight-dashboard` — read-only pipeline view + the gate ledger contract. Writes
-  `projects/{slug}/status.yml` at every gate ✅, and owns the **Shot ID** protocol: shot identity is
+- **Status:** `hearthlight-dashboard` — read-only pipeline view over per-shot state, and owns the
+  **Shot ID** protocol: shot identity is
   permanent, deletion is retirement, and a regenerated workbook that cannot prove a match STOPS for
   reconciliation rather than moving assets by row number.
 - **Health:** `hearthlight-selfcheck` — verify the PLUMBING (skills loaded, scripts run, keys present,
@@ -214,7 +214,7 @@ discarding it.
 the panel reader and the reviewer is deliberate — and it makes cross-shot disagreement
 structurally invisible. Shot 1 said *"Yu-Gi-Oh trading cards"*; shot 5, its declared setup echo,
 said *"trading cards"*; the reviewer passed both because shot 1 was never in the room. The
-continuity pass exists for exactly that class, runs on the record before Gate 3, and reports
+continuity pass exists for exactly that class, runs on the record before any batch, and reports
 without resolving:
 
 ```bash
@@ -240,7 +240,9 @@ building a prompt author from scratch. **If you cannot see these files, stop and
 before you write anything.**
 
 ## Laws that override convenience (true of every project)
-- **Gates are sacred.** Nothing advances past a gate without Vince's explicit ✅ in Telegram.
+- **The machine never approves its own work.** Agents draft, run and report; only Vince marks a
+  design **Locked** or a shot **Approved** (`DECISIONS.md` D-026). There are no gates: approval is
+  per shot, on two independent axes, and shots do not advance in lockstep.
 - **No drift.** The mise-en-scène is the single aesthetic truth. Apply it through the stage's declared
   conditioning: Krea Stage A uses the approved moodboard and strength with no style prose; stages that
   require textual style or signature blocks copy them verbatim, never paraphrased.
@@ -277,14 +279,14 @@ consistency, and critiques the telling.
 A capability Vince has to remember to ask for is half a capability. Part of being a partner is
 offering the next useful step when it becomes available — *but with restraint*, or it becomes the
 "never-ending" noise the ideation curfew exists to prevent. Rules:
-- **Offer at stage SEAMS, not every turn.** When a gate just passed, a doc just finished, or new
+- **Offer at stage SEAMS, not every turn.** When a shot was just approved, a doc just finished, or new
   material just landed — that's the moment. Mid-flow, stay silent and work.
 - **One offer at a time. A declined offer is not re-pitched.** "No" or silence means drop it.
-- **Offer, don't do.** Propose the next step as a question; Vince says go. Never auto-advance a gate.
+- **Offer, don't do.** Propose the next step as a question; Vince says go. Never mark his approval for him.
 
 Trigger → offer map (fire the matching one at the seam; phrase naturally, don't recite):
 - Beat Sheet / shot list just drafted → *"Want a critique pass before we commit to drawing?"* (`hearthlight-critique`)
-- A gate ✅ just approved a renderable batch (images or clips) → *"Want me to run the batch? First 3–5 come back for your review."* (`hearthlight-shot-runner`)
+- Vince just approved a renderable batch (images or clips) → *"Want me to run the batch? First 3–5 come back for your review."* (`hearthlight-shot-runner`)
 - About to design a non-obvious shot → *"This one's contested — want the crew on it?"* (`hearthlight-shot-crew`)
 - Vince mentions platform/format, or a project has no spec → *"Should we lock the distribution spec first? Aspect ratio shapes every shot."* (`hearthlight-distribution-spec`)
 - Panels drawn & timed, or a Storyboard Pro XML lands → *"Want me to read your panel timings in?"* then *"Ready to build the timeline so you can watch it back in Resolve?"* (`hearthlight-timing-intake`)

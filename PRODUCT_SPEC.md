@@ -42,7 +42,7 @@ Talefeather — grief / living-legacy — is one *client*, loaded only when a pr
 | Surface | How it runs | Role |
 |---|---|---|
 | **Film Study Tool** (Hearthlight Studio) | Local Python HTTP server, browser UI. Separate repository. | Vince's primary point of contact. Shot tracker and production dashboard: the film's current state, and the controls that move it |
-| **Hermes + Telegram** | Hermes gateway, own profile, own bot | Dictating a Shot Vision, approving a gate, running a stage from the phone |
+| **Hermes + Telegram** | Hermes gateway, own profile, own bot | Dictating a Shot Vision, approving a shot, running a stage from the phone |
 | **Claude Cowork / ChatGPT** | Agent sessions over the same files | Building and improving the tool itself |
 
 The three share no memory. **The files are the only coordination medium** — see `AGENTS.md`
@@ -75,7 +75,7 @@ The three share no memory. **The files are the only coordination medium** — se
   review versions, and insert, retire, or restore shots without changing permanent identity.
   Stage-A prompts compile from the Vision and are editable in place; saving one writes the canonical
   record, so the edit is what the next compile and the next generation both read. Likeness prompts
-  remain manual. These controls do not approve Hearthlight gates.
+  remain manual. Approving a shot is Vince's, always.
   Studio Shot Vision plus the permanent-ID shot registry are the live authority. Imported hand-drawn
   board workbooks are immutable archived references; current spreadsheets are generated handoff exports
   and never silently replace Studio state or block image-prompt compilation. This is mechanical, not
@@ -105,7 +105,7 @@ The three share no memory. **The files are the only coordination medium** — se
 - **A film-level continuity pass.** The author, the panel reader and the reviewer each see one shot,
   which makes cross-shot disagreement structurally invisible — shot 1 said *"Yu-Gi-Oh trading cards"*
   and shot 5, its declared setup echo, said *"trading cards"*, and every single-shot reviewer passed
-  both. `continuity_pass.py run --project {slug}` reads the whole record before Gate 3 and **reports
+  both. `continuity_pass.py run --project {slug}` reads the whole record before a batch and **reports
   without resolving**. Contract: `hearthlight-image-prompts/references/CONTINUITY-PASS.md`.
 - **Asset bindings survive renumbering.** A number-bound registry does not fail loudly — it hands the
   author the wrong character sheets. `rekey_assets.py` migrates existing number bindings to
@@ -115,25 +115,25 @@ The three share no memory. **The files are the only coordination medium** — se
 
 ## 3. The pipeline — stages and owning skills
 
-| #    | Stage                                                                                                                 | Gate       | Owning skill                                              |
-| ---- | --------------------------------------------------------------------------------------------------------------------- | ---------- | --------------------------------------------------------- |
-| 0    | Distribution spec (format, client, charged register, aspect)                                                          | —          | `hearthlight-distribution-spec`                           |
-| 1    | Intake / transcription                                                                                                | —          | `hearthlight-conventions`                                 |
-| 1.5  | Ideation → Vision Brief                                                                                               | **Gate 0** | `hearthlight-consolidate`                                 |
-| 2    | Story Arc → Beat Sheet → A/V Script                                                                                   | **Gate 1** | `hearthlight-outline`                                     |
-| 2.5  | Story pressure-test                                                                                                   | —          | `hearthlight-critique`                                    |
-| 3    | Mise-en-scène / Aesthetic Bible                                                                                       | **Gate 2** | `hearthlight-mise-en-scene`                               |
-| 3.5  | Character dossiers + turnaround sheets                                                                                | —          | `hearthlight-character`                                   |
-| 3.7  | Timing intake / timeline export                                                                                       | —          | `hearthlight-timing-intake`                               |
-| 3.9  | Clip prep for storyboarding                                                                                           | —          | `hearthlight-clip-extractor`                              |
-| 3.95 | Board intake — panels to files, `shots.json` canonical                                                                | —          | `workflows/board-intake.md` + `hearthlight-dashboard`     |
-| 3.98 | Film-level continuity pass — one agent with every shot in view, reports cross-shot disagreement and never resolves it | —          | `hearthlight-image-prompts` (`continuity_pass.py`)        |
-| 4    | Conditioning stills                                                                                                   | **Gate 3** | `hearthlight-image-prompts`                               |
-| 4.5  | Shot design by crew                                                                                                   | —          | `hearthlight-shot-crew`                                   |
-| 5    | Storyboard: motion, duration, transitions                                                                             | **Gate 4** | `hearthlight-storyboard`                                  |
-| 6    | i2v clips — local ComfyUI MiniMax H3 (RunningHub Seedance parked)                                                     | **Gate 5** | `hearthlight-video-prompts` + `hearthlight-comfyui-graph` |
-| 6b   | Board sheet for board2video — 10–15s sequence as one image                                                            | —          | `hearthlight-board-sheet` *(EXPERIMENTAL)*                |
-| —    | Batch execution at stages 4 and 6                                                                                     | —          | `hearthlight-shot-runner`                                 |
+| #    | Stage                                                                                                                 | Owning skill                                              |
+| ---- | --------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
+| 0    | Distribution spec (format, client, charged register, aspect)                                                          | `hearthlight-distribution-spec`                           |
+| 1    | Intake / transcription                                                                                                | `hearthlight-conventions`                                 |
+| 1.5  | Ideation → Vision Brief                                                                                               | `hearthlight-consolidate`                                 |
+| 2    | Story Arc → Beat Sheet → A/V Script                                                                                   | `hearthlight-outline`                                     |
+| 2.5  | Story pressure-test                                                                                                   | `hearthlight-critique`                                    |
+| 3    | Mise-en-scène / Aesthetic Bible                                                                                       | `hearthlight-mise-en-scene`                               |
+| 3.5  | Character dossiers + turnaround sheets                                                                                | `hearthlight-character`                                   |
+| 3.7  | Timing intake / timeline export                                                                                       | `hearthlight-timing-intake`                               |
+| 3.9  | Clip prep for storyboarding                                                                                           | `hearthlight-clip-extractor`                              |
+| 3.95 | Board intake — panels to files, `shots.json` canonical                                                                | `workflows/board-intake.md` + `hearthlight-dashboard`     |
+| 3.98 | Film-level continuity pass — one agent with every shot in view, reports cross-shot disagreement and never resolves it | `hearthlight-image-prompts` (`continuity_pass.py`)        |
+| 4    | Conditioning stills                                                                                                   | `hearthlight-image-prompts`                               |
+| 4.5  | Shot design by crew                                                                                                   | `hearthlight-shot-crew`                                   |
+| 5    | Storyboard: motion, duration, transitions                                                                             | `hearthlight-storyboard`                                  |
+| 6    | i2v clips — local ComfyUI MiniMax H3 (RunningHub Seedance parked)                                                     | `hearthlight-video-prompts` + `hearthlight-comfyui-graph` |
+| 6b   | Board sheet for board2video — 10–15s sequence as one image                                                            | `hearthlight-board-sheet` *(EXPERIMENTAL)*                |
+| —    | Batch execution at stages 4 and 6                                                                                     | `hearthlight-shot-runner`                                 |
 
 Cross-cutting: `hearthlight-terse` (voice register), `hearthlight-acting` (performance writing,
 both routes), `hearthlight-research` + `hearthlight-reference-report` (world research),
@@ -146,7 +146,7 @@ Stages 4–6 are not a single path. Two workflows run in parallel, catalogued in
 
 | Route                                     | How a clip is made                                                                                                                         | Status                        |
 | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------- |
-| **shot2video** Shot-Image → Video         | One approved conditioning still per shot (Gate 3), then i2v from that still                                                                | Active — carrying the v1 film |
+| **shot2video** Shot-Image → Video         | One approved conditioning still per shot, then i2v from that still                                                                | Active — carrying the v1 film |
 | **board2video** Storyboard → Video Direct | No still. Asset sheets + style reference condition the clip. **B1** = board image + plain instruction; **B2** = per-shot structured prompt | Active — parallel trial       |
 
 They fail differently, which is why both run. shot2video settles framing in a cheap medium and costs two
@@ -164,7 +164,9 @@ Full per-skill responsibilities, usage evidence, and classification: **`SKILL-IN
 
 **Laws** (from `AGENTS.md`, true of every project):
 
-- Gates are sacred — nothing advances without Vince's explicit ✅ in Telegram.
+- The machine never approves its own work. Agents draft, run and report; only Vince marks a design
+  **Locked** or a shot **Approved**. Approval is per shot on two independent axes — there are no
+  gates (D-026).
 - No drift — provider conditioning carries the locked aesthetic: Krea Stage A uses its approved moodboard and strength outside prose; stages requiring textual style or signature blocks copy them verbatim.
 - Nothing exists only in chat — every artifact lands in `projects/{slug}/`.
 - The distribution spec is read before framing; aspect ratio is a composition law, not an export setting.
@@ -185,7 +187,7 @@ depends on the agent having read the skill.
 
 **Reported, not enforced.** `continuity_pass.py` is the only pass that sees the whole film, and it
 deliberately reports cross-shot disagreement without resolving it — resolution is Vince's. Running it
-before Gate 3 is instruction, not code.
+before a batch is instruction, not code.
 
 ## 5. Notable system behaviours
 
@@ -201,9 +203,11 @@ in the repository. See `SKILL-INVENTORY.md` and `ROADMAP.md`.
 **Voice register is stated in three places.** `CLAUDE.md` (always-on switch), `AGENTS.md` (summary),
 and `skills/hearthlight-terse/SKILL.md` (authoritative). The first two defer to the third explicitly.
 
-**The gate ledger.** Each project keeps `status.yml` with one line per gate, valued
-`approved YYYY-MM-DD` / `pending` / `unconfirmed` / `done` / `n/a`. `unconfirmed` means work exists
-but no ✅ was recorded — it must be ratified, not assumed.
+**Per-shot approval state.** `Design` (Exploring / Designed / Locked) and `Production` (Not started
+/ In progress / Needs fix / Candidate ready / Approved) are computed independently from the shot
+record, so *Design: LOCKED · Production: NEEDS FIX* says fix the image, not the shot. `Inputs`
+(Ready / Stale / Broken) is machine-computed and is the only state that blocks generation.
+Migration off the retired gate ledger: `governance/GATE-REMOVAL.md`.
 
 ## 6. Known limitations
 
@@ -234,7 +238,7 @@ but no ✅ was recorded — it must be ratified, not assumed.
   through the files themselves. See `AGENTS.md` § Multi-agent working agreement.
 - **`.venv-stt` is dead.** The faster-whisper environment was a Linux venv and did not survive the
   WSL → Windows migration; the hand-drawn-board intake path depends on it.
-- **Stage 6 is unproven end to end.** No full film has passed every gate. The generator is now local
+- **Stage 6 is unproven end to end.** No film has been carried from board to finished cut. The generator is now local
   ComfyUI MiniMax H3, confirmed on `yugioh` Shot 1 (2026-08-05), so the stage is no longer metered or
   remote — but only single shots have been run. The leaked RunningHub key still wants rotating; it is
   no longer on the critical path.

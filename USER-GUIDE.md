@@ -6,7 +6,7 @@ owner: agents
 updated: 2026-08-04
 answers:
   - how to run a story through the pipeline
-  - what each gate asks of vince
+  - what each stage asks of vince
   - which command starts a given stage
 not_here:
   what is built: PRODUCT_SPEC.md
@@ -20,14 +20,19 @@ How to run a story through the pipeline, from your seat. (One-time install lives
 
 ## The shape of the work
 
-You do two things: **direct** and **approve**. Hermes does everything between — and increasingly it also **argues with you** (the critique gate, the shot crew). It's a collaborator, not an intern: it researches, pushes back honestly, remembers your taste, and leaves every charged decision to you. Your time should run ~80% direction/approval, ~20% fiddling. If that inverts, the instructions are wrong, not you — say so and have Hermes propose a skill fix.
+You do two things: **direct** and **approve**. Hermes does everything between — and increasingly it also **argues with you** (the critique pass, the shot crew). It's a collaborator, not an intern: it researches, pushes back honestly, remembers your taste, and leaves every charged decision to you. Your time should run ~80% direction/approval, ~20% fiddling. If that inverts, the instructions are wrong, not you — say so and have Hermes propose a skill fix.
 
-The pipeline is a sequence of gates — nothing moves until you say ✅:
+The pipeline is a sequence of stages. Nothing is *approved* except by you — but stages do not
+queue behind one another, and shots do not advance in lockstep:
 
 ```
 Distribution Spec (decide format FIRST)
-  └─ Rant → GATE 0 Vision Brief → GATE 1 Outline → (Critique pass) → GATE 2 Mise-en-scène
-        → Shot crew designs shots → GATE 3 Images → GATE 4 Storyboard → GATE 5 Clips → your edit
+  └─ Rant → Vision Brief → Outline → (Critique pass) → Mise-en-scène
+        → Shot crew designs shots → Images → Storyboard → Clips → your edit
+
+  Per shot:  Design: Exploring → Designed → Locked
+             Production: Not started → In progress → Needs fix → Candidate ready → Approved
+             Inputs: Ready / Stale / Broken   (machine-computed; Broken blocks generation)
 ```
 
 ## Before a new story: the Distribution Spec
@@ -50,14 +55,14 @@ Lasts as long as you want — multiple voice notes, across days. Hermes does thr
 
 Useful phrases: "**Research [direction]**", "**Park that**", "**Just listen**" (capture only), "**Consolidate**" / "**lock it**" (ends ideation, compiles the doc).
 
-Then the **selects pass**: keep / kill / merge per item, name the primary arc in one sentence. Killed ideas go to the boneyard (never deleted). You get a one-page **Vision Brief** — read it asking: *is this still my story?* ✅ = Gate 0.
+Then the **selects pass**: keep / kill / merge per item, name the primary arc in one sentence. Killed ideas go to the boneyard (never deleted). You get a one-page **Vision Brief** — read it asking: *is this still my story?*
 
 ## Stage 2 — Outline, then the Critique pass
 
-- **Outline (Gate 1):** three docs one at a time — Story Arc, Beat Sheet, A/V Script. Watch for `[OPEN SLOT]` markers — creative decisions reserved for you (the detonation image, the withheld turn). Approve each separately; voice-note revisions work.
+- **Outline:** three docs one at a time — Story Arc, Beat Sheet, A/V Script. Watch for `[OPEN SLOT]` markers — creative decisions reserved for you (the detonation image, the withheld turn). Approve each separately; voice-note revisions work.
 - **Critique:** before you commit to drawing, ask *"critique this"* — Hermes pressure-tests the *telling* (not the story): buried detonation beats, echo shots, close-up inflation, sentimentality, contrast spine not on the page. It argues once, you keep or reject each note. This is the collaborator earning its seat. (Skill: `hearthlight-critique`.)
 
-## Stage 3 — Mise-en-scène (the Aesthetic Bible) — Gate 2, the sacred one
+## Stage 3 — Mise-en-scène (the Aesthetic Bible) — the one worth slowing down for
 
 The ONE aesthetic source of truth every prompt draws from. Two tiers:
 - **Tier 1 — LOCKED:** the **style block** (exact ink-and-watercolour wording — a draft awaits your blessing), palette, and character **signature details** + turnarounds. Set in stone; drift from it is the failure.
@@ -69,9 +74,9 @@ Plus an **Overview** (the visual thesis): the contrast spine, colour-as-emotion,
 
 When designing the shot list, Hermes runs a **crew** (in illustration terms): Layout, Value-Light, Background, Continuity/Model, Posing, Motion, Sound, Editor — each tells the story in its dimension. Routine shots it handles in one pass; **contested shots** it delegates the conflicting roles to subagents, then reconciles and shows you the tradeoff (*"Layout wanted a wide for isolation; Continuity flagged it'd lose the eyeline — kept the wide, added the gaze cue"*). Each crew member writes a per-dimension entry into the shot row; the video-prompt writer later compiles those entries into one prompt. **Best watched in the TUI** (`hearthlight` in a terminal, then `/agents`) so you see the crew deliberate. (Skill: `hearthlight-shot-crew`.)
 
-## Stage 4 — Image review (Gate 3)
+## Stage 4 — Image review
 
-Images arrive in Telegram batches of 3–5, by beat. Reply per image: ✅ approve (immutable; changes = new versions) · 🔁 *with a note* (regenerate) · ✏️ edit the prompt. If a correction is *general* ("more paper texture at night"), say so — Hermes offers to write it into the rules. Before Gate 3, **spot-check full-res files** — Telegram thumbnails hide drift.
+Images arrive in Telegram batches of 3–5, by beat. Reply per image: ✅ approve (immutable; changes = new versions) · 🔁 *with a note* (regenerate) · ✏️ edit the prompt. If a correction is *general* ("more paper texture at night"), say so — Hermes offers to write it into the rules. Before approving, **spot-check full-res files** — Telegram thumbnails hide drift.
 ### Adding or removing shots at any stage
 
 Hearthlight Studio can add a shot at the end, insert one between existing shots, or retire a shot during
@@ -85,10 +90,10 @@ match, Hearthlight stops for reconciliation instead of moving assets by row numb
 
 ## Stages 5–6 — Storyboard, timing, and video
 
-- **Storyboard (Gate 4):** per shot — image, VO timestamps, duration, *motion intent* (one move: a push-in, steam, light fading). Figures don't mouth the VO unless you say so.
+- **Storyboard:** per shot — image, VO timestamps, duration, *motion intent* (one move: a push-in, steam, light fading). Figures don't mouth the VO unless you say so.
 - **Timing from your hand:** if you've timed panels in **Storyboard Pro**, export a **Final Cut XML with one clip per panel** and drop it in. Hermes reads your exact per-panel durations (the pace you set by ear) and uses them for the shot list, the audio cuts, AND the Seedance clip lengths — one timing source, no re-guessing. (Skill: `hearthlight-timing-intake`.)
 - **Watch it back:** Hermes can write a **Final Cut XML you import into DaVinci Resolve** — your panels (hand-drawn now, generated later) held at your timing with the VO synced. Press play, watch the whole story at real pace before any video renders. Same export later carries the animated Seedance clips.
-- **Video (Gate 5):** clips render through ComfyUI/RunningHub. Review with ✅/🔁. Watch one thing above all: does it still look *painted*? Photoreal creep is the enemy. Approved clips + VO land in `07-final/` for your edit.
+- **Video:** clips render through ComfyUI/RunningHub. Review with ✅/🔁. Watch one thing above all: does it still look *painted*? Photoreal creep is the enemy. Approved clips + VO land in `07-final/` for your edit.
 
 ## Notion — your point of contact
 
@@ -114,4 +119,4 @@ Hermes surfaces work to Notion: **working notes** (transcripts, briefs), a **dai
 
 ## The covenant, short version
 
-Your improvisation is sacred; the machine catches everything, argues honestly, and asks before adding. Gates fail cheap; skipping them fails expensive. The instruction layer gets smarter every project — correct the system, not just the output.
+Your improvisation is sacred; the machine catches everything, argues honestly, and asks before adding. Judgment is cheap before a generation and expensive after — that is why `Inputs: Broken` blocks and nothing else does. The instruction layer gets smarter every project — correct the system, not just the output.
