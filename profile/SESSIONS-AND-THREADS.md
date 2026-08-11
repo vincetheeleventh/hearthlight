@@ -12,25 +12,27 @@ By default, a Telegram DM is **one rolling session** — everything blurs togeth
 
 **Use a Telegram forum + topics.** Each forum **topic** becomes its own Hermes session (`group:<chat_id>:<thread_id>`). So:
 1. Make the Hearthlight chat a forum (group with Topics enabled), or use Bot API topic mode.
-2. One topic per thread: "Pilot — McConaughey", "Build — Hearthlight", "Feature — Notion logging", etc.
+2. One topic per thread — one per project and one per build workstream: "Film — Yu-Gi-Oh!",
+   "Build — Hearthlight", "Feature — Notion logging".
 3. In each topic, run `/title <name>` once so the session has a stable, resumable name.
 
 Now each topic is a real thread: its own context, its own history, resumable by name. Switching topics switches threads cleanly.
 
-**CLI alternative:** `hermes -p hearthlight -r "mcconaughey-pilot"` resumes that session from the terminal. `/new` starts a fresh thread; `/title` names it.
+**CLI alternative:** `hermes -p hearthlight -r "yugioh"` resumes that session from the terminal. `/new` starts a fresh thread; `/title` names it.
 
 ## Finding and resuming
 - List: `hermes -p hearthlight sessions list`
 - Resume by name: `hermes -p hearthlight -r "hearthlight-build"`
 - The agent also has `session_search` — ask it "what did we decide about the audio fork?" and it searches all past threads (FTS5) before asking you to repeat yourself.
 
-## The two threads already set up (Notion rows seeded)
+## Threads seeded as Notion rows
 | Thread | Type | Hermes session title |
 |---|---|---|
+| Film: Yu-Gi-Oh! — The Warrior Returning Alive | Project | `yugioh` |
 | Pilot: McConaughey — Don't Half Ass It | Project | `mcconaughey-pilot` |
 | Build: Hearthlight system | Feature | `hearthlight-build` |
 
-Create the matching sessions by opening a topic for each and running `/title mcconaughey-pilot` / `/title hearthlight-build`.
+`yugioh` is the v1 film (`GOALS.md`). Create a session by opening a topic and running `/title <name>`.
 
 ## Discipline that keeps it clean
 - One topic = one thread = one session. Don't discuss the pilot in the build topic.

@@ -13,7 +13,7 @@ hermes skills install NousResearch/hermes-agent/skills/creative/comfyui
 
 ## 2. Create the profile (clones your working config + OpenRouter key)
 ```bash
-hermes profile create hearthlight --clone --description "Creative director's pipeline agent: turns spoken family stories into illustrated narrative media through gated stages."
+hermes profile create hearthlight --clone --description "Single-operator AI filmmaking tool: turns a director's storyboards, spoken vision and narrative beats into generation-ready prompts, references and settings, through gated stages."
 ```
 
 ## 3. Point it at Claude and the Story Studio workspace

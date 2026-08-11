@@ -1,6 +1,8 @@
 # Hearthlight — Notion MCP setup
 
-Goal: let the Hearthlight profile write notes to your Notion pilot page directly, so Notion is its point of contact. One-time setup.
+Goal: let the Hearthlight profile write notes to Notion directly, so Notion is a readable point of contact. One-time setup.
+
+The page below is the original pilot page; a project page per film works the same way — share it with the integration and record its ID in `projects/{slug}/notion-log.md`.
 
 Pilot page: **"Hearthlight Pilot: Don't Half Ass It"**
 ID `37d4e5bccd028016b374d5afed3a2916`
@@ -53,7 +55,7 @@ Then ask the bot: *"which MCP tools are available right now?"* — you should se
 
 ## 6. One-time: create the activity-log child page
 Tell the bot once:
-> "Create a child page under the pilot page (ID 37d4e5bccd028016b374d5afed3a2916) called 'Hearthlight Activity Log', then save its page ID into projects/mcconaughey-call/notion-log.md. From now on, append all activity-log entries there."
+> "Create a child page under the pilot page (ID 37d4e5bccd028016b374d5afed3a2916) called 'Hearthlight Activity Log', then save its page ID into projects/{slug}/notion-log.md. From now on, append all activity-log entries there."
 
 This keeps the full activity log on its own page so the pilot page stays a clean dashboard. The `hearthlight-notion-log` skill governs how it logs.
 
