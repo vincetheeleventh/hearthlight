@@ -429,18 +429,28 @@ def cmd_record(a) -> int:
     return 0
 
 
+def read_readings(project: Path) -> list[dict]:
+    """Every recorded panel reading. One reader, so `status` and `plan` cannot disagree."""
+    path = readings_path(project)
+    if not path.is_file():
+        return []
+    events = []
+    for line in path.read_text(encoding="utf-8", errors="replace").splitlines():
+        if not line.strip():
+            continue
+        try:
+            event = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if isinstance(event, dict) and event.get("event") == "panel-read":
+            events.append(event)
+    return events
+
+
 def cmd_status(a) -> int:
     project = STUDIO / "projects" / a.project
     shots = load_shots(project)
-    read_ids = set()
-    p = readings_path(project)
-    if p.is_file():
-        for line in p.read_text(encoding="utf-8", errors="replace").splitlines():
-            if line.strip():
-                try:
-                    read_ids.add(str(json.loads(line).get("shot_id")))
-                except json.JSONDecodeError:
-                    pass
+    read_ids = {str(e.get("shot_id")) for e in read_readings(project)}
 
     have = missing_file = no_panel = 0
     for s in shots:
@@ -458,6 +468,73 @@ def cmd_status(a) -> int:
         print(f"  {mark}  shot {str(s.get('display_number')):>3}  {state}")
     print(f"\n{have} with a drawing on disk · {missing_file} listed but missing · "
           f"{no_panel} without a panel · {len(read_ids)} read")
+    return 0
+
+
+def cmd_plan(a) -> int:
+    """Write one packet per unread panel, and the dispatch instructions to go with them.
+
+    The vision pass existed for five days and ran zero times. Not because it was hard —
+    because it was a three-command dance per shot with an unautomated model call in the
+    middle, times twenty-eight, with nothing to start it. A chore with no owner does not
+    get done, and the drawings stayed decoration.
+
+    This makes it one invocation. It does not call a model itself: the read is a
+    judgment under a contract, and which model performs it is the caller's business.
+    What it removes is the bookkeeping.
+    """
+    project = STUDIO / "projects" / a.project
+    if not project.is_dir():
+        fail(f"no project at {project}")
+    shots = load_shots(project)
+    already = {str(e.get("shot_id")) for e in read_readings(project)}
+
+    out_dir = Path(a.out_dir) if a.out_dir else project / "04-images" / "panel-packets"
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    planned, skipped_read, skipped_nopanel = [], [], []
+    for shot in shots:
+        shot_id = str(shot.get("shot_id") or "")
+        label = shot.get("display_number")
+        panels, _notes = resolve_panels(project, shot)
+        if not panels:
+            skipped_nopanel.append(label)
+            continue
+        if shot_id in already and not a.force:
+            skipped_read.append(label)
+            continue
+        planned.append((shot, label))
+
+    print(f"{len(planned)} to read · {len(skipped_read)} already read · {len(skipped_nopanel)} without a panel")
+    if skipped_nopanel:
+        print(f"  no panel: {', '.join(str(x) for x in skipped_nopanel)}")
+    if a.dry_run:
+        print("\n[dry-run] no packets written")
+        return 0
+
+    for shot, label in planned:
+        namespace = argparse.Namespace(project=a.project, shot=str(label),
+                                       out=str(out_dir / f"shot-{label}-panel-packet.json"))
+        cmd_packet(namespace)
+
+    runbook = out_dir / "READ-THESE.md"
+    runbook.write_text(
+        "# Vision pass — read these boards\n\n"
+        f"{len(planned)} packet(s) in this folder, one per shot with an unread panel.\n\n"
+        "For each packet: open the panel image it names, read it under\n"
+        f"`{CONTRACT.relative_to(STUDIO).as_posix()}`, and return strict JSON.\n\n"
+        "Then record it:\n\n"
+        "```bash\n"
+        f"python skills/hearthlight-image-prompts/scripts/panel_reader.py record \\\n"
+        f"    --project {a.project} --shot <N> --reading <reading.json>\n"
+        "```\n\n"
+        "**Report conflicts, never resolve them.** The panel is tier-3 evidence; the current Shot\n"
+        "Vision governs. Absence of detail in a rough sketch is not an instruction to omit.\n\n"
+        "**Do not mark everything high-confidence.** A rough board does not read that way, and the\n"
+        "recorder warns when it does.\n",
+        encoding="utf-8")
+    print(f"\npackets -> {out_dir.relative_to(STUDIO).as_posix()}")
+    print(f"dispatch -> {runbook.relative_to(STUDIO).as_posix()}")
     return 0
 
 
@@ -484,6 +561,11 @@ def main() -> int:
 
     s = sub.add_parser("status", help="which shots have a drawing, and which are read")
     s.add_argument("--project", required=True); s.set_defaults(func=cmd_status)
+
+    pl = sub.add_parser("plan", help="one packet per unread panel, plus dispatch instructions")
+    pl.add_argument("--project", required=True); pl.add_argument("--out-dir")
+    pl.add_argument("--force", action="store_true", help="re-read panels already read")
+    pl.add_argument("--dry-run", action="store_true"); pl.set_defaults(func=cmd_plan)
 
     a = ap.parse_args()
     return a.func(a)

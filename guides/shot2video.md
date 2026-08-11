@@ -49,10 +49,16 @@ cat workflows/board-intake.md
 An LLM with vision opens each panel and reports what it sees.
 
 ```bash
-python skills/hearthlight-image-prompts/scripts/panel_reader.py packet --project {slug} --shot 8 --out packet.json
-# an agent reads the drawing under references/PANEL-READING.md
+# one packet per unread panel, plus the dispatch note
+python skills/hearthlight-image-prompts/scripts/panel_reader.py plan --project {slug}
+# an agent reads each drawing under references/PANEL-READING.md, then:
 python skills/hearthlight-image-prompts/scripts/panel_reader.py record --project {slug} --shot 8 --reading reading.json
 ```
+
+**This is not optional decoration.** Until a panel is read, the prompt author is told a
+drawing exists and to ignore it — the boards are the most authored thing in the project and an
+unread one contributes nothing. `Inputs` says *"the board panel has never been read"* on any shot
+in that state.
 
 The reader **names conflicts and never settles them.** If your sketch shows a two-shot and the
 Vision says single, you get told both. A sketch is concrete and a Vision is abstract, and
@@ -94,7 +100,7 @@ Order of authority when sources disagree — worth knowing, because it explains 
 
 1. Film laws, rights, aspect ratio
 2. **Your latest Shot Vision** ← creative authority
-3. Storyboard text and the panel drawing
+3. Storyboard text and the panel drawing (once it has been read)
 4. Adjacent-shot continuity
 5. Character, location, prop records
 6. What the provider can do

@@ -297,6 +297,74 @@ def relevant_props(props: dict, shot: dict) -> list[dict]:
     ]
 
 
+def current_readings(root: Path) -> dict[str, dict]:
+    """The latest panel reading per shot, folded from the append-only ledger.
+
+    Until 2026-08-11 nothing read this file. `panel_reader.py` wrote readings, the
+    contract described their authority, three documents claimed the drawing was tier-3
+    evidence — and the author's bundle never carried it, so the vision pass produced a
+    ledger with no consumer. The boards were decoration.
+    """
+    latest: dict[str, dict] = {}
+    for event in read_jsonl(root / "04-images" / "panel-readings.jsonl"):
+        if event.get("event") != "panel-read":
+            continue
+        shot_id = str(event.get("shot_id") or "")
+        if shot_id:
+            latest[shot_id] = {
+                "reading": event.get("reading") or {},
+                "read_at": event.get("created_at"),
+                "event_id": event.get("event_id"),
+            }
+    return latest
+
+
+def panel_context(shot: dict, readings: dict[str, dict]) -> dict:
+    """What the author is told about the hand-drawn board for this shot.
+
+    TIER 3, and the wording says so: the drawing is baseline execution evidence, never
+    above the current Shot Vision. It is authoritative for framing, blocking, screen
+    geography, eyeline, scale and exclusion — and never for wardrobe, colour, light,
+    texture, likeness or period. Absence of detail in a rough sketch is not an
+    instruction to omit.
+    """
+    panel = shot.get("panel") if isinstance(shot.get("panel"), dict) else {}
+    path = str(panel.get("path") or "")
+    entry = readings.get(str(shot.get("shot_id") or ""))
+    if not path and not entry:
+        return {"state": "none", "note": "No board panel is linked to this shot. Work from the Vision and the storyboard text."}
+    if not entry:
+        return {
+            "state": "unread",
+            "path": path,
+            "note": "A board panel exists but has not been read. Do not guess at its contents; "
+                    "treat this shot as having no drawing evidence.",
+        }
+    reading = entry["reading"]
+    return {
+        "state": "read",
+        "path": path,
+        "read_at": entry["read_at"],
+        "authority": (
+            "TIER 3 — baseline execution evidence, never above the current Shot Vision. "
+            "Authoritative for: framing, blocking, screen geography, eyeline, scale, exclusion. "
+            "NOT authoritative for: wardrobe, colour, light, texture, likeness, period. "
+            "Absence of detail in a rough sketch is never an instruction to omit."
+        ),
+        "framing": reading.get("framing"),
+        "blocking": reading.get("blocking"),
+        "screen_geography": reading.get("screen_geography"),
+        "eyeline": reading.get("eyeline"),
+        "scale": reading.get("scale"),
+        "excluded": reading.get("excluded"),
+        "confidence": reading.get("confidence"),
+        # Named, never resolved. The panel reader reports a conflict; the author obeys
+        # the Vision and records the displaced fact in `supersedes`.
+        "conflicts_with_vision": reading.get("conflicts_with_vision") or [],
+        "blockers": reading.get("blockers") or [],
+    }
+
+
 def narrative_records(root: Path) -> dict[str, dict]:
     value = read_json(root / "05-storyboard" / "shot-narrative.json", {})
     shots = value.get("shots", {}) if isinstance(value, dict) else {}
@@ -334,6 +402,7 @@ def source_bundle(root: Path, shot_ids: list[str]) -> tuple[dict, dict[str, dict
     registry_source = root / "05-storyboard" / "shots.json"
     visions = current_visions(root)
     narratives = narrative_records(root)
+    readings = current_readings(root)
     manifest = read_json(root / "03-bible" / "assets.json", {})
     manifest = manifest if isinstance(manifest, dict) else {}
     props = read_json(root / "03-bible" / "props.json", {})
@@ -405,6 +474,7 @@ def source_bundle(root: Path, shot_ids: list[str]) -> tuple[dict, dict[str, dict
                 "duration_seconds": shot.get("duration_seconds"),
                 "record": f"shots.json:{shot_id}",
             },
+            "panel": panel_context(shot, readings),
             "narrative": narratives.get(shot_id, {}),
             "adjacent_continuity": neighbor_context(shot_id),
             "characters": {name: characters[name] for name in related if name in characters},
@@ -442,6 +512,7 @@ def source_bundle(root: Path, shot_ids: list[str]) -> tuple[dict, dict[str, dict
         "mise_en_scene": sha256_file(root / "03-bible" / "mise-en-scene.md"),
         "assets": sha256_text(json.dumps(semantic_assets, sort_keys=True, ensure_ascii=False, separators=(",", ":"))),
         "props": sha256_file(root / "03-bible" / "props.json") if (root / "03-bible" / "props.json").is_file() else None,
+        "panel_readings": sha256_file(root / "04-images" / "panel-readings.jsonl") if (root / "04-images" / "panel-readings.jsonl").is_file() else None,
         "author_guide": sha256_file(AUTHOR_GUIDE),
         "vision_ledger": sha256_file(root / "04-images" / "shot-vision.jsonl") if (root / "04-images" / "shot-vision.jsonl").is_file() else None,
     }
@@ -474,6 +545,7 @@ def worker_instructions(bundle: dict, repair: dict | None = None) -> str:
         "LATEST SHOT VISION IS CREATIVE AUTHORITY. Storyboard fields are supersedable baseline evidence. Before writing, compare them, follow Vision in every conflict, and record each displaced baseline fact in supersedes. "
         "For character visible_traits, copy visual_traits[].text exactly; a shot-specific trait is allowed only when copied verbatim from current Vision. Leave gaze and expression blank when the face or eyes are not visible. "
         "props_canon is BINDING. Every prop listed there that is visible in this shot must be named in prompt_body using its canon wording — never a generic substitute, and never omitted because a neighbouring shot's prose omitted it. Its forbidden entries are hard constraints. "
+        "shot.panel carries the hand-drawn board. When state is 'read' it is TIER 3 evidence beside the storyboard text and never above the Vision: authoritative for framing, blocking, screen geography, eyeline, scale and exclusion, and never for wardrobe, colour, light, texture, likeness or period. Absence of detail in a sketch is not an instruction to omit. A sketch is concrete and a Vision is abstract, and concreteness is not authority. Record every displaced panel fact in supersedes. When state is 'unread' a drawing exists that nobody has read — do not guess at its contents. "
         "Do not copy a stale storyboard composition merely because it is concrete. Build a relational prose plan before the prompt: whole tableau first, atomic subject clauses second, light and the shot-specific visual relationship last. State each fact once. Never substitute global style language for missing staging. Return JSON only; never call tools.\n\n"
         "FOCUSED AUTHOR CONTRACT:\n" + author_guide()
         + "\n\nOUTPUT SCHEMA — match exactly:\n" + json.dumps(schema, ensure_ascii=False)

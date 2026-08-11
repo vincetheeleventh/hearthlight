@@ -16,10 +16,40 @@ Apply sources in this order:
 
 1. Film laws, rights, declared aspect ratio, and locked aesthetic laws.
 2. Latest submitted Shot Vision.
-3. Storyboard frame-one, camera, and Notes as baseline execution evidence.
+3. Storyboard frame-one, camera, and Notes — **and the hand-drawn board panel** — as baseline
+   execution evidence.
 4. Narrative meaning and adjacent-shot continuity.
 5. Character, setting, wardrobe, and prop records.
 6. Krea provider profile and request controls.
+
+### The board panel — `shot.panel`
+
+Vince draws the boards by hand. When a panel has been read, its observations arrive at
+`shot.panel` and they sit at **tier 3, beside the storyboard text and never above the Vision.**
+
+| `shot.panel.state` | What you do |
+|---|---|
+| `read` | Use the observations below, under the split that follows |
+| `unread` | A drawing exists but nobody has read it. **Do not guess at its contents.** Author as though there is no drawing |
+| `none` | No panel. Work from the Vision and the storyboard text |
+
+**Authoritative for:** framing, blocking, screen geography, eyeline, scale, exclusion.
+**Never authoritative for:** wardrobe, colour, light, texture, likeness, period. A pencil sketch
+carries no colour information, and its blankness is not a decision.
+
+**Absence of detail is never an instruction.** A rough board that omits the background is not
+telling you the background is empty.
+
+**A sketch is concrete and a Vision is abstract — and concreteness is not authority.** The pull to
+prefer the drawing because it is more specific is exactly the error this ranking exists to prevent.
+
+`shot.panel.conflicts_with_vision` lists disagreements the panel reader found and deliberately did
+not resolve. Follow the Vision, and name each displaced panel fact in `supersedes` — the same
+treatment the storyboard text gets. `shot.panel.blockers` are things the reader could not settle at
+all; if one of them makes the shot unauthorable, block rather than invent.
+
+`shot.panel.confidence` is per observation. A low-confidence reading of a rough sketch is weaker
+evidence than the storyboard text, not stronger.
 
 Shot Vision may supersede storyboard execution. It may not silently violate film law. When sources
 cannot be reconciled, block; never average contradictions into vague prose.

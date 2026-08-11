@@ -182,3 +182,79 @@ class VisibilityAwarePromptTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+class PanelReachesTheAuthorTests(unittest.TestCase):
+    """The drawing must arrive in the author's bundle.
+
+    For five days `panel-readings.jsonl` had no consumer: `panel_reader.py` wrote
+    readings, three documents called the panel tier-3 evidence, and `source_bundle`
+    never carried it. The vision pass could have run on all 28 shots and changed
+    nothing. These tests fail if that wiring comes out again.
+    """
+
+    def test_unread_panel_tells_the_author_not_to_guess(self) -> None:
+        panel = authoring.panel_context(
+            {"shot_id": "s1", "panel": {"path": "05-storyboard/panels/shot-08-board.png"}},
+            {},
+        )
+        self.assertEqual(panel["state"], "unread")
+        self.assertIn("not been read", panel["note"])
+        self.assertIn("Do not guess", panel["note"])
+
+    def test_absent_panel_is_stated_rather_than_omitted(self) -> None:
+        panel = authoring.panel_context({"shot_id": "s1"}, {})
+        self.assertEqual(panel["state"], "none")
+        self.assertTrue(panel["note"])
+
+    def test_a_read_panel_carries_its_observations_and_its_tier(self) -> None:
+        readings = {"s1": {
+            "read_at": "2026-08-11T00:00:00+00:00",
+            "event_id": "e1",
+            "reading": {
+                "framing": "single on the boy, widening to a two-shot",
+                "blocking": "father enters frame right",
+                "screen_geography": "doorway camera-left",
+                "confidence": {"framing": "high", "blocking": "low"},
+                "conflicts_with_vision": [
+                    {"panel_shows": "two-shot", "vision_states": "single"}
+                ],
+                "blockers": [],
+            },
+        }}
+        panel = authoring.panel_context(
+            {"shot_id": "s1", "panel": {"path": "p.png"}}, readings
+        )
+        self.assertEqual(panel["state"], "read")
+        self.assertEqual(panel["framing"], "single on the boy, widening to a two-shot")
+        self.assertEqual(len(panel["conflicts_with_vision"]), 1)
+        # The tier is stated in the payload, not left to the contract alone — the
+        # contract is prose the model may skim; this sits beside the observations.
+        self.assertIn("TIER 3", panel["authority"])
+        self.assertIn("never above the current Shot Vision", panel["authority"])
+        for allowed in ("framing", "blocking", "screen geography", "eyeline", "scale"):
+            self.assertIn(allowed, panel["authority"])
+        for denied in ("wardrobe", "colour", "light", "texture", "likeness", "period"):
+            self.assertIn(denied, panel["authority"])
+        self.assertIn("never an instruction to omit", panel["authority"])
+
+    def test_the_readings_ledger_is_folded_to_the_latest_per_shot(self) -> None:
+        import json, tempfile
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            (root / "04-images").mkdir(parents=True)
+            (root / "04-images" / "panel-readings.jsonl").write_text(
+                "\n".join(json.dumps(e) for e in [
+                    {"event": "panel-read", "shot_id": "s1", "created_at": "1", "reading": {"framing": "first"}},
+                    {"event": "panel-read", "shot_id": "s1", "created_at": "2", "reading": {"framing": "second"}},
+                    {"event": "something-else", "shot_id": "s1", "reading": {"framing": "ignored"}},
+                ]) + "\n", encoding="utf-8")
+            latest = authoring.current_readings(root)
+        self.assertEqual(latest["s1"]["reading"]["framing"], "second")
+
+    def test_the_author_contract_names_the_panel(self) -> None:
+        """The contract is pasted verbatim into the author's instructions. It described
+        an authority order for two days that never mentioned the drawing at all."""
+        guide = (Path(authoring.AUTHOR_GUIDE)).read_text(encoding="utf-8")
+        self.assertIn("shot.panel", guide)
+        self.assertIn("hand-drawn board panel", guide)
+        self.assertIn("concreteness is not authority", guide)
