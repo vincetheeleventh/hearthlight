@@ -25,6 +25,11 @@ SYNC-CHANGELOG.md
 .artifact-work/
 test-tmp/
 .test-tmp/
+# The dashboard and image-prompt suites build their TemporaryDirectory INSIDE the
+# tests folder rather than the system temp dir, and cleanup fails on a mounted
+# Windows folder -- so a failed run leaves tmpXXXXXXXX/ behind, unremovable from
+# the sandbox. Ignored so `git add -A` cannot swallow them. Added 2026-08-10.
+**/tests/tmp*/
 node_modules/
 .venv-stt/
 
@@ -40,13 +45,16 @@ __pycache__/
 Thumbs.db
 
 # ─── (Belt-and-suspenders) any stray media at the root ───────────
-*.png
-*.jpg
-*.jpeg
-*.mp4
-*.mov
-*.wav
-*.ogg
-*.mp3
-*.webm
-*.m4a
+# Leading slash = ROOT ONLY, which is what the heading always claimed. Without it
+# these matched at every depth, so a reference image inside skills/ could not be
+# tracked without `git add -f`. Anchored 2026-08-10 (ROADMAP known problem 6).
+/*.png
+/*.jpg
+/*.jpeg
+/*.mp4
+/*.mov
+/*.wav
+/*.ogg
+/*.mp3
+/*.webm
+/*.m4a

@@ -49,9 +49,8 @@ ElevenLabs pass for the film score.
 **Primary user: Vince, directing.** Hearthlight is a single-operator studio. Every design choice
 assumes one human with taste and final say, not a team and not a self-serve consumer app.
 
-**Beneficiary: whoever the film is for** — declared per project, never assumed. Hearthlight is the
-**engine**; a *client* (e.g. Talefeather, the grief / living-legacy service) is one thing running on
-it. The engine must not know or care who is watching. `client: none` is the normal case.
+**Beneficiary: whoever the film is for** — declared per project, never assumed. Hearthlight is the tool; a *client* (e.g. Talefeather, the grief / living-legacy service) is one thing running on.
+
 
 ---
 
@@ -78,8 +77,7 @@ they are learned.
    is a goal, not maintenance.
 6. **The filmmaker drifts from his own story.** As creative decisions stack, the film can wander
    from the original intent and accumulate complexity. Hearthlight holds the narrative goals and
-   says so when a choice pulls away from them. *(Vince: this sentence was truncated in your draft —
-   confirm the wording.)*
+   says so when a choice pulls away from them. 
 
 Hearthlight exists so that **one person with taste can make an authored film that reads as
 authored** — not as plausible-generic AI gloss.

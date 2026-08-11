@@ -317,10 +317,18 @@ def gather_docs(git_facts: dict) -> dict:
 
 
 def gather_unfinished() -> dict:
-    """TODO/FIXME markers and unresolved review flags across tracked text."""
+    """TODO/FIXME markers and unresolved review flags across tracked text.
+
+    `governance/` is excluded: those files *define* the markers, so scanning them
+    counts the protocol as unfinished work. Before this exclusion 7 of 10 hits were
+    the definitions -- including checkpoint.py matching its own regex -- which made
+    the number meaningless. Flagged by the 2026-08-07 checkpoint, fixed 2026-08-10.
+    """
     marker = re.compile(r"\b(TODO|FIXME|XXX|HACK|NEEDS VINCE|\[OPEN SLOT\])\b")
     hits = []
     for p, rel in walk_text_files():
+        if rel.startswith("governance/"):
+            continue
         try:
             text = p.read_text(encoding="utf-8", errors="replace")
         except OSError:
