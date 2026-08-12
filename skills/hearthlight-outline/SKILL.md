@@ -1,17 +1,16 @@
 ---
 name: hearthlight-outline
-description: Hearthlight Stage 2 (Gate 1) — expand the approved Vision Brief into three outline docs: Story Arc Overview, Beat Sheet, A/V Script. Expansion of the Brief, never invention beyond it. Charged creative choices are flagged as open slots for Vince, not filled.
-version: 0.1.0
+description: "Hearthlight Stage 2 — expand the confirmed Vision Brief into three outline docs: Story Arc Overview, Beat Sheet, and A/V Script. Expand the Brief without inventing beyond it. Flag charged creative choices as open slots for Vince."
 metadata:
   hermes:
-    tags: [hearthlight, outline, beat-sheet, av-script, gate-1]
+    tags: [hearthlight, outline, beat-sheet, av-script]
     category: hearthlight
 ---
 
-# Hearthlight — Outline Documents (Stage 2, Gate 1)
+# Hearthlight — Outline Documents (Stage 2)
 
 ## When to Use
-After Gate 0 (Vision Brief approved). Never before.
+After Vince confirms the Vision Brief as binding source material.
 
 ## The authorship law
 Stage 2 is **expansion of the Vision Brief, not invention beyond it.** This is where authorship could quietly leak from Vince to the machine. The machine drafts the skeleton; Vince places the heart:
@@ -47,7 +46,7 @@ Left: AUDIO — VO segment text with timestamps, ambient/sound notes. Right: VIS
 2. Draft the three docs in order. Trace every content claim to the Brief or the interview; structural craft is yours, content is not.
 3. Post to Telegram one document at a time (arc first — if the spine is wrong, beats are wasted work). List all open slots and gap observations at the top of each post.
 4. Vince approves, edits, or sends voice-note revisions; voice notes are transcribed and applied, with changes named back to him (playback check).
-5. **GATE 1:** explicit ✅ on all three docs. Then Stage 3.
+5. **Review:** Vince confirms or revises each document. Confirmed material becomes binding; unresolved items stay explicit.
 
 ## Pitfalls
 - Filling an open slot because the draft "needed an ending". The dove-level inventions are his.
@@ -59,4 +58,4 @@ Left: AUDIO — VO segment text with timestamps, ambient/sound notes. Right: VIS
 ## Verification
 - Every beat's content traces to Brief or interview; every beat maps to a VO timestamp.
 - Open slots are marked and listed, none silently filled.
-- Each doc carries `GATE 1 PASSED {date}` after explicit per-doc approval.
+- Each doc records its current confirmation state without implying that unrelated work must stop.

@@ -418,7 +418,7 @@ def rebuild_views(root: Path) -> None:
     status_lines = [
         "# Image review status — Warrior Returning Alive",
         "",
-        "> Derived from append-only `generations.jsonl`. Gate 3 still requires Vince's explicit ✅.",
+        "> Derived from append-only `generations.jsonl`. Only Vince approves a shot.",
         "",
     ]
     if specs:
@@ -443,9 +443,13 @@ def preflight(root: Path, phase: str) -> dict:
     blockers, warnings, ok = [], [], []
     assets_path = root / "03-bible" / "assets.json"
     specs_path = root / "04-images" / "shot-specs.json"
+    registry_path = root / "05-storyboard" / "shots.json"
+    registry = read_json(registry_path) if registry_path.exists() else {}
+    source_path = root / str(registry.get("source") or "__missing_registered_shot_source__")
     for label, path in [
-        ("distribution spec", root / "distribution-spec.md"),
-        ("approved shot source", root / "05-storyboard" / "warrior_returning_alive_shotlist.xlsx"),
+        ("project identity", root / "project.json"),
+        ("shot registry", registry_path),
+        ("registered shot source", source_path),
         ("compiled image shot specs", specs_path),
         ("asset manifest", assets_path),
     ]:

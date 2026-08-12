@@ -300,7 +300,7 @@ def preflight(root: Path, stage: str) -> dict:
     manifest = assets(root)
     blockers, warnings, ok = [], [], []
     required = [
-        root / "distribution-spec.md",
+        root / "project.json",
         root / "03-bible" / "mise-en-scene.md",
         root / "03-bible" / "assets.json",
         root / "04-images" / "shot-specs.json",
@@ -311,11 +311,16 @@ def preflight(root: Path, stage: str) -> dict:
         required.append(root / spec_source)
     for path in required:
         (ok if path.exists() else blockers).append(str(path.relative_to(root)))
-    distribution_text = (root / "distribution-spec.md").read_text(encoding="utf-8") if (root / "distribution-spec.md").exists() else ""
-    if "client: [OPEN" in distribution_text:
+    try:
+        identity = json.loads((root / "project.json").read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        identity = {}
+    if not identity.get("client"):
         blockers.append("project client declaration open")
-    if "charged_register: [OPEN" in distribution_text:
+    if not identity.get("charged_register"):
         blockers.append("charged register declaration open")
+    if not identity.get("master_aspect_ratio"):
+        blockers.append("master aspect ratio declaration open")
     if not manifest.get("moodboard", {}).get("id"):
         blockers.append("moodboard ID missing")
     else:

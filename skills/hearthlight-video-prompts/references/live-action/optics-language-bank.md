@@ -9,7 +9,7 @@
 > bokeh, no chromatic aberration, no razor-thin focus plane, and no lens.** Pasting these blocks
 > verbatim into a painted shot is a direct invitation to photoreal creep — the exact failure
 > `hearthlight-video-prompts` carries a preservation clause to prevent, and the one thing Vince
-> watches for at Gate 5.
+> watches for during clip review.
 >
 > **Use the lens blocks only where the film's locked style is photographic.** Otherwise take the
 > *framing logic* — how close, how much environment, how isolated the subject — and express it in

@@ -44,7 +44,7 @@ Output: a checklist sorted FAIL → WARN → OK, with counts and an exit code (0
 - **Secrets (presence only, never prints values):** Telegram / Notion / OpenAI / RunningHub keys in `.env`.
 - **Config:** both Story Studio skill directories are loaded; Notion MCP present; Krea OAuth and required read/generate/upload/job tools are present.
 - **Per project (--project):** style block blessed (NOT still DRAFT — else generation is blocked),
-  distribution-spec exists, 00-source has material, and the Krea first-pass readiness gate reports every blocker without spending credits.
+  project identity exists, 00-source has material, and the Krea first-pass readiness check reports every blocker without spending credits.
 
 ## What it deliberately does NOT do
 - Judge whether any shot, prompt, or story beat is *good*. That's taste — Vince's, always.

@@ -1,7 +1,6 @@
 ---
 name: hearthlight-distribution-spec
 description: Hearthlight project-level brief — the project's IDENTITY (format, client, charged register) plus its technical target (platform, aspect ratio, length, captions, hook timing, safe areas). Decided ONCE per project at the front, then OBEYED by every downstream stage (outline, mise-en-scène framing, storyboard durations, ComfyUI aspect, terse register). This file is where a project declares what kind of film it is; the engine assumes nothing about format or client without it.
-version: 0.1.0
 metadata:
   hermes:
     tags: [hearthlight, distribution, platform, aspect-ratio, brief]
@@ -82,8 +81,9 @@ The rest of this file is the **technical target**: where the film goes and what 
 ## Why it must come early
 Aspect ratio and length are **creative constraints, not export settings.** A 9:16 vertical piece composes differently than 16:9 (stacked/center-weighted vs. lateral space); a 60s cut tells the story differently than 110s. Deciding these after the shot list means reworking the shot list. Decide first; obey downstream.
 
-## What the spec captures (`03-bible/distribution-spec.md` or project root)
-- **Identity:** `format`, `client`, `charged_register` (see above — declare before anything else).
+## What the spec captures
+- **Machine-readable identity:** `project.json` at project root with `format`, `client`, `charged_register`, `master_aspect_ratio`, and `medium`.
+- **Creative/technical detail:** the distribution section of the Film Brief: platform, length, captions, hook, safe areas, and sound assumptions.
 - **Platform(s):** TikTok / Reels / Shorts / YouTube / Vimeo / website / feed. Primary + any secondary.
 - **Aspect ratio:** 9:16 vertical · 16:9 horizontal · 1:1 square · 4:5 portrait-feed. The compositional frame everything is drawn into.
 - **Length target:** the finished runtime, with tolerance (e.g. ~110s ± 10).
@@ -115,8 +115,8 @@ If the spec is "master + cutdowns," draw the **master** with the vertical crop i
 - Confusing identity with technical target — keep client-emotion and frame-shape separate.
 
 ## Verification
-- `distribution-spec.md` exists with `format`, `client`, `charged_register`, platform, aspect,
-  length, captions, hook, safe areas.
+- `project.json` contains complete identity and composition fields.
+- The Film Brief declares platform, length, captions, hook, and safe areas; open decisions remain explicit.
 - Any client profile loaded this session matches the declared `client:` value.
 - The shot list / storyboard is drawn in the spec's aspect ratio (not cropped from another).
 - ComfyUI `ratio`/`resolution` match the spec.

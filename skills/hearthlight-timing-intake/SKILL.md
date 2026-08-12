@@ -1,7 +1,6 @@
 ---
 name: hearthlight-timing-intake
 description: The timing round-trip between Hearthlight and an editor (Storyboard Pro / DaVinci Resolve). INTAKE — parse a Storyboard Pro Final Cut XML (per-panel clips) into per-shot durations that feed the shot list, the clip-extractor's audio cuts, and Seedance duration targets. ALSO — turn a hand-drawn board (panel images + CSV timing + VO audio + description) into a rough shot list, with VO transcribed (faster-whisper) and panels reconciled into shots (no-cuts). EXPORT — write an FCP XML so generated panels/clips + VO assemble into a watchable timeline in Resolve. One timing source; the board's pace becomes the system's pace.
-version: 0.2.0
 metadata:
   hermes:
     tags: [hearthlight, timing, xml, davinci-resolve, storyboard-pro, round-trip]

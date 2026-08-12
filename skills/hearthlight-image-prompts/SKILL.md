@@ -1,13 +1,13 @@
 ---
 name: hearthlight-image-prompts
-description: "Hearthlight Gate 3 still workflow: compile shot prompts from the approved board and bible, run a Krea 2 style-and-composition pass, preserve version history, review composition with Vince, then use GPT Image 2 to replace provisional people with approved character-sheet identities without changing the shot. Use for first-pass boards, likeness replacement, revisions, contact sheets, and final still selection."
+description: "Hearthlight still workflow: compile prompts from current Shot Vision, board, and bible; run style-and-composition; preserve version history; review with Vince; then apply approved character identity without changing the shot. Use for first passes, likeness replacement, revisions, contact sheets, and final still selection."
 metadata:
   hermes:
-    tags: [hearthlight, image-prompts, krea, gpt-image-2, version-history, gate-3]
+    tags: [hearthlight, image-prompts, krea, gpt-image-2, version-history]
     category: hearthlight
 ---
 
-# Hearthlight — Images (Gate 3)
+# Hearthlight — Images
 
 ## ⛔ STOP — THE AUTHORING SYSTEM ALREADY EXISTS. DO NOT WRITE PROMPTS BY HAND.
 
@@ -110,7 +110,7 @@ Run before any batch. A word-scan is cheaper than a re-render.
 
 ## Core workflow
 
-Gate 3 has two separately approved image stages.
+The still workflow has two separately reviewed image stages.
 
 ### Stage A — STYLE AND COMPOSITION CHECK
 
@@ -128,7 +128,7 @@ meaning, but never enter a prompt as abstract prose. Generated prompts never rew
 
 **Focused author contract:** `references/PROMPT-AUTHOR.md` has one job: translate one validated shot
 bundle into one high-quality Krea prompt. `prompt_authoring.py` injects the full contract into every
-author and reviewer call; the broad Gate 3 workflow in this file is not the worker's context.
+author and reviewer call; the broad still workflow in this file is not the worker's context.
 
 **Compilation order:**
 1. Python loads and hashes film laws, full visual-system context, declared master aspect, current Shot
@@ -176,7 +176,7 @@ Generate one owner per unique setup. Download and ledger every result before the
 Never overwrite. A matching completed request fingerprint skips without spend; a submitted unfinished
 job resumes by Krea job ID.
 
-### Gate 3A — composition review
+### Composition review
 
 Send a labeled contact sheet plus full-resolution images in batches of 3–5. Vince reviews style and composition. A voice rant changes no state by itself.
 
@@ -214,9 +214,9 @@ python skills/hearthlight-image-prompts/scripts/two_pass.py --project {slug} com
 
 Before paid Stage B work, record its estimate and explicit approval with the same `set-estimate` / `approve-cost` commands using `--stage likeness`. Stage B is blocked until every needed Krea base is composition-approved/selected and every needed local character sheet is approved. Krea upload URLs are not required for GPT Image 2 local references.
 
-### Gate 3B — final image review
+### Final image review
 
-Review the likeness versions using the same confirmed-rant protocol. Likeness revisions create a child version of the selected composition base. A final selection must come from Stage B when that shot requires likeness; otherwise it may come from Stage A. Gate 3 closes only after every shot has a final selection and Vince gives explicit ✅.
+Review likeness versions using the same confirmed-rant protocol. Likeness revisions create a child version of the selected composition base. A final selection must come from Stage B when that shot requires likeness; otherwise it may come from Stage A. Vince approves each shot independently.
 
 Approved final still paths are the sole conditioning inputs for later video generation.
 

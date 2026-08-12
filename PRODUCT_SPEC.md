@@ -33,7 +33,7 @@ This is combined with "Film Study Tool" user interface to be a visual shot track
 Hearthlight itself is being iterated on as the user makes films, (improving the agent instructions and skills, adding features to reduce friction points, etc) improving the user-hearthlight dynamic.
 
 **Nothing about a project is assumed.** `format`, `client` and `charged_register` are declared in
-each project's distribution spec and obeyed; guessing one is a defect (`DECISIONS.md` D-025).
+each project's `project.json` and obeyed; guessing one is a defect (`DECISIONS.md` D-025).
 Talefeather — grief / living-legacy — is one *client*, loaded only when a project asks for it.
 `client: none` is the normal value.
 
@@ -67,22 +67,26 @@ The three share no memory. **The files are the only coordination medium** — se
   the critique, outline, and mise-en-scène stages.
 - **A visual production cockpit (Hearthlight Studio).** The Film Study Tool and live Hearthlight
   projects share one URL-backed shell. The default project view is shot-first: stage-coloured hero
-  thumbnails, stable Shot IDs, compact review controls, a collapsible requirements/assets drawer,
-  and a direct opener for the registered shot-list workbook. From the overview or shot page, Vince
+  thumbnails, stable Shot IDs, compact review controls, action-specific input blockers,
+  and a direct opener for the registered shot-list workbook. Storyboards, review candidates,
+  selected heroes, and approved assets are distinct; a newer render never silently replaces the
+  chosen hero. From the overview or shot page, Vince
   can edit/dictate and individually save versioned Shot Vision inside each shot page. Each save versions
   only that shot and compiles its current Krea prompt. Vince can inspect compiled prompts, references,
   warnings and spend estimates on the collapsed Prompt Board, approve the exact batch, queue generation,
   review versions, and insert, retire, or restore shots without changing permanent identity.
   Stage-A prompts compile from the Vision and are editable in place; saving one writes the canonical
   record, so the edit is what the next compile and the next generation both read. Likeness prompts
-  remain manual. Approving a shot is Vince's, always.
+  remain manual. A revision request stays attached to the exact asset and chosen target, and the
+  regenerated child records both its parent asset and originating review event. Approving a shot is
+  Vince's, always.
   Studio Shot Vision plus the permanent-ID shot registry are the live authority. Imported hand-drawn
   board workbooks are immutable archived references; current spreadsheets are generated handoff exports
   and never silently replace Studio state or block image-prompt compilation. This is mechanical, not
   aspirational: `shots.json` is canonical, `shot_record.py` writes it and logs the applied revision to
   `shot-edits.jsonl`, and `export_shotlist.py` regenerates the workbook one-way.
-  **Source: the `Film Study Tool` repository** (`film_study_tool/`), not this one. `staging/overview-ui/`
-  holds a frozen copy from 2026-08-04 that no longer matches the running UI — see § 6.
+  **Source: the `Film Study Tool` repository** (`film_study_tool/`), not this one. Hearthlight no
+  longer carries a second copy of Studio code.
 
 - **The shot page is a spine plus three tabs.** Storybreaking leads with the beat strip — every shot
   in the beat, panels large — because "does this shot earn its place" is a comparative question. Shot
@@ -169,7 +173,7 @@ Full per-skill responsibilities, usage evidence, and classification: **`SKILL-IN
   gates (D-026).
 - No drift — provider conditioning carries the locked aesthetic: Krea Stage A uses its approved moodboard and strength outside prose; stages requiring textual style or signature blocks copy them verbatim.
 - Nothing exists only in chat — every artifact lands in `projects/{slug}/`.
-- The distribution spec is read before framing; aspect ratio is a composition law, not an export setting.
+- `project.json` is read before framing; aspect ratio is a composition law, not an export setting.
 - The spec declares, the tool obeys — `format`, `client`, `charged_register` are never assumed.
 - Image provider priority: OpenAI Codex OAuth → Krea MCP → OpenAI API key, unless a stage pins a surface.
 - Rights discipline — the McConaughey pilot is private use only, stylized resemblance, never photoreal.
@@ -207,7 +211,8 @@ and `skills/hearthlight-terse/SKILL.md` (authoritative). The first two defer to 
 / In progress / Needs fix / Candidate ready / Approved) are computed independently from the shot
 record, so *Design: LOCKED · Production: NEEDS FIX* says fix the image, not the shot. `Inputs`
 (Ready / Stale / Broken) is machine-computed and is the only state that blocks generation.
-Migration off the retired gate ledger: `governance/GATE-REMOVAL.md`.
+The retired project-stage ledger is archived. The optional intake cockpit proxies these same axes
+from Studio instead of recomputing progress.
 
 ## 6. Known limitations
 
@@ -222,16 +227,7 @@ Migration off the retired gate ledger: `governance/GATE-REMOVAL.md`.
 - **`pytest` must be present for the checkpoint to verify tests.** Without it the checkpoint reports
   `not run` rather than falsely passing, and `commit` will not block on failures it could not
   observe. It is absent by default from the Cowork sandbox and must be installed per session.
-- **Test state: 39 pass in this repository; 154 in the Film Study Tool.** Both suites are green.
-  Collection from the repository root depends on a root `conftest.py` that skips
-  `staging/overview-ui/test_productions.py` when `film_study_tool` is not importable — without it
-  `pytest` aborts during collection and returns no results at all rather than failures, which reads
-  as success to anything that only checks for a traceback.
-- **`staging/overview-ui/` is a stale duplicate of the Studio UI**, frozen 2026-08-04 at 1826 lines
-  of `productions.js` against the running 2419. It is a second source of truth for the same files —
-  the thing `GOALS.md` § *Keeping features tight* question 1 exists to prevent. It should be deleted
-  and the test that imports from it repointed; until then, read the `Film Study Tool` repository for
-  anything about the UI.
+- **Test state: 41 pass in this repository; 164 in the Film Study Tool.** Both suites are green.
 - **Laws are advisory to any agent that skips the read.** Nothing prevents an agent from generating
   an image without loading the mise-en-scène.
 - **No shared state between the three agent surfaces.** Cowork, Hermes, and ChatGPT coordinate only

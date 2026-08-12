@@ -47,6 +47,6 @@ Worked fix (Vince-approved method):
 `two_pass.py` (Hearthlight Stage 3) derives the master ratio from
 `03-bible/assets.json` → `master_aspect_ratio`, via `master_ratio(root)`, and validates
 recorded images against `ratio_target(master_ratio(root))`. To change a project's master
-(4:3 → 16:9, etc.): update `assets.json` + `distribution-spec.md`; every prompt/packet/
+(4:3 → 16:9, etc.): update `project.json` + `assets.json`; every prompt/packet/
 record tag that names the ratio must use `master_ratio(root)`, never a hardcoded literal.
 Catching every hardcoded `4:3` at once avoids a silent metadata/validation mismatch.

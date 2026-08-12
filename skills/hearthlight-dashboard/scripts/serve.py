@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Hearthlight cockpit server — stdlib only.
+"""Hearthlight intake cockpit server — stdlib only.
 
 GET  /                → index.html
 GET  /status.json     → full rescan (refresh = truth)
@@ -7,8 +7,8 @@ POST /api/upload      → save a dropped file  (?project=&zone=&name=&sub=)
 POST /api/note        → save a typed rant/idea  {project, kind, text}
 POST /api/new-project → scaffold a project  {slug}
 
-Boundary: NO gate approvals here. Gates live in Telegram; the ledger
-(status.yml) is written by the agent, never by this server.
+Production state comes from Hearthlight Studio on port 8765. This server owns
+only intake uploads, typed notes, and project scaffolding.
 
 Run:  python serve.py [port]     (default 8787)
 """
@@ -29,23 +29,6 @@ SCAFFOLD = ["00-source/audio", "01-intake/clips", "02-outline",
             "03-bible/refs/storyboard-panels", "03-bible/refs/environments",
             "03-bible/refs/props", "03-bible/characters",
             "04-images", "05-storyboard", "06-video", "07-final"]
-
-LEDGER_TEMPLATE = """# Hearthlight gate ledger — the durable record of Vince's ✅s.
-# States: approved YYYY-MM-DD | pending | unconfirmed | done | n/a
-project: {slug}
-
-distribution_spec: pending
-gate0_vision: pending
-gate1_outline: pending
-critique: pending
-gate2_mise_en_scene: pending
-clip_prep: pending
-gate3_images: pending
-gate4_storyboard: pending
-gate5_video: pending
-final_edit: pending
-"""
-
 
 def load_zones():
     with open(os.path.join(SKILL_DIR, "intake.json"), encoding="utf-8") as f:
@@ -168,14 +151,20 @@ class Handler(http.server.BaseHTTPRequestHandler):
             return self._json(400, {"error": "project already exists"})
         for d in SCAFFOLD:
             os.makedirs(os.path.join(proj_dir, d.replace("/", os.sep)), exist_ok=True)
-        with open(os.path.join(proj_dir, "status.yml"), "w", encoding="utf-8") as f:
-            f.write(LEDGER_TEMPLATE.format(slug=slug))
+        with open(os.path.join(proj_dir, "project.json"), "w", encoding="utf-8") as f:
+            json.dump({
+                "schema_version": 1,
+                "format": "",
+                "client": "none",
+                "charged_register": "",
+                "master_aspect_ratio": "",
+            }, f, indent=2)
+            f.write("\n")
         with open(os.path.join(proj_dir, "AGENTS.md"), "w", encoding="utf-8") as f:
             f.write(f"# {slug} — project context\n\n"
                     "New Hearthlight project (scaffolded via cockpit).\n"
-                    "FIRST: lock the distribution spec (`hearthlight-distribution-spec`) — "
-                    "aspect ratio is a composition law.\n"
-                    "Conventions: `hearthlight-conventions`. Gate ledger: `status.yml`.\n")
+                    "FIRST: fill project.json. Format and aspect ratio shape every shot.\n"
+                    "Conventions: `hearthlight-conventions`.\n")
         self._json(200, {"created": slug})
 
     # -------- plumbing --------

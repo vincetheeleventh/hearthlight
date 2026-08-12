@@ -23,7 +23,7 @@ This is an actual free-speak rant from Vince (June 2026, spoken while designing 
 
 ## Tensions (yours to resolve)
 1. A: input must be "unstructured... free flowing" [rant ¶1] — vs — B: output must be "laser focused" on one arc [rant ¶1]
-   *(Surfaced, not resolved. Vince resolved it by sequencing: freedom at capture, focus at the gate.)*
+   *(Surfaced, not resolved. Vince resolved it by sequencing: freedom at capture, focus at selection.)*
 
 ## Open questions
 - Who performs era research when the user DOES know the era — skip or confirm? [gap noticed, not filled]

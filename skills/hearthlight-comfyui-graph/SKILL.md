@@ -1,17 +1,16 @@
 ---
 name: hearthlight-comfyui-graph
 description: Hearthlight Stage 6 plumbing — queue the local ComfyUI MiniMax H3 i2v graph that turns an approved still (plus an optional end frame) into a video clip. Owns the wiring; gets its prompt text from hearthlight-video-prompts. The RunningHub Seedance graph is parked.
-version: 0.2.0
 metadata:
   hermes:
-    tags: [hearthlight, comfyui, minimax, video, gate-5]
+    tags: [hearthlight, comfyui, minimax, video]
     category: hearthlight
 ---
 
 # Hearthlight — ComfyUI Graph (Stage 6 plumbing)
 
 ## When to Use
-After Gate 4 (storyboard approved), to actually generate clips. This skill owns the **wire**. It does
+After the relevant storyboard shots are locked, to actually generate clips. This skill owns the **wire**. It does
 NOT write the prompt — that comes from `hearthlight-video-prompts`.
 
 ---

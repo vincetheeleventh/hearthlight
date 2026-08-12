@@ -1,7 +1,7 @@
 # live-action/ — PARKED. Not for illustrated films.
 
 **Nothing in this folder is read by the illustrated pipeline.** It is craft for a capability
-Hearthlight does not yet use: films that declare `medium: live-action` in their distribution spec.
+Hearthlight does not yet use: films that declare `medium: live-action` in `project.json`.
 
 Every current Hearthlight project is `medium: illustrated`. **If that is your project, stop here.**
 
@@ -14,7 +14,7 @@ different medium — photoreal 8K live-action — and it is **actively harmful i
 
 An ink-and-wash frame has no lens. It has no bokeh, no focus plane, no sensor and no shutter. Asking
 a video model for "creamy bokeh" or "razor-thin focus" over a painted source is a direct instruction
-to abandon the medium — the photoreal creep Vince watches for at Gate 5, and the failure the style
+to abandon the medium — the photoreal creep Vince watches for during clip review, and the failure the style
 block and preservation clause exist to prevent.
 
 ## What is in here
@@ -34,5 +34,5 @@ Everything else in here — bokeh, chromatic aberration, shutter blur, focus fal
 
 ## Before using any of it
 
-The project's distribution spec must read `medium: live-action`. If it does not, and you are reaching
+The project's `project.json` must read `medium: live-action`. If it does not, and you are reaching
 for this folder, one of the two is wrong — resolve that first.

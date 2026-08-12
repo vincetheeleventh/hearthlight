@@ -1,7 +1,6 @@
 ---
 name: hearthlight-reference-report
 description: Turn a folder of collected reference images + a research writeup into a glanceable, organized report on Notion — each image shown inline next to its caption and its role (what it's a reference FOR). Use after research/reference-collection so Vince can review at a glance instead of opening a directory of loose files.
-version: 0.1.0
 metadata:
   hermes:
     tags: [hearthlight, references, notion, report, mise-en-scene]

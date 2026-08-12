@@ -171,7 +171,7 @@ After any edit:
 4. New shots show explicit missing requirements.
 5. Retired-shot jobs cannot launch.
 6. Descendant clips remain attached to their parent asset and shot; stale-lineage rules still apply.
-7. Gate state does not change automatically.
+7. Shot approval does not change automatically.
 
 ## Reconciliation stop conditions
 

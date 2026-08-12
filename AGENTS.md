@@ -24,7 +24,7 @@ generation actually need: prompts, references, settings. Your job shrinks to the
 Vince does: **creative direction and approval.** The machine drafts; Vince places the heart.
 
 **Nothing about a project is assumed.** Every project declares `format`, `client` and
-`charged_register` in its distribution spec, and the tool obeys what it finds. It does not know
+`charged_register` in `project.json`, and the tool obeys what it finds. It does not know
 whether today's film is a short film, a social clip or a commissioned remembrance piece — and
 guessing is a defect, not a shortcut. **Talefeather** — the grief / living-legacy service — is one
 *client*, with its own profile under `profile/clients/talefeather/`; never import its audience or
@@ -133,10 +133,10 @@ capped at **7 open**; a new idea must displace a worse one. Open 30 days with no
 - **`USER-GUIDE.md`** — how Vince runs a story through the pipeline.
 - **`profile/SOUL.md`** — your identity. **`profile/SETUP.md`, `NOTION-SETUP.md`,
   `SESSIONS-AND-THREADS.md`** — setup + how threads/Notion work.
-- **Per project: `projects/{slug}/distribution-spec.md`** — ESSENTIAL, read FIRST. Two halves:
-  the project's **identity** (`format`, `client`, `charged_register`) and its **technical
-  target** (platform, aspect ratio, length, captions, safe areas). Aspect ratio is a COMPOSITION LAW,
-  not an export setting — read this BEFORE framing any shot. (Loaded progressively when you
+- **Per project: `projects/{slug}/project.json`** — ESSENTIAL, read FIRST for machine-readable
+  identity (`format`, `client`, `charged_register`, `master_aspect_ratio`, `medium`). Read the Film
+  Brief for the detailed technical target (platform, length, captions, safe areas). Aspect ratio is a
+  COMPOSITION LAW, not an export setting — read this BEFORE framing any shot. (Loaded progressively when you
   read into a project folder via that folder's AGENTS.md.)
   Current: `yugioh` → short-film / none. `mcconaughey-call` → social-content / talefeather.
 - **Client profiles: `profile/clients/{client}/`** — load ONLY the one the project's
@@ -248,7 +248,7 @@ before you write anything.**
   require textual style or signature blocks copy them verbatim, never paraphrased.
 - **Image provider priority.** For direct image generation: OpenAI Codex OAuth first; on eligible provider failure use Krea MCP; if Krea fails or is unavailable, use the OpenAI API key. Stage-specific execution-surface laws still win (for example, a Stage 4 Krea batch stays on Krea MCP).
 - **Nothing exists only in chat.** Every artifact lands in `projects/{slug}/`.
-- **Read the distribution spec before framing.** 9:16 vs 16:9 changes composition, not just export.
+- **Read `project.json` before framing.** 9:16 vs 16:9 changes composition, not just export.
 - **The spec declares; the tool obeys.** `format`, `client`, `charged_register` come from the
   project, never from assumption. Never assume a client the project didn't declare.
 - **Protect the charged register.** Whatever the project names as emotionally load-bearing is never
@@ -288,7 +288,7 @@ Trigger → offer map (fire the matching one at the seam; phrase naturally, don'
 - Beat Sheet / shot list just drafted → *"Want a critique pass before we commit to drawing?"* (`hearthlight-critique`)
 - Vince just approved a renderable batch (images or clips) → *"Want me to run the batch? First 3–5 come back for your review."* (`hearthlight-shot-runner`)
 - About to design a non-obvious shot → *"This one's contested — want the crew on it?"* (`hearthlight-shot-crew`)
-- Vince mentions platform/format, or a project has no spec → *"Should we lock the distribution spec first? Aspect ratio shapes every shot."* (`hearthlight-distribution-spec`)
+- Vince mentions platform/format, or project identity is incomplete → *"Should we lock the project identity first? Aspect ratio shapes every shot."* (`hearthlight-distribution-spec`)
 - Panels drawn & timed, or a Storyboard Pro XML lands → *"Want me to read your panel timings in?"* then *"Ready to build the timeline so you can watch it back in Resolve?"* (`hearthlight-timing-intake`)
 - Storyboard / panels approved → *"Want me to assemble a timeline + VO so you can watch it at real pace?"* (`hearthlight-timing-intake` export)
 - Chosen the draw-to moments → *"Want me to cut the audio clips for Storyboard Pro?"* (`hearthlight-clip-extractor`)

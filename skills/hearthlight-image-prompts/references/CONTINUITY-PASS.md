@@ -80,7 +80,7 @@ be ignored within a week, and then it protects nothing.
 
 ## Where it runs
 
-Before Gate 3, on the **record** — not on rendered images. The whole point is to catch the
+Before a render batch, on the **record** — not on rendered images. The whole point is to catch the
 disagreement while a fix costs one edit instead of one regeneration.
 
 ```bash

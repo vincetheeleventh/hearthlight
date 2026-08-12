@@ -1,10 +1,9 @@
 ---
 name: hearthlight-critique
-description: Hearthlight story pressure-test — a structured critique pass between the outline (Gate 1) and the mise-en-scène (Gate 2). Challenges the visual grammar before any drawing: buried detonation beats, echo shots, pacing flats, close-up inflation, contrast-spine not executed, sentimentality. Honest notes, not flattery. Vince keeps or rejects each; the kill decision stays his.
-version: 0.1.0
+description: "Hearthlight story pressure-test for an outline, shot list, or evolving sequence. Challenges visual grammar before or during production: buried detonation beats, echo shots, pacing flats, close-up inflation, contrast-spine failures, and sentimentality. Honest notes, not flattery. Vince keeps or rejects each."
 metadata:
   hermes:
-    tags: [hearthlight, critique, story, visual-grammar, gate-1.5]
+    tags: [hearthlight, critique, story, visual-grammar]
     category: hearthlight
 ---
 
@@ -22,11 +21,11 @@ Flattery wastes his time and the work suffers. But the kill decision is always h
 he decides. Push honestly, then let go.
 
 ## When to Use
-After Gate 1 (outline/Beat Sheet/shot list drafted), before Gate 2 (mise-en-scène) — or whenever
+After the outline, Beat Sheet, or shot list is drafted — or whenever
 Vince says "critique this," "pressure-test the story," "give me notes." Also re-runnable on a revised cut.
 
 ## The critique checklist (run all; report only what actually fires)
-Read the Vision Brief (the contract), the Beat Sheet / shot list, the distribution spec (format
+Read `project.json`, the Vision Brief (the contract), and the Beat Sheet / shot list (format
 constrains everything), and the taste memory (`profile/TASTE.md` — what Vince consistently kills/reaches for).
 
 **Structure**

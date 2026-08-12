@@ -1,7 +1,6 @@
 ---
 name: hearthlight-clip-extractor
 description: Hearthlight media prep for storyboarding — extract an audio-only master from the source video, then cut chosen moments into matched audio + video clips using transcript timestamps, named for drag-and-drop into Storyboard Pro. Sits between transcript (Stage 1) and storyboard (Stage 5).
-version: 0.1.0
 metadata:
   hermes:
     tags: [hearthlight, audio, video, ffmpeg, storyboard, clips]

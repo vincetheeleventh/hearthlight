@@ -1,20 +1,19 @@
 ---
 name: hearthlight-consolidate
-description: Hearthlight Stage 1.5 (Gate 0) — the multi-turn ideation loop (dig / offer / reflect, with a curfew) followed by consolidation, Vince's selects pass, and the approved Vision Brief. Collaboration is welcome; smuggling is not.
-version: 0.2.0
+description: Hearthlight Stage 1.5 — the multi-turn ideation loop (dig / offer / reflect, with a curfew) followed by consolidation, Vince's selects pass, and the confirmed Vision Brief. Collaboration is welcome; smuggling is not.
 metadata:
   hermes:
-    tags: [hearthlight, story, ideation, consolidation, gate-0]
+    tags: [hearthlight, story, ideation, consolidation]
     category: hearthlight
 ---
 
-# Hearthlight — Ideation & Consolidation (Stage 1.5, Gate 0)
+# Hearthlight — Ideation & Consolidation (Stage 1.5)
 
 ## When to Use
 From Vince's first rant about a new story until the Vision Brief is approved. The ranting/ideation phase is **multi-turn** — expect several exchanges, sometimes across days. This whole conversation is Stage 1.5.
 
 ## The No-Smuggling Law
-This replaces the old flat no-invention law. You are a collaborator now — but a gated one:
+This replaces the old flat no-invention law. You are a collaborator now — but a bounded one:
 - In **chat**, you may dig, offer, and reflect (Phase A below).
 - In **documents**, nothing you originated may appear unless Vince explicitly adopted it in conversation.
 - Every line in the Consolidation Doc and Vision Brief carries a provenance tag: `[vince 02:14]` / `[vince t2 ¶3]` for his words, `[offer→adopted t3]` for yours that he took.
@@ -49,7 +48,7 @@ Log every offer in `01-intake/offers.md` with status: **adopted / parked / decli
 3. Post to Telegram: *"Selects pass: keep / kill / merge per item. Then name the primary arc in one sentence."*
 4. Apply verdicts. Killed items AND interesting parked/declined offers → `boneyard.md` (never deleted — often right for the wrong project).
 5. Draft `01-intake/vision-brief.md`: arc statement (his words; any non-his phrase marked `[proposed wording — confirm]`), kept ideas grouped, adopted offers with their `[verify at Stage 3]` tags, open questions.
-6. **GATE 0:** explicit ✅ on the Vision Brief. Nothing downstream begins without it. No exceptions.
+6. **Confirmation:** Vince explicitly confirms the Vision Brief before it becomes binding source material.
 
 ## Templates
 ### consolidation-doc.md — add to the v0.1 template:
@@ -74,6 +73,6 @@ Log every offer in `01-intake/offers.md` with status: **adopted / parked / decli
 - Every doc line carries a provenance tag; every `[offer→adopted]` has a visible adoption moment in the chat history.
 - `offers.md` is complete with statuses; declined offers were never re-pitched.
 - Adopted factual nuggets all carry `[verify at Stage 3]`.
-- Gate 0 ✅ is explicit before any Stage 2 work.
+- The Vision Brief is explicitly confirmed before Stage 2 treats it as binding.
 
 See `references/worked-example.md` — a Phase B output from a real rant (predates the ideation-loop update; its clustering, quoting, and routing standards still apply).

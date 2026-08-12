@@ -36,7 +36,7 @@ Nothing starts until all of these exist:
 | Locked style block | `projects/{slug}/03-bible/mise-en-scene.md` | `hearthlight-mise-en-scene` |
 | Character sheets + signature strings | `projects/{slug}/03-bible/characters/` | `hearthlight-character` |
 | Shot registry with stable IDs | `projects/{slug}/05-storyboard/shots.json` | `hearthlight-dashboard` |
-| Distribution spec (aspect is a composition law) | `projects/{slug}/distribution-spec.md` | `hearthlight-distribution-spec` |
+| Project identity (aspect is a composition law) | `projects/{slug}/project.json` | `hearthlight-distribution-spec` |
 
 ## The route
 

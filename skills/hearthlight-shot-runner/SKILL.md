@@ -1,37 +1,36 @@
 ---
 name: hearthlight-shot-runner
-description: Batch execution engine for the render stages. After a gate passes, turns the approved shot list into a written batch plan (exact paths, exact prompt sources, verification steps, no placeholders), then executes it shot by shot — fresh subagent per shot, two-stage review (Stage A spec compliance judged by the machine; Stage B quality judged ONLY by Vince in Telegram), a durable progress ledger so a crashed session never re-renders paid generations, and a two-strike parking rule so one stubborn shot never stalls the batch. Use at Stage 4 (conditioning images, after Gate 2/3) and Stage 6 (Seedance clips, after Gate 4/5). Adapted for Hearthlight from obra/superpowers (MIT): subagent-driven-development + writing-plans + verification-before-completion.
-version: 0.1.0
+description: "Batch execution engine for renderable shots. Turns an explicitly chosen set of Design: Locked shots into a written batch plan with exact paths, prompt sources, and verification; executes each shot with a fresh worker; keeps Stage A machine spec review separate from Stage B Vince quality review; preserves paid-run history; and parks stubborn shots after two failures. Use for image or video batches once their inputs are ready."
 metadata:
   hermes:
     tags: [hearthlight, batch, execution, subagents, review, ledger, stage-4, stage-6]
     category: hearthlight
 ---
 
-# Hearthlight — Shot Runner (batch execution between gates)
+# Hearthlight — Shot Runner
 
 ## The idea
 Adapted from **superpowers**' subagent-driven development. Its insight: a controller that
 dispatches a *fresh* worker per task, reviews each result against spec, and tracks progress in a
 durable ledger will run for hours without drifting. Hearthlight's translation: **shots are
 tasks, the Aesthetic Bible is the spec, and quality is the one review the machine may never
-perform.** The runner buys autonomy *between* gates while keeping the gates sacred.
+perform.** The runner automates mechanics while leaving every quality decision to Vince.
 
 **Core principle:** fresh subagent per shot + spec review per shot + ledger = a 28-shot batch
 that survives crashes, never silently drifts, and lands on Vince's phone in reviewable batches.
 
 **Continuous execution:** once a batch starts, do not stop to ask "should I continue?" between
 shots. Stop only for: BLOCKED you cannot resolve, genuine ambiguity, or batch complete. (Vince
-approved the batch at the gate — that ✅ is the instruction to run.)
+explicitly selected the shots for this batch — that selection is the instruction to run.)
 
 ## When to use
 - **Stage 4:** conditioning images for the approved shot list (requires: style block LOCKED,
-  Gate 2 passed; run `hearthlight-selfcheck` first — it blocks generation if the bible is DRAFT)
-- **Stage 6:** Seedance clips for approved storyboard shots (requires: Gate 4 passed, prompts
+  relevant visual components locked; run `hearthlight-selfcheck` first — it blocks generation if the bible is DRAFT)
+- **Stage 6:** video clips for Design: Locked storyboard shots (requires: prompts
   compiled by `hearthlight-video-prompts`, graph per `hearthlight-comfyui-graph`)
 - Re-runs: any subset of shots Vince marked 🔁 at review
 
-Not for: anything before a gate ✅. This skill executes approved work; it never originates
+Not for: shots Vince has not selected for execution. This skill executes chosen work; it never originates
 creative choices. A shot with an unresolved creative question goes to `hearthlight-shot-crew`,
 not the runner.
 
@@ -57,7 +56,7 @@ Before generating anything, write `projects/{slug}/0X-*/batch-plan.md`. One row 
 a verify line with no checkable condition. Every row must be executable by a subagent with
 zero session context. Self-review the plan against the shot list before starting: every
 approved shot has a row; every row's paths exist (except outputs); no row contradicts the
-distribution spec.
+project identity and current shot record.
 
 ## Step 2 — Execute: fresh subagents, dispatched in PARALLEL
 Dispatch worker subagents. Hand each artifacts as **files/paths, not pasted text** — the row from
@@ -127,7 +126,7 @@ Worker reports one of four statuses (superpowers vocabulary, kept exactly):
 
 ## Step 3 — Two-stage review (the heart of the adaptation)
 **Stage A — SPEC compliance. Machine judges.** Mechanical, checkable, per shot:
-- output file exists, non-trivial size, correct aspect ratio (distribution spec is law)
+- output file exists, non-trivial size, correct aspect ratio (`project.json` is law)
 - style conditioning matches the stage: Krea Stage A uses approved moodboard ID/strength and contains no style/aspect scaffold in prompt prose; textual stages carry the Tier 1 block verbatim
 - character conditioning matches the stage: Krea Stage A omits character sheets; likeness/textual stages use approved identity references and required signature rules
 - duration ≥ board target (Stage 6); `generateAudio` matches what Vince confirmed for this project
@@ -141,7 +140,7 @@ One stubborn shot never stalls twenty-seven good ones.
 of 3–5 by beat (existing convention): ✅ approve · 🔁 regenerate with note · ✏️ edit prompt.
 The machine may *attach* observations (a worker's concern, a suspected drift) but **never
 approves, rejects, or ranks quality itself.** Photoreal creep, a dead pose, a wash gone muddy
-— Vince's eye only. Gates stay sacred; this skill widens the road between them, not through them.
+— Vince's eye only. The machine never approves its own output.
 
 ## The ledger (durable progress — re-rendering costs real money)
 Append-only `projects/{slug}/0X-*/batch-ledger.md`, one line per event:
@@ -167,7 +166,7 @@ plan (no orphans either direction), and the summary is logged to Notion (`hearth
 (`hearthlight-terse`): counts, parked reasons, next seam offer.
 
 ## Red flags (never)
-- Run before the gate ✅ or the selfcheck gate-block clears
+- Run before Vince selects the batch or before selfcheck blockers clear
 - Let a worker inherit session history instead of its plan row
 - Skip Stage A because "it's probably fine" — drift is silent by nature
 - Judge quality, or auto-advance 🔁 fixes to approved
@@ -180,5 +179,5 @@ plan (no orphans either direction), and the summary is logged to Notion (`hearth
 `hearthlight-selfcheck` (pre-flight) → this skill ← `hearthlight-image-prompts` /
 `hearthlight-video-prompts` (what to render) ← `hearthlight-shot-crew` (contested shots first)
 → `hearthlight-timing-intake` (approved outputs into the Resolve timeline) →
-`hearthlight-notion-log` (batch summary). Offer at the seam after Gate 2/4 passes:
+`hearthlight-notion-log` (batch summary). Offer after Vince locks a renderable set of shots:
 *"Batch is approved — want me to run it? I'll come back with the first 3–5 for review."*

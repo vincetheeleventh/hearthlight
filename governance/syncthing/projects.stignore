@@ -7,7 +7,7 @@
 // MEASURED 2026-08-05:  311 files, 79 MB syncs.  15 files, 4.31 GB excluded.
 //
 // WHAT SYNCS:  the live creative work — outlines, bibles, storyboards,
-//              generated stills and clips, gate ledgers. All of yugioh (the v1
+//              generated stills and clips, project identity, and review ledgers. All of yugioh (the v1
 //              film) travels, because it is entirely generated with no source.
 // WHAT DOES NOT: raw interview media in 00-source/, and the large derived cuts
 //              in 01-intake/clips/. Source never changes and is rights-
@@ -49,5 +49,5 @@ node_modules
 
 // ── Everything else syncs ───────────────────────────────────────────────────
 // Explicitly: 01-intake transcripts, 02-outline, 03-bible (+ refs), 04-images,
-// 05-storyboard, 06-video, 07-final, status.yml, distribution-spec.md,
+// 05-storyboard, 06-video, 07-final, project.json, 02-outline/FILM-BRIEF.md,
 // AGENTS.md, activity-log.md, notion-log.md.

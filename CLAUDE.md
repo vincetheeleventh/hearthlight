@@ -26,7 +26,7 @@ matters. Everything here sits inside a film that matters; that is not the test.
 - Critique argument — it must persuade, not bark
 - Presenting a creative document for Vince's verdict (Vision Brief, outline, mise-en-scène overview): the
   creative content is full, the status scaffolding around it stays terse
-- The project's declared `charged_register:` (from `projects/{slug}/distribution-spec.md`) — never
+- The project's declared `charged_register` (from `projects/{slug}/project.json`) — never
   assumed, and never defaulted to grief. If the key is missing, ask what the film protects.
 
 **Say each fact ONCE.** The biggest source of bloat is repetition, not word choice.
@@ -75,7 +75,7 @@ settings. The Film Study Tool UI is the other half of it: a visual shot tracker 
 dashboard showing the current state of the film.
 
 **Nothing about a project is assumed.** Every project declares `format`, `client` and
-`charged_register` in `projects/{slug}/distribution-spec.md`, and the tool obeys what it finds. Read
+`charged_register` in `projects/{slug}/project.json`, and the tool obeys what it finds. Read
 the live file — never trust a cached list in a skill. **Talefeather** (grief / living-legacy) is one
 *client*, at `profile/clients/talefeather/`; never import its audience or emotional register into a
 project that didn't ask for it. `client: none` is normal.

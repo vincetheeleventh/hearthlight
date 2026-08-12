@@ -1,17 +1,16 @@
 ---
 name: hearthlight-video-prompts
-description: Hearthlight Stage 6 (Gate 5) — write one Seedance 2.0 image-to-video prompt per storyboard entry and queue via the ComfyUI/RunningHub workflow. Ported from Vince's seedance-prompt-maker, adapted for i2v conditioning from approved stills.
-version: 0.1.0
+description: Hearthlight Stage 6 — write one image-to-video prompt per locked storyboard shot and queue it through the current ComfyUI workflow. Adapt motion from the board and condition from the selected still without inventing new action.
 metadata:
   hermes:
-    tags: [hearthlight, video, seedance, comfyui, gate-5]
+    tags: [hearthlight, video, seedance, comfyui]
     category: hearthlight
 ---
 
-# Hearthlight — Video Prompts & Generation (Stage 6, Gate 5)
+# Hearthlight — Video Prompts & Generation (Stage 6)
 
 ## When to Use
-After Gate 4 (storyboard approved). One prompt per storyboard entry, derived mechanically — nothing improvised at this stage.
+After the relevant storyboard shots are locked. One prompt per storyboard entry, derived mechanically — nothing improvised at this stage.
 
 ## Which workflow are you on?
 Two routes reach a clip, and they need different prompts. Read `workflows/README.md` first.
@@ -105,7 +104,7 @@ memory, so every prompt is a sealed current-shot document · describe observable
 never lens metadata.
 
 ## Companion reference (vocabulary only)
-For Seedance-specific phrasing, camera/lighting vocabulary, and i2v technique, you may consult `references/seedance-os-bridge.md` (a curated bridge to the Seedance 2.0 Skill OS repo). Borrow wording, never process — this skill's gate logic, conservative motion register, lip-sync policy, file conventions, and preservation clause always win. For the pilot, read that repo's `seedance-copyright` notes: McConaughey is a public figure, stylized resemblance only (PRD §3).
+For Seedance-specific phrasing, camera/lighting vocabulary, and i2v technique, you may consult `references/seedance-os-bridge.md` (a curated bridge to the Seedance 2.0 Skill OS repo). Borrow wording, never process — this skill's conservative motion register, lip-sync policy, file conventions, and preservation clause always win. For the pilot, read that repo's `seedance-copyright` notes: McConaughey is a public figure, stylized resemblance only (PRD §3).
 
 ## Carryover rules from the seedance practice
 - Read the WHOLE storyboard before writing — rhythm is global.
@@ -121,12 +120,12 @@ For Seedance-specific phrasing, camera/lighting vocabulary, and i2v technique, y
 - Vince reviews in ComfyUI and/or clips posted to Telegram. Same protocol as images: ✅ / 🔁 with note / ✏️; versions never overwrite; status tracked in `06-video/prompts.md`.
 - Watercolour-fidelity check per clip: paper texture held? linework stable? any photoreal creep mid-clip? Two clips failing the same way → stop and re-examine the prompt pattern or workflow settings before burning more RunningHub credits.
 
-**GATE 5:** every clip approved → copy approved assets to `07-final/` (copy, never move) alongside the VO segment and storyboard. The piece is ready for manual edit assembly.
+When Vince approves a clip, copy it to `07-final/` (copy, never move) alongside the VO segment and storyboard. Assemble the edit from approved clips; other shots may continue iterating.
 
 ## Pitfalls
 - Re-describing the still (repaint invitation).
 - Omitting the preservation clause.
-- Motion not present in the storyboard ("it felt static" is a Gate 4 conversation, not a prompt liberty).
+- Motion not present in the storyboard ("it felt static" requires a storyboard revision, not prompt liberty).
 - Duration ranges, shot numbers, interleaved commentary, non-English text.
 - Queuing big batches before the first clip proves the style holds.
 
@@ -134,4 +133,4 @@ For Seedance-specific phrasing, camera/lighting vocabulary, and i2v technique, y
 - One block per storyboard entry; durations and titles match the storyboard exactly.
 - Preservation clause present in every prompt.
 - `06-video/prompts.md` logs every generation; approved clips exist at the logged filenames.
-- `GATE 5 PASSED {date}` recorded, `07-final/` populated by copy.
+- Each approved clip has a durable review event; `07-final/` is populated by copy.

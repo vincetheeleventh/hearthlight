@@ -1,7 +1,7 @@
 ---
 doc: GATE-REMOVAL
-role: runbook
-authority: canon
+role: migration-record
+authority: archive
 owner: vince
 updated: 2026-08-11
 answers:
@@ -12,7 +12,10 @@ not_here:
   the rule that replaced them: DECISIONS.md D-026
 ---
 
-# Removing gates for real
+# Gate-removal migration — completed 2026-08-11
+
+Completed across Studio, dashboard reporting, active skills, project ledgers, and project identity.
+The steps below are retained as the implementation trail.
 
 The canon docs are done. This is the rest: **41 skill files, 8 scripts, `status.yml` per project,
 and the Studio UI.**

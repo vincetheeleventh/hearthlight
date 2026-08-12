@@ -442,14 +442,17 @@ def reconcile_shots(
     return result, findings, retired
 
 
-def distribution_source(project_root: Path) -> Path | None:
-    spec = project_root / "distribution-spec.md"
-    if not spec.is_file():
+def current_registry_source(project_root: Path) -> Path | None:
+    registry = project_root / "05-storyboard" / "shots.json"
+    if not registry.is_file():
         return None
-    match = re.search(r"Source:\s*`([^`]+\.xlsx)`", spec.read_text(encoding="utf-8"), re.I)
-    if not match:
+    try:
+        source = json.loads(registry.read_text(encoding="utf-8")).get("source")
+    except (OSError, json.JSONDecodeError):
         return None
-    candidate = (project_root / match.group(1)).resolve()
+    if not isinstance(source, str) or not source.lower().endswith(".xlsx"):
+        return None
+    candidate = (project_root / source).resolve()
     return candidate if candidate.is_file() and project_root.resolve() in candidate.parents else None
 
 
@@ -577,7 +580,7 @@ def build_registry(
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Build or refresh a Hearthlight shots.json registry.")
     parser.add_argument("--project", required=True, help="Project slug under Story Studio/projects")
-    parser.add_argument("--source", help="Project-relative shot-list XLSX. Defaults to distribution-spec.md.")
+    parser.add_argument("--source", help="Project-relative shot-list XLSX. Defaults to the current shots.json source.")
     parser.add_argument("--legacy-source", action="append", default=[], help="Older project-relative XLSX whose human labels must remain aliases.")
     parser.add_argument("--dry-run", action="store_true", help="Print the registry without writing it.")
     parser.add_argument("--accept-retirements", action="store_true", help="Explicitly retire existing shots absent from the new source.")
@@ -591,7 +594,7 @@ def main(argv: list[str] | None = None) -> int:
     project_root = (projects_root / args.project).resolve()
     if projects_root not in project_root.parents or not project_root.is_dir():
         raise SystemExit(f"Project not found: {args.project}")
-    source = (project_root / args.source).resolve() if args.source else distribution_source(project_root)
+    source = (project_root / args.source).resolve() if args.source else current_registry_source(project_root)
     if source is None:
         candidates = sorted((project_root / "05-storyboard").glob("*.xlsx"), key=lambda path: path.stat().st_mtime)
         source = candidates[-1].resolve() if candidates else None

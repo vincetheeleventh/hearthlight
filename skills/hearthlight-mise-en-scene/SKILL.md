@@ -1,14 +1,13 @@
 ---
 name: hearthlight-mise-en-scene
-description: Hearthlight Stage 3 (Gate 2) — the Mise-en-scène (Aesthetic Bible). The ONE organized source of truth every prompt-writing agent draws from. Two tiers: LOCKED illustration style (set in stone) + COMPOSED world (per-location props, layout, wardrobe, light — grounded in research, finalized by Vince). Consistency is the product; no sequence image before it's blessed.
-version: 0.2.0
+description: "Hearthlight Stage 3 — the Mise-en-scène (Aesthetic Bible). The ONE organized source of truth every prompt-writing agent draws from. Two tiers: LOCKED illustration style + COMPOSED world (per-location props, layout, wardrobe, light — grounded in research, finalized by Vince). Use when establishing or revising the film's visual law."
 metadata:
   hermes:
-    tags: [hearthlight, mise-en-scene, aesthetic, style, world, consistency, gate-2]
+    tags: [hearthlight, mise-en-scene, aesthetic, style, world, consistency]
     category: hearthlight
 ---
 
-# Hearthlight — Mise-en-scène (Aesthetic Bible) — Stage 3, Gate 2
+# Hearthlight — Mise-en-scène (Aesthetic Bible) — Stage 3
 
 ## What this is (read first)
 The single, organized aesthetic source of truth for a project. **Every prompt-writing agent — this one or another — draws from this doc when writing image/video prompts.** It replaces the older "Asset Bible" name; same job, clearer shape. It holds *all* aesthetic choices in two tiers:
@@ -21,7 +20,7 @@ A prompt is assembled as: **TIER 1 (verbatim, always) + the relevant TIER 2 loca
 Above both tiers sits an **OVERVIEW** — the visual thesis. It holds the *intent*: how the look and the world together argue the emotion of the story. Without it, an agent assembles technically-correct but dead frames ("a 1991 dorm room" instead of "the box he's trapped in while the world moves on"). The overview is what makes the props mean something.
 
 ## Why this stage exists
-Consistency is the product. Drift — characters mutating between frames, the style sliding toward generic AI gloss — is a craft failure in any genre — and, for Talefeather work, the exact flaw customers punish competitors for (`profile/clients/talefeather/AUDIENCE-CONTEXT.md`). It is the failure that forced the hand-built grind. Blessed once, inherited everywhere. **Gate 2 is sacred: no sequence image before it's blessed.**
+Consistency is the product. Drift — characters mutating between frames, the style sliding toward generic AI gloss — is a craft failure in any genre — and, for Talefeather work, the exact flaw customers punish competitors for (`profile/clients/talefeather/AUDIENCE-CONTEXT.md`). It is the failure that forced the hand-built grind. Once Vince locks a component, every dependent prompt inherits it verbatim.
 
 ## Document layout
 Lives at `03-bible/mise-en-scene.md` (+ `refs/`, `characters/`). Also mirrored to Notion as a child of the project page (it's a touch-point Vince glances at — via `hearthlight-notion-log` / `hearthlight-reference-report` patterns). Structure:
@@ -112,7 +111,7 @@ Rule: every Tier-2 location section should trace back to a tension in the contra
 **Style block** — the exact language pasted *verbatim* into every prompt. Vince authors/locks it. Working draft pending his blessing:
 > `hand-drawn ink and watercolour illustration, loose expressive ink linework with varied line weight, transparent layered watercolour washes, visible cold-press paper texture, pigment blooms at wash edges, muted warm palette, generous white-paper negative space, soft wet-in-wet backgrounds, confident dry-brush detail on figures, storybook realism`
 
-Rules: concrete painter's language; no model-flattering tags ("masterpiece"), no generic tags ("cinematic"); 30–60 words. Once blessed → **LOCKED**; changing it re-opens Gate 2. This block is the single source of truth for the *look* — every other skill (image-prompts, video-prompts) quotes it, never redefines it.
+Rules: concrete painter's language; no model-flattering tags ("masterpiece"), no generic tags ("cinematic"); 30–60 words. Once blessed → **LOCKED**. Changing it requires Vince to lock the revised component. This block is the single source of truth for the *look* — every other skill (image-prompts, video-prompts) quotes it, never redefines it.
 
 **Style refs** — 2–4 exemplars Vince approves, in `refs/`. Passed as image inputs where the model supports them.
 
@@ -139,7 +138,7 @@ Every Tier-2 detail traces to research or is tagged `[stylized — Vince decides
 3. **Tier 1:** draft the style block + 4–6 candidate style-ref prompts; generate, post to Telegram for selects. Build character signature details — propose in chat FIRST, approve, then generate turnarounds.
 4. **Tier 2:** for each location, compose the world section from research, **anchored to its tension in the contrast spine**; surface every uncertain detail as a `[stylized — Vince decides]` choice. Generate one establishing image per location.
 4. Assemble `mise-en-scene.md` in the two-tier layout; mirror to Notion.
-5. **GATE 2:** post the bible summary to Telegram. Explicit ✅ required on: style block wording, style refs, each character's signature details + turnaround, each location's world section + establishing image.
+5. **Locking pass:** show the bible summary to Vince. He locks style wording, style refs, character signatures and turnarounds, and each location's world section independently.
 
 ## How prompt-writers use this doc (the touch-point contract)
 - `hearthlight-image-prompts` and `hearthlight-video-prompts` assemble: **Tier-1 style block (verbatim) + Tier-1 character signature block (verbatim) + the beat's location Tier-2 details + the specific action.**
@@ -150,14 +149,14 @@ Every Tier-2 detail traces to research or is tagged `[stylized — Vince decides
 ## Drift policy
 - **Character drift** = a signature detail missing/mutated. **Style drift** = gloss creep (over-rendered, oversaturated, plastic skin, vanished paper texture), palette shift, mechanical linework. **World drift** = props/wardrobe inconsistent with the location's Tier-2 block.
 - Drift caught at review → regenerate that image; fine.
-- Drift recurring across 3+ images → the doc is underspecified. Stop; propose an amendment (re-opens Gate 2 for that component only). Never quietly mutate individual prompts to compensate — that's how the ChatGPT grind happened.
+- Drift recurring across 3+ images → the doc is underspecified. Stop; propose an amendment and have Vince lock that revised component. Never quietly mutate individual prompts to compensate — that's how the ChatGPT grind happened.
 
 ## Pitfalls
 - **Skipping the overview and going straight to props** — that yields period-accurate, emotionally-dead frames. The thesis comes first; the details serve it.
 - **Overview drifting into story** — it owns the visual, not the plot. If it starts inventing events or dialogue, it's overstepping the Beat Sheet. Reference the arc, don't rewrite it.
 - A Tier-2 location that names no tension from the contrast spine — that's set dressing, not mise-en-scène.
 - Treating Tier 1 and Tier 2 as the same — the look is locked, the world is composed; keep them visibly separate.
-- Generating sequence images "to test" before Gate 2.
+- Generating sequence images against an unlocked visual component.
 - Style blocks of model-flattering/generic tags instead of painter's language.
 - Signature details that don't survive abstraction (eye colour drowns in a wash; silhouette survives).
 - Un-sourced period props in a Tier-2 block; photoreal likeness on the pilot.
@@ -169,5 +168,5 @@ Every Tier-2 detail traces to research or is tagged `[stylized — Vince decides
 - `mise-en-scene.md` exists in the two-tier layout (+ overview); mirrored to Notion.
 - Tier 1: style block marked LOCKED + approved refs; each character has a signature block + turnaround.
 - Tier 2: every recurring location has a full world section + establishing image; every detail sourced or `[stylized]`.
-- Gate 2 ✅ explicit in Telegram before any Stage 4 work.
+- Every visual component used by a Stage 4 shot is explicitly locked by Vince.
 - A prompt-writer can assemble a correct prompt using ONLY this doc + the beat.

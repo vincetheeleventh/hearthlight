@@ -171,5 +171,5 @@ Answer every one. If any answer is no, fix the prompt before sending.
 - [ ] Are the timing blocks internally consistent?
 - [ ] Is dialogue clean — only the scripted line, everyone else silent?
 - [ ] No scene numbers, no context leakage?
-- [ ] Style block verbatim; aspect and duration matching the distribution spec?
+- [ ] Style block verbatim; aspect from `project.json`; duration from the current shot record?
 - [ ] Is the QA itself absent from the output?

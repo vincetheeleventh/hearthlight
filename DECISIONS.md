@@ -3,7 +3,7 @@ doc: DECISIONS
 role: law
 authority: canon
 owner: agents
-updated: 2026-08-05
+updated: 2026-08-11
 answers:
   - which design rules are currently in force
   - where a given rule binds
@@ -53,4 +53,4 @@ file, and replace the row.
 | D-023 | A skill that restates another skill's law is worse than no skill. Per-asset-type craft belongs to the skill owning that type; only universal laws are cross-cutting. | every new skill |
 | D-024 | `shots.json` is the canonical shot record and panels are files on disk. The workbook is a one-way export; nothing in production reads it. *(⚠️ recorded by the checkpoint, not yet ratified by Vince)* | shot registry, compilers, `workflows/board-intake.md` |
 | D-025 | Hearthlight is a single-operator AI filmmaking **tool**, not an engine underneath a product. Supersedes D-003's framing; keeps its rule — `format`, `client` and `charged_register` are declared per project and obeyed, and guessing one is a defect. | every doc, every project |
-| D-026 | No gates. Approval is **per shot**, on two independent axes — `Design` (Exploring / Designed / Locked) and `Production` (Not started / In progress / Needs fix / Candidate ready / Approved) — plus machine-computed `Inputs`. Agents draft, run and report; only Vince marks Locked or Approved. Supersedes D-007. | every skill, `status.yml`, Studio, shot runner |
+| D-026 | No gates. Approval is **per shot**, on two independent axes — `Design` (Exploring / Designed / Locked) and `Production` (Not started / In progress / Needs fix / Candidate ready / Approved) — plus machine-computed `Inputs`. Agents draft, run and report; only Vince marks Locked or Approved. Supersedes D-007. | every skill, `shots.json`, Studio, shot runner |

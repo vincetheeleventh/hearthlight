@@ -50,7 +50,7 @@ Every incumbent fails on the same craft axis. StoryWorth: *"my finished product 
 
 **Pipeline consequence:** (note — the engine already encodes these as its own craft laws; this section
 is the *commercial* argument for why they matter to Talefeather, not their only justification)
-- **Consistency-as-product is the answer to "every book looks the same."** The Asset Bible (Gate 2), the no-drift policy, the verbatim style block — these aren't perfectionism, they're the entire competitive wedge. A story that drifts into generic AI gloss commits the exact sin customers already punish competitors for.
+- **Consistency-as-product is the answer to "every book looks the same."** The locked Asset Bible, the no-drift policy, and the verbatim style block aren't perfectionism; they're the entire competitive wedge. A story that drifts into generic AI gloss commits the exact sin customers already punish competitors for.
 - **Narrative architecture is the answer to "a list of answers, not a story."** The Story Arc → Beat Sheet → A/V Script chain exists so the output is an *architected film*, not a transcript with pictures. Counterpoint (image not echoing words) is what makes it feel authored.
 - **"It doesn't feel like them"** is answered by the character sheet's *signature details that survive abstraction* and, in commission work, by the **family questions** — research that asks "Ford or Chevy? phone in the kitchen or the hallway?" The family are the world experts; the questions are how the artifact becomes *theirs* and not plausible-generic.
 

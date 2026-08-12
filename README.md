@@ -44,7 +44,7 @@ Story Studio/
                                      board-intake + the comparison ledger
   guides/                          ← the same routes in PLAIN LANGUAGE, for Vince at the bench.
                                      Start at guides/assets.md; both routes stand on the sheets
-  staging/overview-ui/             ← Hearthlight Studio, the production cockpit. Final home undecided
+  Film Study Tool repository       ← Hearthlight Studio, the production cockpit (separate repository)
   skills/                          ← Hermes skills = the instruction layer (PRD §6). 23 skills:
     hearthlight-distribution-spec/ Platform/aspect/length/captions + format/client/charged_register — decided first
     hearthlight-conventions/       Folders, naming, versioning, conventions

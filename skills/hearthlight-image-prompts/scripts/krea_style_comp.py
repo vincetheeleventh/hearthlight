@@ -164,9 +164,9 @@ def load_registry(root: Path, source: Path) -> tuple[dict, dict[str, dict], dict
     registry = read_json(path)
     if registry.get("status") != "ready":
         raise SystemExit("Shot registry needs reconciliation; generation blocked")
-    # The workbook-hash gate exists to catch registry/workbook divergence. Once a
+    # The workbook-hash check catches registry/workbook divergence. Once a
     # project is canonical (`shot_record.py migrate`) the prompt comes from the
-    # registry itself, the workbook is a derived export, and the gate is
+    # registry itself, the workbook is a derived export, and the check is
     # meaningless — a stale export must not block generation.
     canonical = source.name == "shots.json"
     if not canonical and registry.get("source_revision_hash") != sha256(source):

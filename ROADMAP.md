@@ -57,8 +57,9 @@ Vince's explicit approval to send the project source bundle to that external pro
 
 **Hearthlight Studio** *(CONFIRMED)*
 The production cockpit. Shot-first project view, editable/versioned Shot Vision, technical storyboard
-source, Prompt Board approval, review controls, and durable generation queueing. Lives in
-`staging/overview-ui/`; where it should finally live is undecided.
+source, Prompt Board approval, review controls, and durable generation queueing. It lives in the
+separate Film Study Tool repository and runs on port 8765. Project-stage reporting has been removed;
+the active state model is per-shot Design / Production / Inputs.
 
 **The shot2video / board2video trial** *(CONFIRMED — Vince, 2026-08-05, D-022)*
 Two routes from storyboard to clip run in parallel. **shot2video** approves a conditioning still per
@@ -70,7 +71,7 @@ question is settled by memory, which is what D-022 exists to prevent. Two skills
 its generator surface — `MiniMaxH3ReferenceToVideo` — is mapped but untried).
 
 **Medium as a spec-level law** *(CONFIRMED — Vince, 2026-08-05)*
-`medium: illustrated | live-action` in the distribution spec. Illustrated bans photographic
+`medium: illustrated | live-action` in `project.json`. Illustrated bans photographic
 vocabulary from prompts — bokeh, focus plane, shutter blur, pore-level skin, the `Photoreal` tag.
 Every current project is illustrated; the photoreal material is parked in
 `hearthlight-video-prompts/references/live-action/` behind a README explaining why not to open it.
@@ -122,10 +123,7 @@ proposals, the crew arguing rather than complying.
    claims. Reference images cannot be tracked without `-f`.
 6. **The image-prompt tests read live `projects/yugioh` data** — exact counts and cell addresses —
    so editing the shot list fails the suite and can block a checkpoint commit.
-7. **A project's central document has no home the code reads.** `yugioh/02-outline/FILM-BRIEF.md`
-   declares itself authoritative and supersedes `distribution-spec.md`, but eight code paths read
-   `distribution-spec.md` and none read the brief. The conventions name no slot for a brief.
-8. **The image ledger is write-only.** `yugioh/04-images/` holds 68 PNGs; `generations.jsonl` knows
+7. **The image ledger is write-only.** `yugioh/04-images/` holds 68 PNGs; `generations.jsonl` knows
     30, and all 30 read `selected_final: false`. Which still is the approved base for a shot is
     answerable only by folder name — the row-number failure D-009 exists to prevent, one level up.
     *Partly addressed 2026-08-05:* `set_shot_image.py` now writes a paired `generation` +

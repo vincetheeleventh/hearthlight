@@ -30,7 +30,7 @@ rewriting anything — most bad renders are a missing input, not a bad prompt.
 
 | Needs to exist | Where | If it's missing |
 |---|---|---|
-| Aspect ratio decided | `distribution-spec.md` | Everything gets re-composed later. Aspect is a composition law, not an export setting |
+| Aspect ratio decided | `project.json` | Everything gets re-composed later. Aspect is a composition law, not an export setting |
 | Locked style block | `03-bible/mise-en-scene.md` | Every shot looks like a different film |
 | Character + location sheets | `03-bible/` | Faces and rooms drift shot to shot ([guide](assets.md)) |
 | Props registry | `03-bible/props.json` | Objects go generic — this is how the cards became "trading cards" |

@@ -38,7 +38,7 @@ positives. Interrogate them:
 |---|---|
 | No inbound references | Is this dead, or just under-integrated like `hearthlight-character`? |
 | Oversized SKILL.md | Is it doing two jobs that should split — or is it genuinely one big job? |
-| Scripts with no test | Does breakage here cost money or a gate? Untested + expensive is the bad quadrant. |
+| Scripts with no test | Does breakage here cost money or corrupt shot state? Untested + expensive is the bad quadrant. |
 | Stale skill counts | A doc asserting a number that is no longer true. Usually a GREEN fix. |
 | Broken skill refs | Points at something that does not exist. Always a GREEN fix. |
 
@@ -109,7 +109,7 @@ Short, and in this order:
 
 ## The hard limits
 
-**RED — never autonomous, no exceptions:** `GOALS.md` · the gate protocol · deleting any file, skill,
+**RED — never autonomous, no exceptions:** `GOALS.md` · the approval model · deleting any file, skill,
 or feature · product strategy · a project's charged register · `profile/TASTE.md` (his aesthetic
 memory is his) · rewriting an existing `DECISIONS.md` entry · resolving a `⚠️ NEEDS VINCE` marker.
 

@@ -1,17 +1,16 @@
 ---
 name: hearthlight-character
 description: Hearthlight character creation — meaning-first interrogation producing a terse human dossier (CHARACTER.md) plus a machine record (character.json) that agents read for prompt assembly. Owns the signature string, the reviewer's reject-list, and the lighting-neutral turnaround sheet wired to image2 on every video job. Use when a project needs characters designed, or an existing one reads generic or machine-drafted.
-version: 0.2.0
 metadata:
   hermes:
-    tags: [hearthlight, character, design, turnaround, model-sheet, consistency, gate-2]
+    tags: [hearthlight, character, design, turnaround, model-sheet, consistency]
     category: hearthlight
 ---
 
 # Hearthlight — Character Creation
 
 ## When to Use
-Stage 3 (Gate 2), or whenever a character reads generic, drifts between frames, or was machine-drafted
+Stage 3, or whenever a character reads generic, drifts between frames, or was machine-drafted
 and never interrogated. This skill owns **making** a character. `hearthlight-mise-en-scene` owns where
 the result is filed.
 
@@ -212,7 +211,7 @@ wins*. Never duplicate the dossier.
 3. Director decides → write `CHARACTER.md` (terse) and `character.json` (complete).
 4. Optionally run a divergence batch before committing.
 5. Generate the sheet. **Read the output back with vision before presenting it.**
-6. **Approval** — explicit ✅ on signature string, reject-list, and sheet. Part of Gate 2; gates all
+6. **Approval** — Vince explicitly locks the signature string, reject-list, and sheet. These decisions all
    sequence work featuring that character.
 7. On approval: set status in both files, mirror the string into `mise-en-scene.md`, register the sheet
    in `assets.json`, log it (`hearthlight-notion-log`).

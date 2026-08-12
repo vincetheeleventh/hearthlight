@@ -40,7 +40,7 @@ If a sentence's purpose is to tell you what *used to be* true, it is not canon. 
 | "the revised GOALS.md" · "the new spec" | It is just `GOALS.md`. There is one. |
 | "Verified 2026-08-03" as body prose | `updated:` in the front matter carries this. |
 
-**Dates are allowed** where the date is the fact — a gate approval, a decision date, a scheduled
+**Dates are allowed** where the date is the fact — a shot approval, a decision date, a scheduled
 event. They are banned as narration about the document's own history.
 
 ### Not banned

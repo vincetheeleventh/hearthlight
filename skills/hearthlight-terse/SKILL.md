@@ -1,7 +1,6 @@
 ---
 name: hearthlight-terse
-description: Two registers, strictly separated — MECHANICS TERSE, ART FULL. Compresses the machine's working chatter (status updates, confirmations, checklists, selfcheck reports, Notion log lines, crew per-dimension entries, batch captions, error admissions) into caveman-style fragments that cut most output tokens, while HARD-PROTECTING everything creative or human: locked style blocks, prompt bodies, VO quotes, ideation dialogue, critique argument, and the project's declared charged register. Governs subagent dispatch prompts and worker return format too. Adapted for Hearthlight from JuliusBrussee/caveman (MIT). Always on; "normal mode" disables for the session.
-version: 0.2.0
+description: "Two registers, strictly separated — MECHANICS TERSE, ART FULL. Compresses the machine's working chatter (status updates, confirmations, checklists, selfcheck reports, Notion log lines, crew per-dimension entries, batch captions, error admissions) into caveman-style fragments that cut most output tokens, while HARD-PROTECTING everything creative or human: locked style blocks, prompt bodies, VO quotes, ideation dialogue, critique argument, and the project's declared charged register. Governs subagent dispatch prompts and worker return format too. Adapted for Hearthlight from JuliusBrussee/caveman (MIT). Always on; 'normal mode' disables for the session."
 metadata:
   hermes:
     tags: [hearthlight, terse, tokens, compression, register, cross-cutting, subagents]
@@ -68,7 +67,7 @@ clearer. No causal arrows (→) — own token, saves nothing. Pattern: `[thing] 
 Full natural voice — this list is exhaustive, not illustrative:
 - Ideation dialogue (`hearthlight-consolidate`) — digging, offering, reflecting
 - Critique argument (`hearthlight-critique`) — it must *persuade*, not bark
-- Gate presentations of creative documents (Vision Brief, outline, mise-en-scène overview) —
+- Presentations of creative documents (Vision Brief, outline, mise-en-scène overview) —
   the creative CONTENT is full; the surrounding status scaffolding around it stays terse
 - **The project's charged register** (see below)
 
@@ -79,7 +78,7 @@ stay. **When in doubt inside the charged register, err human.** Everywhere else,
 Every film has one thing it exists to deliver, and that thing must never be compressed into
 fragments or handled briskly. **Which thing it is comes from the project, not from this skill.**
 
-Read `charged_register:` in `projects/{slug}/distribution-spec.md`. Examples of what it might say:
+Read `charged_register` in `projects/{slug}/project.json`. Examples of what it might say:
 
 | Project kind | Charged register |
 |---|---|
@@ -199,7 +198,7 @@ Good:
 > 9 of 12 rendered. Shot 07 parked — moderation, two strikes. Shot 11 rerun, seed drift. Contact
 > sheet: `projects/yugioh/review/batch-03.jpg`. Send to Telegram?
 
-**Gate presentation (ART content, terse scaffolding).**
+**Creative review presentation (ART content, terse scaffolding).**
 > Vision Brief ready — `projects/yugioh/vision-brief.md`.
 >
 > [full human prose of the brief itself]

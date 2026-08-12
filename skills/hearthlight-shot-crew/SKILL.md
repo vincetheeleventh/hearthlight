@@ -1,7 +1,6 @@
 ---
 name: hearthlight-shot-crew
 description: Orchestrate an illustration/stop-motion CREW to design each shot — layout, value-light, background, continuity/model, posing, motion, sound, editor — each contributing in its domain and NEGOTIATING tradeoffs. Routine shots run as an internal checklist; contested shots delegate the conflicting roles to subagents, then the orchestrator reconciles into one coherent shot and shows its tradeoffs. Vince is the director; the kill decision is his.
-version: 0.1.0
 metadata:
   hermes:
     tags: [hearthlight, shot-list, crew, orchestrator, delegation, illustration]

@@ -1,17 +1,16 @@
 ---
 name: hearthlight-storyboard
-description: Hearthlight Stage 5 (Gate 4) — assemble the storyboard doc from approved images + A/V script: motion intent, durations, transitions. The single source of truth for video generation; Seedance prompts derive from it, never improvised.
-version: 0.1.0
+description: "Hearthlight Stage 5 — assemble and revise storyboard records from shot intent, images, and the A/V script: motion, duration, transition, and lip-sync policy. The storyboard is authoritative for video motion; prompts derive from it rather than improvising."
 metadata:
   hermes:
-    tags: [hearthlight, storyboard, motion, gate-4]
+    tags: [hearthlight, storyboard, motion]
     category: hearthlight
 ---
 
-# Hearthlight — Storyboard (Stage 5, Gate 4)
+# Hearthlight — Storyboard (Stage 5)
 
 ## When to Use
-After Gate 3 (all beat images approved and sequence locked).
+Use whenever storyboard motion or timing needs to be established or revised. Shots may be at different production states.
 
 ## What this document is
 `05-storyboard/storyboard.md` — one entry per shot, assembled from the approved images and the A/V script. It is the **single source of truth for video generation**: Stage 6 prompts are derived from it mechanically. If something about a shot isn't in the storyboard, it doesn't exist.
@@ -49,12 +48,12 @@ One motion idea per shot as the default. Two maximum (e.g. push-in + steam). If 
 2s quick inserts · 3s gestures/punctuation · 4s standard beats · 5s held shots and the detonation beat · 6–8s exceptional stillness only. Sum the durations against the VO segment length — total clip time should cover the VO with a small tail, and the cut rhythm should breathe with the speech (cuts land in the pauses, not mid-phrase).
 
 ## Lip sync policy
-The VO is interview audio — the older voice remembering. The illustrated figures are the memory. **Default: figures do NOT mouth the VO words.** A figure may speak silently within the scene (we see the call happen; we hear the man remember it) — if so, write `mouth moves, inaudible within scene` explicitly. Any true lip-sync exception is Vince's call, flagged at the gate.
+The VO is interview audio — the older voice remembering. The illustrated figures are the memory. **Default: figures do NOT mouth the VO words.** A figure may speak silently within the scene (we see the call happen; we hear the man remember it) — if so, write `mouth moves, inaudible within scene` explicitly. Any true lip-sync exception is Vince's call and must be recorded on that shot.
 
 ## Procedure
-1. Read the A/V script and `04-images/status.md`; confirm every beat has an approved image (if not, stop — Gate 3 isn't actually closed).
+1. Read the A/V script and current shot record. Use each shot's selected hero when present; keep missing or candidate imagery explicit.
 2. Draft entries in sequence. Read the whole sequence before finalizing durations — rhythm is global, not per-shot.
-3. Post to Telegram as one document with a per-shot summary table. **GATE 4:** explicit ✅.
+3. Present the per-shot summary. Vince locks or revises shots independently.
 
 ## Pitfalls
 - Motion intent that re-describes the image instead of naming the change.
@@ -65,4 +64,4 @@ The VO is interview audio — the older voice remembering. The illustrated figur
 ## Verification
 - Every shot: approved image filename, VO timestamps, duration, exactly one (max two) motion ideas, transition.
 - Durations sum to VO length + tail.
-- `GATE 4 PASSED {date}` at the top after approval.
+- Current per-shot design confirmation is recorded in the shot record.

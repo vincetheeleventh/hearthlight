@@ -1,7 +1,6 @@
 ---
 name: hearthlight-conventions
-description: Hearthlight project conventions — directory structure, file naming (generated assets AND reference images), the reference manifest, versioning, where media enters the system, and the gate protocol. Load at the start of any Hearthlight project work or when unsure where a file belongs.
-version: 0.2.0
+description: Hearthlight project conventions — directory structure, file naming for generated assets and references, the reference manifest, versioning, stable project identity, and where media enters the system. Load at the start of project work or when unsure where a file belongs.
 metadata:
   hermes:
     tags: [hearthlight, conventions, folders]
@@ -171,7 +170,7 @@ new version of the old one (versions are for corrections; see the immutability r
 the UI. A second name for the same asset is a drift vector. Tags are registered in the reference
 manifest above.
 
-## THE ASSET STRESS TEST (the gate before any asset locks)
+## THE ASSET STRESS TEST (the check before any asset locks)
 An asset is a pair: **a descriptor (text) + a reference (image)**. The descriptor goes into every
 prompt **word for word** — the model has no memory, and there is no "as established earlier".
 
@@ -202,10 +201,11 @@ amended asset is an untested asset; re-run the three.
 or any asset feeding `workflows/board2video.md`, where there is no conditioning still to hide behind
 and a weak sheet fails in every shot of a sequence at once.
 
-## Gate protocol
-- Gates 0–5 map to stages 1.5–6 (see PRD §5). A gate passes only on Vince's explicit ✅ in Telegram.
-- Record each gate pass at the top of the stage's main doc: `GATE n PASSED {date}`.
-- Never start work belonging to a later stage while a gate is open.
+## Approval protocol
+- Approval is per shot, not a linear project stage.
+- The machine never approves its own work. Vince locks Shot Vision and approves assets.
+- Record decisions in the authoritative shot record and append-only review/selection ledgers.
+- Work may move iteratively between story, design, prompting, generation, critique, and revision.
 
 ## PROPOSED AMENDMENT — cockpit intake (Vince to ratify, 2026-07-30)
 The Hearthlight cockpit (`hearthlight-dashboard`, localhost:8787) is now a valid

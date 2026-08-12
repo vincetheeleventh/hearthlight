@@ -393,7 +393,7 @@ def visual_system_context(root: Path) -> dict[str, str]:
     return {
         "visual_thesis": between(text, "## OVERVIEW", "## THE DRIVEWAY LIGHT LAW", 6000),
         "locked_style_context": between(text, "## TIER 1", "## TIER 1 — CHARACTERS", 5000),
-        "driveway_light_law": between(text, "## THE DRIVEWAY LIGHT LAW", "## GATE 4", 7000),
+        "driveway_light_law": between(text, "## THE DRIVEWAY LIGHT LAW", "## SHOT 19B AMENDMENT", 7000),
     }
 
 

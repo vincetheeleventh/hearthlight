@@ -13,7 +13,7 @@ USAGE (WSL):
 
 Exit code 0 = all green, 1 = at least one RED (hard failure).
 """
-import os, sys, subprocess, glob, re, shutil
+import json, os, sys, subprocess, glob, re, shutil
 
 # Derive paths robustly. NOTE: under the gateway, $HOME is overridden to the
 # profile's home/ subdir, so os.path.expanduser("~") points at a nonexistent
@@ -256,8 +256,16 @@ if "--project" in sys.argv:
                   GREEN if blessed else WARN, "" if blessed else "style block still DRAFT — no images until blessed")
         else:
             check(f"project {proj}: mise-en-scene.md exists", WARN, "not built yet")
-        check(f"project {proj}: distribution-spec.md exists",
-              GREEN if os.path.isfile(os.path.join(pdir,"distribution-spec.md")) else WARN)
+        identity_path = os.path.join(pdir, "project.json")
+        identity_ok = False
+        if os.path.isfile(identity_path):
+            try:
+                identity = json.load(open(identity_path, encoding="utf-8"))
+                identity_ok = all(identity.get(key) for key in ("format", "client", "charged_register", "master_aspect_ratio"))
+            except (OSError, ValueError):
+                identity_ok = False
+        check(f"project {proj}: project.json identity complete",
+              GREEN if identity_ok else WARN, "" if identity_ok else "format, client, charged_register, and master_aspect_ratio are required")
         check(f"project {proj}: 00-source has material",
               GREEN if os.listdir(os.path.join(pdir,"00-source")) else WARN)
         compiler = os.path.join(STUDIO, "skills", "hearthlight-image-prompts", "scripts", "krea_style_comp.py")

@@ -1,7 +1,6 @@
 ---
 name: hearthlight-research
 description: Hearthlight world & period research — build the sourced Research Deck that feeds period-true detail into prompts, and the family-questions list that turns uncertainty into interview material. Research populates the world, never the story.
-version: 0.1.0
 metadata:
   hermes:
     tags: [hearthlight, research, period-detail, family-questions]

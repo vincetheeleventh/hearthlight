@@ -6,10 +6,9 @@ description: >
   per shot. Clusters the shot list into sequences, crops each panel, and renders the sheet. The whole
   point is that the prompt afterwards can be one sentence. Use when running board2video, or when a
   sequence needs to be handed to a video model as a picture rather than as prose.
-version: 0.1.0
 metadata:
   hermes:
-    tags: [hearthlight, board, storyboard, sequence, board2video, gate-5]
+    tags: [hearthlight, board, storyboard, sequence, board2video]
     category: hearthlight
 ---
 

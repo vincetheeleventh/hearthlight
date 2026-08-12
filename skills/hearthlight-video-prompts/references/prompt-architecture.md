@@ -224,7 +224,7 @@ that is what holds the look through the motion.
 > illustrated film**; `Photoreal.` in particular is the fastest single route to losing the medium.
 > Those tags live with the live-action material.
 
-**Aspect comes from the distribution spec.** It is a composition law, not an export setting.
+**Aspect comes from `project.json`.** It is a composition law, not an export setting.
 
 ## Style block
 
@@ -279,6 +279,6 @@ A guardian that reads as a large man = failed shot.
 - [ ] One lens character for the beat; content matches the FOV
 - [ ] One light source logic; no second sun
 - [ ] Style block verbatim
-- [ ] Aspect and duration match the distribution spec
+- [ ] Aspect matches `project.json`; duration matches the current shot record
 - [ ] No age written anywhere
 - [ ] Beats carry at most three sentences each

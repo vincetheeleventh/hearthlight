@@ -1,7 +1,6 @@
 ---
 name: hearthlight-notion-log
-description: Hearthlight's Notion surfacing — Vince's preferred point of contact. Maintain three surfaces on Notion: working notes (usable artifacts), a daily journal (what got done), and a Threads database (one row per project/feature, linked to its Hermes session). Append-only, rate-limit-safe.
-version: 0.2.0
+description: "Hearthlight's Notion surfacing — Vince's preferred point of contact. Maintain three surfaces on Notion: working notes (usable artifacts), a daily journal (what got done), and a Threads database (one row per project/feature, linked to its Hermes session). Append-only, rate-limit-safe."
 metadata:
   hermes:
     tags: [hearthlight, notion, logging, threads, journal]
@@ -29,7 +28,7 @@ The *real* thread (the resumable conversation) lives in Hermes as a **session wi
 - **Working notes** → the relevant thread page's `## Working notes` section (or a linked sub-page for long artifacts like a full transcript). Big transcripts: store the file locally, put a short summary + the local path + key excerpts on Notion, not the whole 10k-word dump (context + rate-limit hygiene).
 - **Daily journal** → the thread page's `## Daily journal`, under a `### YYYY-MM-DD` header. One bullet per accomplishment.
 - **Threads DB** → create a row when a new project/feature starts; update Status + Last Active as it moves.
-- **Milestones** (gate passes, locked brief, key decisions) → also mirror a one-liner to the pilot dashboard's notes area so the front page tells the story at a glance.
+- **Milestones** (locked brief, approved shot, key decisions) → also mirror a one-liner to the project log so the production trail stays glanceable.
 - The standalone **Activity Log page** (created earlier) remains the optional full chronological feed; the three surfaces above are the primary, curated views Vince asked for.
 
 ## Rate-limit & readability discipline
